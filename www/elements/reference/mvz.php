@@ -16,7 +16,7 @@
     }
 
     //получаем список рцк
-    $sub_res=sql_query("SELECT `id`,`name_rck` FROM `rck` $limit;")  or sqlerr(__FILE__, __LINE__);
+    $sub_res=sql_query("SELECT `id`,`name_rck` FROM `rck`;")  or sqlerr(__FILE__, __LINE__);
     while ($subrow = mysql_fetch_array($sub_res)){
         $data_rck[$subrow['id']]= $subrow['name_rck'];
     }
