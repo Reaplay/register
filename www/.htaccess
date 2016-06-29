@@ -1,0 +1,8 @@
+Order Allow,Deny
+Allow from all
+AddDefaultCharset utf-8
+php_flag display_errors on
+ErrorDocument 404 http://register/404.php
+ErrorDocument 500 http://register/500.php
+
+
