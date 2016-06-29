@@ -18,13 +18,22 @@ LEFT JOIN location_city ON location_city.id = location_address.id_city
 LEFT JOIN established_post ON established_post.id = employee.id_uid_post
 LEFT JOIN direction ON direction.id = established_post.id_direction
 LEFT JOIN rck ON rck.id = established_post.id_rck
+LEFT JOIN mvz ON mvz.id = established_post.id_mvz
 
 ";
 
     $paginator = create_paginator($_GET['page'],$REL_CONFIG['per_page_employee'],'employee',$left_join, $where);
 // получаем основной список сотрудников
     $res=sql_query("
-SELECT established_post.id,established_post.uid_post, employee.name_employee,employee.id as e_id, established_post.id_functional_manager, direction.name_direction, established_post.id_administrative_manager, employee.id_functionality, rck.name_rck, established_post.draft, location_city.name_city
+SELECT
+established_post.id,established_post.uid_post,established_post.id_position, established_post.id_functional_manager, established_post.id_administrative_manager, established_post.draft,established_post.transfer, established_post.date_entry, established_post.id_direction,
+employee.name_employee,employee.id as e_id, employee.id_functionality, employee.date_transfer, employee.date_employment, employee.fte,
+direction.name_direction,
+rck.name_rck,
+mvz.name_mvz,
+location_city.name_city,
+location_address.name_address,
+location_place.floor,location_place.room,location_place.place,location_place.ready, location_place.date_ready, location_place.reservation, location_place.date_reservation, location_place.occupy,location_place.date_occupy
 
 FROM `employee`
 $left_join
@@ -41,9 +50,14 @@ WHERE employee.is_deleted = 0  $where
         $array_functionality[$row_functionality['id']]['id_parent'] = $row_functionality['id_parent'];
     }
     //получаем список дирекций
-    $res_direction = sql_query("SELECT id, name_direction FROM direction");
+    $res_direction = sql_query("SELECT direction.id, employee.name_employee FROM direction LEFT JOIN employee ON employee.id = direction.id_employee");
     while ($row_direction = mysql_fetch_array($res_direction)) {
-        $array_direction[$row_direction['id']] = $row_direction['name_direction'];
+        $array_direction[$row_direction['id']] = $row_direction['name_employee'];
+    }
+    //получаем список должностей
+    $res_position = sql_query("SELECT id, name_position FROM `position`");
+    while ($row_position = mysql_fetch_array($res_position)) {
+        $array_position[$row_position['id']] = $row_position['name_position'];
     }
 
     $i=0;
@@ -53,15 +67,26 @@ WHERE employee.is_deleted = 0  $where
         $data_employee[$i]=$row;
         $data_employee[$i]['date_employment']=mkprettytime($row['date_employment'],false);
         $data_employee[$i]['date_transfer'] = mkprettytime($row['date_transfer'], false);
+        $data_employee[$i]['date_entry'] = mkprettytime($row['date_entry'], false);
+
+
+        $data_employee[$i]['date_transfer'] = mkprettytime($row['date_transfer'], false);
+        $data_employee[$i]['date_employment'] = mkprettytime($row['date_employment'], false);
+
+        $data_employee[$i]['date_ready'] = mkprettytime($row['date_ready'], false);
+        $data_employee[$i]['date_occupy'] = mkprettytime($row['date_occupy'], false);
+        $data_employee[$i]['date_reservation'] = mkprettytime($row['date_reservation'], false);
         //выбираем функционального рук-ля
         $data_employee[$i]['func_mgr'] = select_manager($row['id_functional_manager']);
         //выбираем административного рук-ля
         $data_employee[$i]['adm_mgr'] = select_manager($row['id_administrative_manager']);
        // узнаем ID родителя функции
         $id_parent =  $array_functionality[$row['id_functionality']]['id_parent'];
-        //прописываем название группы функции
-        $data_employee[$i]['name_functionality'] = $array_functionality[$id_parent]['name'];
-       // $data_employee[$i]['name_direction'] = $array_direction[$row['id_direction']];
+        //прописываем название  функции
+        $data_employee[$i]['group_functionality'] = $array_functionality[$id_parent]['name'];
+        $data_employee[$i]['name_functionality'] = $array_functionality[$row['id_functionality']]['name'];
+        $data_employee[$i]['name_position'] = $array_position[$row['id_position']];
+        $data_employee[$i]['name_cur_direction'] = $array_direction[$row['id_direction']];
 
 
         $i++;
