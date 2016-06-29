@@ -69,7 +69,11 @@ elseif($_POST['action']=='edit'){
 }
 
 if (!$_GET['action']){
-    $res=sql_query("SELECT department.*, type_office.name as name_type_office FROM `department` LEFT JOIN type_office ON type_office.id = department.id_type_office;")  or sqlerr(__FILE__, __LINE__);
+
+    // формируем переход между страниц и прочие данные
+    $paginator = create_paginator($_GET['page'],"30",'department');
+
+    $res=sql_query("SELECT department.*, type_office.name as name_type_office FROM `department` LEFT JOIN type_office ON type_office.id = department.id_type_office ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
         stderr("Ошибка","Подразделения базе не обнаружены","no");
     }
@@ -92,7 +96,7 @@ if (!$_GET['action']){
         $i++;
     }
 
-
+    $REL_TPL->assignByRef('paginator',$paginator);
     $REL_TPL->assignByRef('data_department',$data_department);
     $REL_TPL->output("index", "admincp", "department");
 }

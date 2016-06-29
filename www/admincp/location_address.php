@@ -61,13 +61,17 @@ elseif($_POST['action']=="edit"){
 
 // если нет никакиз активных действий
 if (!$_GET['action']){
+
+    // формируем переход между страниц и прочие данные
+    $paginator = create_paginator($_GET['page'],"30",'location_address');
+
     $res=sql_query("SELECT * FROM `location_address`;")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
         stderr("Ошибка","Адреса базе не обнаружены","no");
     }
 
     //получаем список городов
-    $sub_res=sql_query("SELECT `id`,`name_city` FROM `location_city`;")  or sqlerr(__FILE__, __LINE__);
+    $sub_res=sql_query("SELECT `id`,`name_city` FROM `location_city` ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
     while ($subrow = mysql_fetch_array($sub_res)){
        $data_city[$subrow['id']]= $subrow['name_city'];
     }
@@ -84,7 +88,7 @@ if (!$_GET['action']){
         $i++;
     }
 
-
+    $REL_TPL->assignByRef('paginator',$paginator);
     $REL_TPL->assignByRef('data_address',$data_address);
     $REL_TPL->output("index", "admincp", "location_address");
 }

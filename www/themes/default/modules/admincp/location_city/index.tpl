@@ -4,6 +4,7 @@
 
 <a href="action_admin.php?module=location_city&action=add"><button type="button" class="btn btn-primary btn-lg btn-block">Добавить новый город</button></a>
 <hr>
+{paginator page='action_admin' add_value='module=location_city&' add_link=$add_link add_sort=$add_sort  num_page=$paginator.page max_page=$paginator.max_page count=$paginator.count}
 <table class="table table-striped table-hover table-bordered" id="list_city">
     <thead>
     <tr>
@@ -35,3 +36,4 @@
     {/foreach}
     </tbody>
 </table>
+{paginator page='action_admin' add_value='module=location_city&' add_link=$add_link add_sort=$add_sort  num_page=$paginator.page max_page=$paginator.max_page count=$paginator.count}

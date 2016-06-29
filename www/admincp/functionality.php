@@ -61,13 +61,17 @@ elseif($_POST['action']=="edit"){
 
 // если нет никакиз активных действий
 if (!$_GET['action']){
+
+    // формируем переход между страниц и прочие данные
+    $paginator = create_paginator($_GET['page'],"30",'functionality');
+
     $res=sql_query("SELECT * FROM `functionality`;")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
         stderr("Ошибка","Функционал в базе не обнаружен","no");
     }
 
 
-    $sub_res=sql_query("SELECT `id`,`name_functionality`,id_parent FROM `functionality`;")  or sqlerr(__FILE__, __LINE__);
+    $sub_res=sql_query("SELECT `id`,`name_functionality`,id_parent FROM `functionality` ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
     while ($subrow = mysql_fetch_array($sub_res)){
        $functionality[$subrow['id']]= $subrow['name_functionality'];
     }
@@ -84,7 +88,7 @@ if (!$_GET['action']){
         $i++;
     }
 
-
+    $REL_TPL->assignByRef('paginator',$paginator);
     $REL_TPL->assignByRef('data_functionality',$data_functionality);
     $REL_TPL->output("index", "admincp", "functionality");
 }

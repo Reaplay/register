@@ -61,7 +61,11 @@ elseif($_POST['action']=="edit"){
 
 // если нет никакиз активных действий
 if (!$_GET['action']){
-    $res=sql_query("SELECT * FROM `mvz`;")  or sqlerr(__FILE__, __LINE__);
+
+    // формируем переход между страниц и прочие данные
+    $paginator = create_paginator($_GET['page'],"30",'mvz');
+
+    $res=sql_query("SELECT * FROM `mvz` ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
         stderr("Ошибка","МВЗ базе не обнаружен","no");
     }
@@ -84,7 +88,7 @@ if (!$_GET['action']){
         $i++;
     }
 
-
+    $REL_TPL->assignByRef('paginator',$paginator);
     $REL_TPL->assignByRef('data_mvz',$data_mvz);
     $REL_TPL->output("index", "admincp", "mvz");
 }

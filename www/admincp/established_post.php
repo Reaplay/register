@@ -195,6 +195,10 @@ elseif($_POST['action'] == "edit"){
 }
 
 if(!$_GET['action']){
+
+    // формируем переход между страниц и прочие данные
+    $paginator = create_paginator($_GET['page'],"30",'established_post');
+
     $res = sql_query("
 SELECT
 established_post.*,
@@ -207,6 +211,7 @@ LEFT JOIN department ON department.id = established_post.id_department
 LEFT JOIN direction ON direction.id = established_post.id_direction
 LEFT JOIN mvz ON mvz.id = established_post.id_mvz
 LEFT JOIN location_city ON location_city.id = established_post.id_location_city
+".$paginator['limit']."
 ");
     $i=0;
     while($row=mysql_fetch_array($res)){
@@ -217,6 +222,7 @@ LEFT JOIN location_city ON location_city.id = established_post.id_location_city
         $i++;
     }
 
+    $REL_TPL->assignByRef('paginator',$paginator);
     $REL_TPL->assignByRef('data_established_post',$data_established_post);
     $REL_TPL->output("index", "admincp", "established_post");
 }

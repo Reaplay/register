@@ -1,6 +1,6 @@
-
 <a href="action_admin.php?module=functionality&action=add"><button type="button" class="btn btn-primary btn-lg btn-block">Добавить новый функционал</button></a>
 <hr>
+{paginator page='action_admin' add_value='module=functionality&' add_link=$add_link add_sort=$add_sort  num_page=$paginator.page max_page=$paginator.max_page count=$paginator.count}
 <table class="table table-striped table-hover table-bordered" id="list_functionality">
     <thead>
     <tr>
@@ -36,3 +36,4 @@
     {/foreach}
     </tbody>
 </table>
+{paginator page='action_admin' add_value='module=functionality&' add_link=$add_link add_sort=$add_sort  num_page=$paginator.page max_page=$paginator.max_page count=$paginator.count}

@@ -22,13 +22,17 @@ if($_GET['action'] == "add"){
 
 
 if(!$_GET['action']){
+
+    // формируем переход между страниц и прочие данные
+    $paginator = create_paginator($_GET['page'],"30",'employee');
+
     $res=sql_query("
 SELECT employee.*, location_city.name_city, location_address.name_address, location_place.floor, location_place.place, location_place.room, functionality.name_functionality
 FROM `employee`
 LEFT JOIN functionality ON functionality.id = employee.id_functionality
 LEFT JOIN location_place ON location_place.id = employee.id_location_place
 LEFT JOIN location_address ON location_address.id = location_place.id_address
-LEFT JOIN location_city ON location_city.id = location_address.id_city;")  or sqlerr(__FILE__, __LINE__);
+LEFT JOIN location_city ON location_city.id = location_address.id_city ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
         stderr("Ошибка","Люди в  базе не обнаружены","no");
     }
@@ -41,6 +45,7 @@ LEFT JOIN location_city ON location_city.id = location_address.id_city;")  or sq
         $i++;
     }
 
+    $REL_TPL->assignByRef('paginator',$paginator);
     $REL_TPL->assignByRef('data_employee',$data_employee);
     $REL_TPL->output("index", "admincp", "employee");
 }

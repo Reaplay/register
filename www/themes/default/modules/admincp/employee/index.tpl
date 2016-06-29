@@ -1,5 +1,6 @@
 <a href="action_admin.php?module=employee&action=add"><button type="button" class="btn btn-primary btn-lg btn-block">Добавить нового человека</button></a>
 <hr>
+{paginator page='action_admin' add_value='module=employee&' add_link=$add_link add_sort=$add_sort  num_page=$paginator.page max_page=$paginator.max_page count=$paginator.count}
 <table class="table table-striped table-hover table-bordered" id="list_employee">
     <thead>
     <tr>
@@ -45,3 +46,4 @@
     {/foreach}
     </tbody>
 </table>
+{paginator page='action_admin' add_value='module=employee&' add_link=$add_link add_sort=$add_sort  num_page=$paginator.page max_page=$paginator.max_page count=$paginator.count}
