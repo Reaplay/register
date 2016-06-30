@@ -63,7 +63,7 @@
                 <td>{$employee.name_position}</td>
                 <td>{$employee.name_block}</td>
                 <td>{$employee.department.0}</td>
-                <td>
+                <td>{$employee.type_office}
 
                 </td>
                 <td>{$employee.department.1}</td>

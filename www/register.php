@@ -61,10 +61,11 @@ WHERE employee.is_deleted = 0  $where
     }
 
     //получаем список подразделений
-    $res_department = sql_query("SELECT id, name_department, level FROM `department`");
+    $res_department = sql_query("SELECT id, name_department, level, id_type_office FROM `department`");
     while ($row_department = mysql_fetch_array($res_department)) {
         $array_department[$row_department['id']]['name_department'] = $row_department['name_department'];
         $array_department[$row_department['id']]['level'] = $row_department['level'];
+        $array_department[$row_department['id']]['id_type_office'] = $row_department['id_type_office'];
     }
 
     //получаем список блоков
@@ -73,6 +74,11 @@ WHERE employee.is_deleted = 0  $where
         $array_block[$row_block['id']] = $row_block['name_block'];
     }
 
+    //получаем список типов офисов
+    $res_office = sql_query("SELECT id, name_office FROM `type_office`");
+    while ($row_office = mysql_fetch_array($res_office)) {
+        $array_office[$row_office['id']] = $row_office['name_office'];
+    }
 
     $i=0;
 
@@ -107,7 +113,9 @@ WHERE employee.is_deleted = 0  $where
         unset($data_department);
         foreach($department as $dep) {
             $data_department[$array_department[$dep]['level']] = $array_department[$dep]['name_department'];
-
+            if($array_department[$dep]['id_type_office']){
+                $data_employee[$i]['type_office'] = $array_office[$array_department[$dep]['id_type_office']];
+            }
         }
 
         $data_employee[$i]['department'] = $data_department;

@@ -372,7 +372,7 @@ dbconn();
         sql_query("INSERT INTO block (name_block, added) VALUES ".$insert_block."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO department (level, name_department, added) VALUES ".$insert_department."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO direction (name_direction, added) VALUES ".$insert_direction."; ") or sqlerr(__FILE__, __LINE__);
-        sql_query("INSERT INTO type_office (`name`, added) VALUES ".$insert_type_office."; ") or sqlerr(__FILE__, __LINE__);
+        sql_query("INSERT INTO type_office (`name_office`, added) VALUES ".$insert_type_office."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO rck (`name_rck`, added) VALUES ".$insert_rck."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO mvz (`name_mvz`, added) VALUES ".$insert_mvz."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO location_city (`name_city`, added) VALUES ".$insert_city."; ") or sqlerr(__FILE__, __LINE__);
@@ -402,7 +402,7 @@ dbconn();
         $data_position = select_data_base("position","name_position");
         $data_city = select_data_base("location_city","name_city");
         $data_functionality = select_data_base("functionality","name_functionality","WHERE id_parent = 1");
-
+        $data_type_office = select_data_base("type_office","name_office");
 
         $data_address = select_data_base("location_address","name_address");
 
@@ -423,7 +423,7 @@ dbconn();
         $used_id_functional_manager = array();
         $used_functionality = array();
         $used_address = array();
-
+        $used_id_office = array();
 
         for ($i = $t; $i < count($mass); $i++) {
 
@@ -441,12 +441,12 @@ dbconn();
             // ищем вложенные подразделения
             $id_block = (int)array_search(str_replace("\"","",$data['3']),$data_block);
             unset($array_department);
-            $array_department[] = (int)array_search($data['3'],$data_department);
-            $array_department[] = (int)array_search($data['4'],$data_department);
-            $array_department[] = (int)array_search($data['6'],$data_department);
-            $array_department[] = (int)array_search($data['7'],$data_department);
-            $array_department[] = (int)array_search($data['8'],$data_department);
-            $array_department[] = (int)array_search($data['9'],$data_department);
+            $array_department[] = (int)array_search(str_replace ("\"", "", $data['3']),$data_department);
+            $array_department[] = (int)array_search(str_replace ("\"", "", $data['4']),$data_department);
+            $array_department[] = (int)array_search(str_replace ("\"", "", $data['6']),$data_department);
+            $array_department[] = (int)array_search(str_replace ("\"", "", $data['7']),$data_department);
+            $array_department[] = (int)array_search(str_replace ("\"", "", $data['8']),$data_department);
+            $array_department[] = (int)array_search(str_replace ("\"", "", $data['9']),$data_department);
             $id_department = "";
             foreach ($array_department as $array) {
                 if($array < 1)
@@ -457,6 +457,10 @@ dbconn();
 
                 $id_department .= $array;
             }
+
+            // обрабатываем ДО/ОО
+           $id_type_office = (int)array_search($data['5'],$data_type_office);
+           $id_office =  (int)array_search(str_replace ("\"", "", $data['6']),$data_department);
 
           /*  if(trim($data['9'])){
                 $id_department = (int)array_search($data['9'],$data_department);
@@ -518,7 +522,11 @@ dbconn();
                 sql_query ("UPDATE `employee` SET `email` = '".$data['15']."' WHERE `id` = $id_functional_manager;") or sqlerr(__FILE__, __LINE__);
                 $used_id_functional_manager[] = $id_functional_manager;
             }
-
+            /*ОБРАБАТЫВАЕМ ТИПЫ ОФИСОВ*/
+            if((array_search($id_office,$used_id_office) === false) AND $id_type_office > 0){
+                sql_query ("UPDATE `department` SET `id_type_office` = '".$id_type_office."' WHERE `id` = $id_office;") or sqlerr(__FILE__, __LINE__);
+                $used_id_office[] = $id_office;
+            }
 
     }
 
