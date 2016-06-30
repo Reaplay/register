@@ -26,7 +26,7 @@ LEFT JOIN mvz ON mvz.id = established_post.id_mvz
 // получаем основной список сотрудников
     $res=sql_query("
 SELECT
-established_post.id,established_post.uid_post,established_post.id_position, established_post.id_functional_manager, established_post.id_administrative_manager, established_post.draft,established_post.transfer, established_post.date_entry, established_post.id_direction,
+established_post.id,established_post.uid_post,established_post.id_position, established_post.id_functional_manager, established_post.id_administrative_manager, established_post.draft,established_post.transfer, established_post.date_entry, established_post.id_direction, established_post.id_department, established_post.id_block,
 employee.name_employee,employee.id as e_id, employee.id_functionality, employee.date_transfer, employee.date_employment, employee.fte,
 direction.name_direction,
 rck.name_rck,
@@ -60,6 +60,20 @@ WHERE employee.is_deleted = 0  $where
         $array_position[$row_position['id']] = $row_position['name_position'];
     }
 
+    //получаем список подразделений
+    $res_department = sql_query("SELECT id, name_department, level FROM `department`");
+    while ($row_department = mysql_fetch_array($res_department)) {
+        $array_department[$row_department['id']]['name_department'] = $row_department['name_department'];
+        $array_department[$row_department['id']]['level'] = $row_department['level'];
+    }
+
+    //получаем список блоков
+    $res_block = sql_query("SELECT id, name_block FROM `block`");
+    while ($row_block = mysql_fetch_array($res_block)) {
+        $array_block[$row_block['id']] = $row_block['name_block'];
+    }
+
+
     $i=0;
 
     while ($row = mysql_fetch_array($res)){
@@ -87,7 +101,16 @@ WHERE employee.is_deleted = 0  $where
         $data_employee[$i]['name_functionality'] = $array_functionality[$row['id_functionality']]['name'];
         $data_employee[$i]['name_position'] = $array_position[$row['id_position']];
         $data_employee[$i]['name_cur_direction'] = $array_direction[$row['id_direction']];
+        $data_employee[$i]['name_block'] = $array_block[$row['id_block']];
+        //обрабатываем подраздления
+        $department = explode(",",$row['id_department']);
+        unset($data_department);
+        foreach($department as $dep) {
+            $data_department[$array_department[$dep]['level']] = $array_department[$dep]['name_department'];
 
+        }
+
+        $data_employee[$i]['department'] = $data_department;
 
         $i++;
 
@@ -105,6 +128,7 @@ WHERE employee.is_deleted = 0  $where
     $REL_TPL->assignByRef('data_functions',$data_functions);
     $REL_TPL->assignByRef('data_city',$data_city);
     $REL_TPL->assignByRef('data_position',$data_position);
+
     if($_GET['type'] == "short")
         $REL_TPL->output("register_short", "register");
     elseif($_GET['type'] == "full")

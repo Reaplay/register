@@ -61,28 +61,15 @@
                 <td>{if $employee.uid_post}{$employee.uid_post}{else}Вне штата{/if}</td>
                 <td><a href="view.php?eid={$employee.e_id}">{$employee.name_employee}</a> <i class="fa fa-external-link"></i></td>
                 <td>{$employee.name_position}</td>
+                <td>{$employee.name_block}</td>
+                <td>{$employee.department.0}</td>
                 <td>
 
                 </td>
-                <td>
-
-                </td>
-                <td>
-
-
-                </td>
-                <td>
-
-                </td>
-                <td>
-
-                </td>
-                <td>
-
-                </td>
-                <td>
-
-                </td>
+                <td>{$employee.department.1}</td>
+                <td>{$employee.department.2}</td>
+                <td>{$employee.department.3}</td>
+                <td>{$employee.department.4}</td>
                 <td>{$employee.name_direction}</td>
                 <td>{$employee.name_cur_direction}</td>
                 <td>
