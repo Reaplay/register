@@ -153,8 +153,27 @@ WHERE employee.is_deleted = 0  $where
         $REL_TPL->output("register_short", "register");
     elseif($_GET['type'] == "full") {
         $REL_TPL->output ("register_full", "register");
-       $add_js = '
-
+       $add_js = '<style>#doublescroll { overflow: auto; overflow-y: hidden; }
+#doublescroll p { margin: 0; padding: 1em; white-space: nowrap; }</style>
+<script>
+function DoubleScroll(element) {
+var scrollbar= document.createElement(\'div\');
+scrollbar.appendChild(document.createElement(\'div\'));
+scrollbar.style.overflow= \'auto\';
+scrollbar.style.overflowY= \'hidden\';
+scrollbar.firstChild.style.width= element.scrollWidth+\'px\';
+scrollbar.firstChild.style.paddingTop= \'1px\';
+scrollbar.firstChild.appendChild(document.createTextNode(\'\xA0\'));
+scrollbar.onscroll= function() {
+    element.scrollLeft= scrollbar.scrollLeft;
+};
+element.onscroll= function() {
+    scrollbar.scrollLeft= element.scrollLeft;
+};
+    element.parentNode.insertBefore(scrollbar, element);
+}
+DoubleScroll(document.getElementById(\'scroll\'));
+</script>
        ';
     }
     $REL_TPL->stdfoot($add_js);
