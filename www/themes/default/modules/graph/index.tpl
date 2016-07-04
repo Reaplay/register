@@ -1,12 +1,9 @@
 <div class="row">
     <div class="col-md-8">
-Распределение сотрудников
-<div id="canvas-holder" style="width:75%">
-    <canvas id="chart-area" width="100" height="100" />
-</div>
-
-
-
+    Распределение сотрудников
+        <div id="canvas-holder" style="width:75%">
+            <canvas id="chart-area" width="100" height="100" />
+        </div>
     </div>
     <div class="col-md-4">
         <div class="panel panel-default">

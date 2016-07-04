@@ -145,18 +145,20 @@ dbconn();
 //добавляем основные данные
     if($_POST['step'] == '1') {
 
+        sql_query("TRUNCATE `block`;");
         sql_query("TRUNCATE `department`;");
         sql_query("TRUNCATE `direction`;");
         sql_query("TRUNCATE `employee`;");
+        sql_query("TRUNCATE `employee_model`;");
         sql_query("TRUNCATE `established_post`;");
         sql_query("TRUNCATE `functionality`;");
-        sql_query("TRUNCATE `block`;");
         sql_query("TRUNCATE `location_address`;");
         sql_query("TRUNCATE `location_city`;");
         sql_query("TRUNCATE `location_place`;");
         sql_query("TRUNCATE `mvz`;");
         sql_query("TRUNCATE `position`;");
         sql_query("TRUNCATE `rck`;");
+        sql_query("TRUNCATE `strategic_project`;");
         sql_query("TRUNCATE `type_office`;");
 
         //сначала формируем список основных данных, которые загонять будем в базу
@@ -213,11 +215,11 @@ dbconn();
             $array_department[][2] = $data['7'];
             $array_department[][3] = $data['8'];
             $array_department[][4] = $data['9'];
-
+            /*ОБРАБАТЫВАЕМ МОДЕЛЬ*/
+            $array_model[] = $data['24'];
             /*ОБРАБАТЫВАЕМ РЦК*/
             $array_rck[] = $data['22'];
             /*ОБРАБАТЫВАЕМ МВЗ*/
-
             $array_mvz[$i] = $data['23'];
             /*ОБРАБАТЫВАЕМ НАЗВАНИЯ ГОРОДОВ*/
             $array_city[] = $data['33'];
@@ -240,7 +242,8 @@ dbconn();
             /*ОБРАБАТЫВАЕМ ФУНКЦИОНАЛ*/
             $array_functionality_group[] = $data['19'];
             $array_functionality_function[] = $data['20'];
-
+            /*ОБРАБАТЫВАЕМ СТРАТЕГИЧЕСКИЕ ПРОЕКТЫ*/
+            $array_project[] = $data['21'];
 
             //пропускаем первую строчку
             if ($i != $t) {
@@ -308,6 +311,8 @@ dbconn();
 
           }
       */
+        /*ОБРАБАТЫВАЕМ МОДЕЛЬ*/
+        $insert_model = processing_data ($array_model);
         /*ОБРАБАТЫВАЕМ РЦК*/
         $insert_rck = processing_data ($array_rck);
         /*ОБРАБАТЫВАЕМ МВЗ*/
@@ -364,10 +369,13 @@ dbconn();
         /*ОБРАБАТЫВАЕМ ФУНКЦИОНАЛ*/
         $insert_functionality_group = processing_data($array_functionality_group);
         $insert_functionality_function = processing_data($array_functionality_function, 1);
+        /*ОБРАБАТЫВАЕМ СТРАТЕГИЧЕСКИЕ ПРОЕКТЫ*/
+        $insert_project = processing_data ($array_project);
 
         sql_query("INSERT INTO established_post (uid_post, date_entry, draft, transfer, added) VALUES ".$insert_established_post."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO employee (name_employee, date_employment, date_transfer, fte, added) VALUES ".$insert_employee."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO employee (name_employee, id_uid_post, date_employment, date_transfer, fte, added) VALUES ".$insert_employee_no_ep."; ") or sqlerr(__FILE__, __LINE__);
+        sql_query("INSERT INTO employee_model (name_model,added) VALUES ".$insert_model."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO position (name_position, added) VALUES ".$insert_position."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO block (name_block, added) VALUES ".$insert_block."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO department (level, name_department, added) VALUES ".$insert_department."; ") or sqlerr(__FILE__, __LINE__);
@@ -381,6 +389,7 @@ dbconn();
 
         sql_query("INSERT INTO functionality (`name_functionality`, added) VALUES ".$insert_functionality_group.";") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO functionality (`name_functionality`, added, id_parent) VALUES ".$insert_functionality_function.";") or sqlerr(__FILE__, __LINE__);
+        sql_query("INSERT INTO strategic_project (`name_project`, added) VALUES ".$insert_project.";") or sqlerr(__FILE__, __LINE__);
 
         $REL_TPL->stdmsg('Выполнено','Добавление данных завершено. Шаг 1 завершен. Происходит создание связей (1/3). Не перезагружайте страницу');
         $step = 2;
@@ -737,9 +746,12 @@ dbconn();
         // получаем нужные данные из базы ввиде массива
         $data_functionality = select_data_base("functionality","name_functionality","WHERE id_parent != 0");
         $data_employee = select_data_base("employee","name_employee");
+        $data_project = select_data_base("strategic_project","name_project");
+        $data_model = select_data_base("employee_model","name_model");
 
         $used_employee = array();
         $used_functionality = array();
+
 
         for ($i = $t; $i < count($mass); $i++) {
 
@@ -750,12 +762,30 @@ dbconn();
             $id_employee = (int)array_search(trim($data['1']),$data_employee);
 
             $id_functionality = (int)array_search(trim($data['20']),$data_functionality);
+            $id_project = (int)array_search(trim($data['21']),$data_project);
+            $id_model = (int)array_search(trim($data['24']),$data_model);
 
-
+            $update = "";
             if($id_functionality >0){
-                sql_query ("UPDATE `employee` SET `id_functionality` = '" . $id_functionality . "' WHERE `id` = $id_employee;") or sqlerr (__FILE__, __LINE__);
+                $update = "`id_functionality` = '" . $id_functionality . "'";
             }
+            if($id_project > 0){
+                if($update){
+                    $update .=", ";
+                }
+                $update .= "`id_strategic_poject` = '".$id_project."'";
 
+            }
+            if($id_model > 0){
+                if($update){
+                    $update .=", ";
+                }
+                $update .= "`id_employee_model` = '".$id_model."'";
+
+            }
+            if($update) {
+                sql_query ("UPDATE `employee` SET $update WHERE `id` = $id_employee;") or sqlerr (__FILE__, __LINE__);
+            }
         }
         $REL_TPL->stdmsg('Выполнено','Добавление данных завершено.');
 

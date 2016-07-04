@@ -76,23 +76,19 @@
 2
                 </td>
                 <td>
-3
+                    {if $employee.func_mgr.lc_co}ЦО{else}Регион{/if}
                 </td>
-                <td>{$employee.func_mgr.name_employee}</td>
+                <td><a href="view.php?eid={$employee.func_mgr.e_id}">{$employee.func_mgr.name_employee}</a> <i class="fa fa-external-link"></i></td>
                 <td>{$employee.func_mgr.email}</td>
                 <td>{$employee.func_mgr.name_position}</td>
                 <td>{$employee.adm_mgr.name_employee}</td>
                 <td>{$employee.adm_mgr.name_position}</td>
                 <td>{$employee.group_functionality}</td>
                 <td>{$employee.name_functionality}</td>
-                <td>
-                    <b>Проект</b>
-                </td>
+                <td>{$employee.project}</td>
                 <td>{$employee.name_rck}</td>
                 <td>{$employee.name_mvz}</td>
-                <td>
-<b>Модель</b>
-                </td>
+                <td>{$employee.model}</td>
                 <td>{if $employee.uid_post}Да{else}Нет{/if}</td>
                 <td>{if $employee.draft}Нет{else}Да{/if}</td>
                 <td>{if $employee.draft}Да{else}Нет{/if}</td>

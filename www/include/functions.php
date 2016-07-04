@@ -460,10 +460,11 @@ function unix_time ($date){
             return array();
         }
         $res = sql_query("
-SELECT employee.name_employee, employee.email, position.name_position
+SELECT employee.name_employee,employee.id as e_id, employee.email, position.name_position, location_city.co as lc_co
 FROM established_post
 LEFT JOIN employee ON employee.id_uid_post = established_post.id
 LEFT JOIN position ON position.id = established_post.id_position
+LEFT JOIN location_city ON location_city.id = established_post.id_location_city
 WHERE established_post.id = '".$id_manager."'");
         return mysql_fetch_array($res);
     }

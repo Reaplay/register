@@ -3,6 +3,7 @@
 <!--[if IE 9]>			<html class="ie ie9"> <![endif]-->
 <!--[if gt IE 9]><!-->	<html> <!--<![endif]-->
 	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=9" />
 		<meta charset="utf-8" />
 		<title>{$title}</title>
 

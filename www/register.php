@@ -27,7 +27,7 @@ LEFT JOIN mvz ON mvz.id = established_post.id_mvz
     $res=sql_query("
 SELECT
 established_post.id,established_post.uid_post,established_post.id_position, established_post.id_functional_manager, established_post.id_administrative_manager, established_post.draft,established_post.transfer, established_post.date_entry, established_post.id_direction, established_post.id_department, established_post.id_block,
-employee.name_employee,employee.id as e_id, employee.id_functionality, employee.date_transfer, employee.date_employment, employee.fte,
+employee.name_employee,employee.id as e_id, employee.id_functionality, employee.date_transfer, employee.date_employment, employee.fte, employee.id_strategic_poject, employee.id_employee_model,
 direction.name_direction,
 rck.name_rck,
 mvz.name_mvz,
@@ -60,6 +60,16 @@ WHERE employee.is_deleted = 0  $where
         $array_position[$row_position['id']] = $row_position['name_position'];
     }
 
+    //получаем список стратегических проектов
+    $res_project = sql_query("SELECT id, name_project FROM strategic_project");
+    while ($row_project = mysql_fetch_array($res_project)) {
+        $array_project[$row_project['id']] = $row_project['name_project'];
+    }
+    //получаем модель
+    $res_model = sql_query("SELECT id, name_model FROM employee_model");
+    while ($row_model = mysql_fetch_array($res_model)) {
+        $array_model[$row_model['id']] = $row_model['name_model'];
+    }
     //получаем список подразделений
     $res_department = sql_query("SELECT id, name_department, level, id_type_office FROM `department`");
     while ($row_department = mysql_fetch_array($res_department)) {
@@ -108,6 +118,8 @@ WHERE employee.is_deleted = 0  $where
         $data_employee[$i]['name_position'] = $array_position[$row['id_position']];
         $data_employee[$i]['name_cur_direction'] = $array_direction[$row['id_direction']];
         $data_employee[$i]['name_block'] = $array_block[$row['id_block']];
+        $data_employee[$i]['model'] = $array_model[$row['id_employee_model']];
+        $data_employee[$i]['project'] = $array_project[$row['id_strategic_poject']];
         //обрабатываем подраздления
         $department = explode(",",$row['id_department']);
         unset($data_department);
@@ -139,6 +151,10 @@ WHERE employee.is_deleted = 0  $where
 
     if($_GET['type'] == "short")
         $REL_TPL->output("register_short", "register");
-    elseif($_GET['type'] == "full")
-        $REL_TPL->output("register_full", "register");
-    $REL_TPL->stdfoot();
+    elseif($_GET['type'] == "full") {
+        $REL_TPL->output ("register_full", "register");
+       $add_js = '
+
+       ';
+    }
+    $REL_TPL->stdfoot($add_js);
