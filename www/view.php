@@ -83,7 +83,7 @@ $data_a_m = select_manager($row['id_administrative_manager']);
 
 //$row['id_department'];
 
-    $sub_res=sql_query("SELECT department.name_department, department.id_parent, type_office.name as type_office, department.level  FROM department LEFT JOIN type_office ON type_office.id = department.id_type_office WHERE department.id IN (".$row['id_department'].")");
+    $sub_res=sql_query("SELECT department.name_department, department.id_parent, type_office.name_office as type_office, department.level  FROM department LEFT JOIN type_office ON type_office.id = department.id_type_office WHERE department.id IN (".$row['id_department'].")");
  //   $i=0;
     while ($sub_row = mysql_fetch_array($sub_res)) {
     $department[$sub_row['level']] = $sub_row['name_department'];
