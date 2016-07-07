@@ -20,7 +20,7 @@
                 {$functionality.name_functionality}
             </td>
             <td>
-                {$functionality.name_parent}
+                {if $functionality.name_parent}{$functionality.name_parent}{else}Корневой{/if}
             </td>
             <td>
                {$functionality.added}
