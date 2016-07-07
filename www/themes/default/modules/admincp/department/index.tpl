@@ -24,7 +24,7 @@
                 {$department.name_parent_department}
             </td>
             <td>
-                {$department.name_type_office}
+                {$department.name_office}
             </td>
             <td>
                 {$department.added}

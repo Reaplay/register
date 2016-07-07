@@ -33,7 +33,7 @@
                     <select class="form-control  select2" name="id_type_office">
                         <option value="0">Отсутствует</option>
                         {foreach from=$data_type_office item=type_office}
-                            <option value="{$type_office.id}" {if $type_office.id == $data.id_type_office}selected="selected"{/if}>{$type_office.name}</option>
+                            <option value="{$type_office.id}" {if $type_office.id == $data.id_type_office}selected="selected"{/if}>{$type_office.name_office}</option>
                         {/foreach}
 
                     </select>
