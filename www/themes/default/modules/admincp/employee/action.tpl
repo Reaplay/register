@@ -27,7 +27,7 @@
                                 <option value="{$department.id}"{if $department.id == $data.id_department}selected="selected"{/if}>{$department.name_department}</option>
                             {/foreach}
 
-                        </select>
+                      
                         </select>
                     </div>
                     <div class="col-md-3 col-sm-3">
