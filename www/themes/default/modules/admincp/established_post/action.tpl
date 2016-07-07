@@ -20,28 +20,61 @@
             </div>
             <div class="row">
                 <div class="form-group">
-                    <div class="col-md-3 col-sm-3">
-                        <select class="form-control  select2" name="id_department_1" onchange="load_data(this,'id_department_2')">
-                            <option value="0">Подразделение</option>
-                            {foreach from=$data_department item=department}
-                                <option value="{$department.id}"{if $department.id == $data.id_department}selected="selected"{/if}>{$department.name_department}</option>
+                    <div class="col-md-6 col-sm-6">
+                        <select class="form-control  select2" name="id_block">
+                            <option value="0">Выберите блок</option>
+                            {foreach from=$data_block item=block}
+                                <option value="{$block.id}"{if $block.id == $data.id_block}selected="selected"{/if}>{$block.name_block}</option>
                             {/foreach}
 
                         </select>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                        <select class="form-control  select2" name="id_department_0">
+                            <option value="0">Подразделение</option>
+                            {foreach from=$data_department item=department}
+                                {if $department.level == 0}<option value="{$department.id}"{if $department.id == $data.id_department}selected="selected"{/if}>{$department.name_department}</option>{/if}
+                            {/foreach}
+
                         </select>
                     </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
                     <div class="col-md-3 col-sm-3">
-                        <select class="form-control  select2" name="id_department_2" onchange="load_data(this,'id_department_3')">
+                        <select class="form-control  select2" name="id_department_1">
+                            <option value="0">Вложенное подразделение 1</option>
+                            {foreach from=$data_department item=department}
+                                {if $department.level == 1}<option value="{$department.id}"{if $department.id == $data.id_department}selected="selected"{/if}>{$department.name_department}</option>{/if}
+                            {/foreach}
 
                         </select>
                     </div>
                     <div class="col-md-3 col-sm-3">
-                        <select class="form-control  select2" name="id_department_3" onchange="load_data(this,'id_department_4')">
+                        <select class="form-control  select2" name="id_department_2">
+                            <option value="0">Вложенное подразделение 2</option>
+                            {foreach from=$data_department item=department}
+                                {if $department.level == 2}<option value="{$department.id}"{if $department.id == $data.id_department}selected="selected"{/if}>{$department.name_department}</option>{/if}
+                            {/foreach}
 
                         </select>
                     </div>
                     <div class="col-md-3 col-sm-3">
-                        <select class="form-control  select2" name="id_department_4" >
+                        <select class="form-control  select2" name="id_department_3">
+                            <option value="0">Вложенное подразделение 3</option>
+                            {foreach from=$data_department item=department}
+                                {if $department.level == 3}<option value="{$department.id}"{if $department.id == $data.id_department}selected="selected"{/if}>{$department.name_department}</option>{/if}
+                            {/foreach}
+
+                        </select>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                        <select class="form-control  select2" name="id_department_4">
+                            <option value="0">Вложенное подразделение 4</option>
+                            {foreach from=$data_department item=department}
+                                {if $department.level == 4}<option value="{$department.id}"{if $department.id == $data.id_department}selected="selected"{/if}>{$department.name_department}</option>{/if}
+                            {/foreach}
 
                         </select>
                     </div>
@@ -87,7 +120,7 @@
                         </select>
                     </div>
                     <div class="col-md-6 col-sm-6">
-мвз
+
                     </div>
                 </div>
             </div>
@@ -142,8 +175,6 @@
                         <select class="form-control  select2" name="draft">
                             <option value="0" {if $data.draft == 0}selected="selected"{/if}>Драфт</option>
                             <option value="1" {if $data.draft == 1}selected="selected"{/if}>Факт</option>
-
-
                         </select>
                     </div>
                     <div class="col-md-6 col-sm-6">

@@ -9,8 +9,14 @@ $REL_TPL->stdhead('Список штатных единиц');
 
 if($_GET['action'] == "add"){
 
+    //получаем список блоков
+    $res_block=sql_query("SELECT `id`,`name_block` FROM `block` ;")  or sqlerr(__FILE__, __LINE__);
+    while ($row_block = mysql_fetch_array($res_block)){
+        $data_block[] = $row_block;
+    }
+
     //получаем список подразделений
-    $res_dep=sql_query("SELECT `id`,`name_department` FROM `department` WHERE id_parent = '0';")  or sqlerr(__FILE__, __LINE__);
+    $res_dep=sql_query("SELECT `id`,`name_department`,`level` FROM `department` ")  or sqlerr(__FILE__, __LINE__);
     while ($row_dep = mysql_fetch_array($res_dep)){
         $data_department[] = $row_dep;
     }
@@ -49,6 +55,7 @@ WHERE position.is_head = 1");
 
     $action	="add";
     $REL_TPL->assignByRef("action",$action);
+    $REL_TPL->assignByRef('data_block',$data_block);
     $REL_TPL->assignByRef('data_department',$data_department);
     $REL_TPL->assignByRef('data_direction',$data_direction);
     $REL_TPL->assignByRef('data_rck',$data_rck);
@@ -63,21 +70,29 @@ WHERE position.is_head = 1");
 
 }
 elseif($_POST['action'] == "add"){
+
     //переводим данные
     $uid_post = (int)$_POST['uid_post'];
     $date_entry	= unix_time($_POST['date_entry']);
     $id_administrative_manager = (int)$_POST['id_administrative_manager'];
     $id_functional_manager = (int)$_POST['id_functional_manager'];
     $id_city = (int)$_POST['id_city'];
-    $id_department_1 = (int)$_POST['id_department_1'];
-    $id_department_2 = (int)$_POST['id_department_2'];
-    $id_department_3 = (int)$_POST['id_department_3'];
-    $id_department_4 = (int)$_POST['id_department_4'];
+    $id_block = (int)$_POST['id_block'];
+    $array_department[] = (int)$_POST['id_department_0'];
+    $array_department[] = (int)$_POST['id_department_1'];
+    $array_department[] = (int)$_POST['id_department_2'];
+    $array_department[] = (int)$_POST['id_department_3'];
+    $array_department[] = (int)$_POST['id_department_4'];
 
-    if($id_department_4){$id_department = $id_department_4;}
-    elseif($id_department_3){$id_department = $id_department_3;}
-    elseif($id_department_2){$id_department = $id_department_2;}
-    elseif($id_department_1){$id_department = $id_department_1;}
+    foreach($array_department as $department){
+        if($department) {
+            if($id_department)
+                $id_department .=",";
+
+            $id_department .= $department;
+        }
+    }
+
 
     $id_direction = (int)$_POST['id_direction'];
 
@@ -91,8 +106,10 @@ elseif($_POST['action'] == "add"){
     else{
         $transfer = '0';
     }
+//uid_post,date_entry,id_administrative_manager,id_functional_manager,id_location_city,id_department,id_direction,id_mvz, id_position, draft, transfer
+    //'".$uid_post."','".$date_entry."','".$id_administrative_manager."','".$id_functional_manager."','".$id_city."','".$id_department."','".$id_direction."','".$id_mvz."','".$id_position."','".$draft."','".$transfer."'
 
-    sql_query("INSERT INTO established_post (uid_post,date_entry,id_administrative_manager,id_functional_manager,id_location_city,id_department,id_direction,id_mvz, id_position, draft, transfer) VALUES ('".$uid_post."','".$date_entry."','".$id_administrative_manager."','".$id_functional_manager."','".$id_city."','".$id_department."','".$id_direction."','".$id_mvz."','".$id_position."','".$draft."','".$transfer."');") or sqlerr(__FILE__, __LINE__);
+    sql_query("INSERT INTO established_post (uid_post, id_position, id_block, id_department, id_direction, id_rck, id_mvz, date_entry, added, id_location_city, id_functional_manager, id_administrative_manager, draft, transfer) VALUES ('".$uid_post."', '".$id_position."', '".$id_block."', '".$id_department."', '".$id_direction."', '".$id_rck."', '".$id_mvz."', '".$date_entry."', '".time()."', '".$id_city."', '".$id_functional_manager."', '".$id_administrative_manager."', '".$draft."', '".$transfer."');") or sqlerr(__FILE__, __LINE__);
 
 }
 elseif($_GET['action'] == "edit"){
