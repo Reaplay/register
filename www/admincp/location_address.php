@@ -71,7 +71,7 @@ if (!$_GET['action']){
     }
 
     //получаем список городов
-    $sub_res=sql_query("SELECT `id`,`name_city` FROM `location_city` ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
+    $sub_res=sql_query("SELECT `id`,`name_city` FROM `location_city`;")  or sqlerr(__FILE__, __LINE__);
     while ($subrow = mysql_fetch_array($sub_res)){
        $data_city[$subrow['id']]= $subrow['name_city'];
     }
