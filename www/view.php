@@ -56,7 +56,7 @@ LEFT JOIN location_address ON location_address.id = location_place.id_address
 LEFT JOIN direction ON direction.id = established_post.id_direction
 LEFT JOIN mvz ON mvz.id = established_post.id_mvz
 LEFT JOIN rck ON rck.id = mvz.id_rck
-WHERE $WHERE
+WHERE $WHERE AND established_post.is_deleted = 0
 /*WHERE established_post.id='".$_GET['id']."'*/
 ") or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
