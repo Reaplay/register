@@ -2867,11 +2867,11 @@ jQuery.easing.jswing=jQuery.easing.swing;jQuery.extend(jQuery.easing,{def:"easeO
 
 /* мои добавления и аддский быдлокод с велосипедами*/
 // получаем адрес
- function load_location_address(select){
-	var resultSelect = $('select[name="id_address"]');
+ function load_location(select,location){
+	var resultSelect = $('select[name="id_'+location+'"]');
 	resultSelect.attr('disabled', 'disabled'); // делаем список не активным
 	// послыаем AJAX запрос, который вернёт список для выбранной области
-	$.getJSON('elements/ajax.php', {action:'getlocationaddress', id_city:select.value}, function(resultList){
+	$.getJSON('elements/ajax.php', {action:'getlocation'+location, id:select.value}, function(resultList){
 		resultSelect.html(''); // очищаем список 
 		// заполняем список  новыми пришедшими данными
 		$.each(resultList, function(i){
@@ -2904,7 +2904,7 @@ function load_mvz(select){
 
 	});
 }
-
+/*
 function load_data(select,names){
 	var resultSelect = $('select[name="'+names+'"]');
 	resultSelect.attr('disabled', 'disabled'); // делаем список не активным
@@ -2934,4 +2934,4 @@ function load_data(select,names){
 		resultSelect.removeAttr('disabled'); // делаем список  активным
 
 	});
-}
+}*/
