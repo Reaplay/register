@@ -5,6 +5,48 @@
  * Date: 18.05.2016
  * Time: 14:51
  */
+
+    function prepeared_data($input_data){
+        //переводим данные
+        $data['uid_post'] = (int)$input_data['uid_post'];
+        $data['date_entry']	= unix_time($input_data['date_entry']);
+        $data['id_administrative_manager'] = (int)$input_data['id_administrative_manager'];
+        $data['id_functional_manager'] = (int)$input_data['id_functional_manager'];
+        $data['id_city'] = (int)$input_data['id_city'];
+        $data['id_block'] = (int)$input_data['id_block'];
+        $array_department[] = (int)$input_data['id_department_0'];
+        $array_department[] = (int)$input_data['id_department_1'];
+        $array_department[] = (int)$input_data['id_department_2'];
+        $array_department[] = (int)$input_data['id_department_3'];
+        $array_department[] = (int)$input_data['id_department_4'];
+
+        foreach($array_department as $department){
+            if($department) {
+                if($id_department)
+                    $id_department .=",";
+
+                $id_department .= $department;
+            }
+        }
+        $data['id_department'] = $id_department;
+
+        $data['id_direction'] = (int)$input_data['id_direction'];
+
+        $data['id_mvz'] = (int)$input_data['id_mvz'];
+        $data['id_rck'] = (int)$input_data['id_rck'];
+        $data['id_position'] = (int)$input_data['id_position'];
+        $data['draft'] = (int)$input_data['draft'];
+        if($input_data['transfer'] == "on"){
+            $data['transfer'] = '1';
+        }
+        else{
+            $data['transfer'] = '0';
+        }
+
+        return $data;
+    }
+
+
 $REL_TPL->stdhead('Список штатных единиц');
 
 if($_GET['action'] == "add"){
@@ -72,7 +114,7 @@ WHERE position.is_head = 1");
 elseif($_POST['action'] == "add"){
 
     //переводим данные
-    $uid_post = (int)$_POST['uid_post'];
+   /* $uid_post = (int)$_POST['uid_post'];
     $date_entry	= unix_time($_POST['date_entry']);
     $id_administrative_manager = (int)$_POST['id_administrative_manager'];
     $id_functional_manager = (int)$_POST['id_functional_manager'];
@@ -105,11 +147,13 @@ elseif($_POST['action'] == "add"){
     }
     else{
         $transfer = '0';
-    }
+    }*/
+
+    $data = prepeared_data($_POST);
 //uid_post,date_entry,id_administrative_manager,id_functional_manager,id_location_city,id_department,id_direction,id_mvz, id_position, draft, transfer
     //'".$uid_post."','".$date_entry."','".$id_administrative_manager."','".$id_functional_manager."','".$id_city."','".$id_department."','".$id_direction."','".$id_mvz."','".$id_position."','".$draft."','".$transfer."'
 
-    sql_query("INSERT INTO established_post (uid_post, id_position, id_block, id_department, id_direction, id_rck, id_mvz, date_entry, added, id_location_city, id_functional_manager, id_administrative_manager, draft, transfer) VALUES ('".$uid_post."', '".$id_position."', '".$id_block."', '".$id_department."', '".$id_direction."', '".$id_rck."', '".$id_mvz."', '".$date_entry."', '".time()."', '".$id_city."', '".$id_functional_manager."', '".$id_administrative_manager."', '".$draft."', '".$transfer."');") or sqlerr(__FILE__, __LINE__);
+    sql_query("INSERT INTO established_post (uid_post, id_position, id_block, id_department, id_direction, id_rck, id_mvz, date_entry, added, id_location_city, id_functional_manager, id_administrative_manager, draft, transfer) VALUES ('".$data['uid_post']."', '".$data['id_position']."', '".$data['id_block']."', '".$data['id_department']."', '".$data['id_direction']."', '".$data['id_rck']."', '".$data['id_mvz']."', '".$data['date_entry']."', '".time()."', '".$data['id_city']."', '".$data['id_functional_manager']."', '".$data['id_administrative_manager']."', '".$data['draft']."', '".$data['transfer']."');") or sqlerr(__FILE__, __LINE__);
 
 }
 elseif($_GET['action'] == "edit"){
@@ -119,9 +163,16 @@ elseif($_GET['action'] == "edit"){
         stderr("Ошибка","Такая штатная единица отсутствует в базе","no");
     }
     $data = mysql_fetch_array($res);
+    $data['date_entry'] = mkprettytime($data['date_entry'],false);
+    $data['id_department'] = explode(",",$data['id_department']);
+    //получаем список блоков
+    $res_block=sql_query("SELECT `id`,`name_block` FROM `block` ;")  or sqlerr(__FILE__, __LINE__);
+    while ($row_block = mysql_fetch_array($res_block)){
+        $data_block[] = $row_block;
+    }
 
     //получаем список подразделений
-    $res_dep=sql_query("SELECT `id`,`name_department` FROM `department` WHERE id_parent = '0';")  or sqlerr(__FILE__, __LINE__);
+    $res_dep=sql_query("SELECT `id`,`name_department`,`level` FROM `department`;")  or sqlerr(__FILE__, __LINE__);
     while ($row_dep = mysql_fetch_array($res_dep)){
         $data_department[] = $row_dep;
     }
@@ -168,6 +219,7 @@ WHERE position.is_head = 1");
     $REL_TPL->assignByRef("action",$action);
     $REL_TPL->assignByRef('data',$data);
     $REL_TPL->assignByRef('data_department',$data_department);
+    $REL_TPL->assignByRef('data_block',$data_block);
     $REL_TPL->assignByRef('data_direction',$data_direction);
     $REL_TPL->assignByRef('data_rck',$data_rck);
     $REL_TPL->assignByRef('data_mvz',$data_mvz);
@@ -180,7 +232,14 @@ WHERE position.is_head = 1");
 
 }
 elseif($_POST['action'] == "edit"){
-    $uid_post = (int)$_POST['uid_post'];
+
+    $res=sql_query("SELECT established_post.added FROM established_post WHERE established_post.id = '".$_POST['id']."'")  or sqlerr(__FILE__, __LINE__);
+    if(mysql_num_rows($res) == 0){
+        stderr("Ошибка","Такая штатная единица отсутствует в базе","no");
+    }
+    $row = mysql_fetch_array($res);
+
+    /*$uid_post = (int)$_POST['uid_post'];
     $date_entry	= unix_time($_POST['date_entry']);
     $id_administrative_manager = (int)$_POST['id_administrative_manager'];
     $id_functional_manager = (int)$_POST['id_functional_manager'];
@@ -206,9 +265,19 @@ elseif($_POST['action'] == "edit"){
     }
     else{
         $transfer = '0';
-    }
+    }*/
 
-    sql_query("UPDATE `established_post` SET `uid_post`='".$uid_post."', `date_entry`='".$date_entry."', `id_administrative_manager`='".$id_administrative_manager."',`id_functional_manager`='".$id_functional_manager."',`id_location_city`='".$id_city."',`id_department`='".$id_department."',`id_direction`='".$id_direction."',`id_mvz`='".$id_mvz."', `id_position`='".$id_position."', `draft`='".$draft."', `transfer`='".$transfer."' WHERE id='".$_POST['id']."';") or sqlerr(__FILE__, __LINE__);
+    $data = prepeared_data($_POST);
+    //добавляем новую запись
+    sql_query("INSERT INTO established_post (uid_post, id_position, id_block, id_department, id_direction, id_rck, id_mvz, date_entry, added, id_location_city, id_functional_manager, id_administrative_manager, draft, transfer, last_update) VALUES ('".$data['uid_post']."', '".$data['id_position']."', '".$data['id_block']."', '".$data['id_department']."', '".$data['id_direction']."', '".$data['id_rck']."', '".$data['id_mvz']."', '".$data['date_entry']."', '".$row['added']."', '".$data['id_city']."', '".$data['id_functional_manager']."', '".$data['id_administrative_manager']."', '".$data['draft']."', '".$data['transfer']."', '".time()."');") or sqlerr(__FILE__, __LINE__);
+    $new_id = mysql_insert_id();
+    // отмечаем старую на удаление
+    sql_query("UPDATE `established_post` SET last_update = '".time()."', is_deleted = '1' WHERE id ='".$_POST['id']."' ;");
+    // обновляем привязанных к нему сотрудников
+    sql_query("UPDATE `employee` SET id_uid_post = '".$new_id."' WHERE id_uid_post ='".$_POST['id']."' ;");
+
+
+   /* sql_query("UPDATE `established_post` SET `uid_post`='".$uid_post."', `date_entry`='".$date_entry."', `id_administrative_manager`='".$id_administrative_manager."',`id_functional_manager`='".$id_functional_manager."',`id_location_city`='".$id_city."',`id_department`='".$id_department."',`id_direction`='".$id_direction."',`id_mvz`='".$id_mvz."', `id_position`='".$id_position."', `draft`='".$draft."', `transfer`='".$transfer."' WHERE id='".$_POST['id']."';") or sqlerr(__FILE__, __LINE__);*/
 }
 
 if(!$_GET['action']){

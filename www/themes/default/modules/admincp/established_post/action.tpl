@@ -13,7 +13,7 @@
                     <div class="col-md-6 col-sm-6">
                         <label class="input">
                         <i class="ico-prepend fa fa-calendar"></i>
-                            <input type="text" class="form-control datepicker required" data-format="dd/mm/yyyy" data-lang="ru" data-RTL="false" name="date_entry" placeholder="Дата ввода в расписание">
+                            <input type="text" class="form-control datepicker required" data-format="dd/mm/yyyy" data-lang="ru" data-RTL="false" name="date_entry" placeholder="Дата ввода в расписание" value="{$data.date_entry}">
                         </label>
                     </div>
                 </div>
@@ -24,7 +24,7 @@
                         <select class="form-control  select2" name="id_block">
                             <option value="0">Выберите блок</option>
                             {foreach from=$data_block item=block}
-                                <option value="{$block.id}"{if $block.id == $data.id_block}selected="selected"{/if}>{$block.name_block}</option>
+                                <option value="{$block.id}" {if $block.id == $data.id_block}selected="selected"{/if}>{$block.name_block}</option>
                             {/foreach}
 
                         </select>
@@ -33,7 +33,7 @@
                         <select class="form-control  select2" name="id_department_0">
                             <option value="0">Подразделение</option>
                             {foreach from=$data_department item=department}
-                                {if $department.level == 0}<option value="{$department.id}"{if $department.id == $data.id_department}selected="selected"{/if}>{$department.name_department}</option>{/if}
+                                {if $department.level == 0}<option value="{$department.id}" {if $department.id == $data.id_department.0}selected="selected"{/if}>{$department.name_department}</option>{/if}
                             {/foreach}
 
                         </select>
@@ -46,7 +46,7 @@
                         <select class="form-control  select2" name="id_department_1">
                             <option value="0">Вложенное подразделение 1</option>
                             {foreach from=$data_department item=department}
-                                {if $department.level == 1}<option value="{$department.id}"{if $department.id == $data.id_department}selected="selected"{/if}>{$department.name_department}</option>{/if}
+                                {if $department.level == 1}<option value="{$department.id}" {if $department.id == $data.id_department.1}selected="selected"{/if}>{$department.name_department}</option>{/if}
                             {/foreach}
 
                         </select>
@@ -55,7 +55,7 @@
                         <select class="form-control  select2" name="id_department_2">
                             <option value="0">Вложенное подразделение 2</option>
                             {foreach from=$data_department item=department}
-                                {if $department.level == 2}<option value="{$department.id}"{if $department.id == $data.id_department}selected="selected"{/if}>{$department.name_department}</option>{/if}
+                                {if $department.level == 2}<option value="{$department.id}" {if $department.id == $data.id_department.2}selected="selected"{/if}>{$department.name_department}</option>{/if}
                             {/foreach}
 
                         </select>
@@ -64,7 +64,7 @@
                         <select class="form-control  select2" name="id_department_3">
                             <option value="0">Вложенное подразделение 3</option>
                             {foreach from=$data_department item=department}
-                                {if $department.level == 3}<option value="{$department.id}"{if $department.id == $data.id_department}selected="selected"{/if}>{$department.name_department}</option>{/if}
+                                {if $department.level == 3}<option value="{$department.id}" {if $department.id == $data.id_department.3}selected="selected"{/if}>{$department.name_department}</option>{/if}
                             {/foreach}
 
                         </select>
@@ -73,7 +73,7 @@
                         <select class="form-control  select2" name="id_department_4">
                             <option value="0">Вложенное подразделение 4</option>
                             {foreach from=$data_department item=department}
-                                {if $department.level == 4}<option value="{$department.id}"{if $department.id == $data.id_department}selected="selected"{/if}>{$department.name_department}</option>{/if}
+                                {if $department.level == 4}<option value="{$department.id}" {if $department.id == $data.id_department.4}selected="selected"{/if}>{$department.name_department}</option>{/if}
                             {/foreach}
 
                         </select>
