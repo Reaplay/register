@@ -12,8 +12,42 @@ $REL_TPL->stdhead('Список людей');
 
 if($_GET['action'] == "add"){
     $action	="add";
-    $REL_TPL->assignByRef("action",$action);
 
+    //получаем ШЭ
+    $res_ep=sql_query("SELECT `id`,`uid_post` FROM `established_post` WHERE uid_post != 0 AND is_deleted = 0")  or sqlerr(__FILE__, __LINE__);
+    while ($row_ep = mysql_fetch_array($res_ep)){
+        $data_ep[] = $row_ep;
+    }
+
+    //получаем список городов
+    $res_city=sql_query("SELECT `id`,`name_city` FROM `location_city`")  or sqlerr(__FILE__, __LINE__);
+    while ($row_city = mysql_fetch_array($res_city)){
+        $data_city[] = $row_city;
+    }
+    //получаем функционала
+    $res_functionality=sql_query("SELECT `id`,`name_functionality` FROM `functionality`")  or sqlerr(__FILE__, __LINE__);
+    while ($row_functionality = mysql_fetch_array($res_functionality)){
+        $data_functionality[] = $row_functionality;
+    }
+
+    //получаем стратегический проект
+    $res_project=sql_query("SELECT `id`,`name_project` FROM `strategic_project`")  or sqlerr(__FILE__, __LINE__);
+    while ($row_project = mysql_fetch_array($res_project)){
+        $data_strategic_poject[] = $row_project;
+    }
+
+    //получаем модель
+    $res_model=sql_query("SELECT `id`,`name_model` FROM `employee_model`")  or sqlerr(__FILE__, __LINE__);
+    while ($row_model = mysql_fetch_array($res_model)){
+        $data_employee_model[] = $row_model;
+    }
+
+    $REL_TPL->assignByRef("action",$action);
+    $REL_TPL->assignByRef("data_ep",$data_ep);
+    $REL_TPL->assignByRef("data_city",$data_city);
+    $REL_TPL->assignByRef("data_functionality",$data_functionality);
+    $REL_TPL->assignByRef("data_strategic_poject",$data_strategic_poject);
+    $REL_TPL->assignByRef("data_employee_model",$data_employee_model);
     $REL_TPL->output("action", "admincp", "employee");
 }
 

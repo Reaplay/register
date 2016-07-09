@@ -9,7 +9,7 @@
                     <div class="col-md-6 col-sm-6">
                         <label>Город</label>
                         <div class="fancy-form fancy-form-select">
-                            <select class="form-control  select2" name="id_city" onchange="load_location_address(this)">
+                            <select class="form-control  select2" name="id_city" onchange="load_location(this,'address')">
                                 <option value="0">Выберите город</option>
                                 {foreach from=$data_city item=city}
                                     <option value="{$city.id}"{if $data_place.id_city == $city.id}selected="selected"{/if}>{$city.name_city}</option>
