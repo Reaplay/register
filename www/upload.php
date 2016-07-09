@@ -773,7 +773,7 @@ dbconn();
                 if($update){
                     $update .=", ";
                 }
-                $update .= "`id_strategic_poject` = '".$id_project."'";
+                $update .= "`id_strategic_project` = '".$id_project."'";
 
             }
             if($id_model > 0){
