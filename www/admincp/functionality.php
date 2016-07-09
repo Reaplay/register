@@ -65,13 +65,13 @@ if (!$_GET['action']){
     // формируем переход между страниц и прочие данные
     $paginator = create_paginator($_GET['page'],"30",'functionality');
 
-    $res=sql_query("SELECT * FROM `functionality` ".$paginator['limit']."; ")  or sqlerr(__FILE__, __LINE__);
+    $res=sql_query("SELECT * FROM `functionality` WHERE is_deleted = 0 ".$paginator['limit']."; ")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
         stderr("Ошибка","Функционал в базе не обнаружен","no");
     }
 
 
-    $sub_res=sql_query("SELECT `id`,`name_functionality` FROM `functionality` WHERE id_parent = 0 ;")  or sqlerr(__FILE__, __LINE__);
+    $sub_res=sql_query("SELECT `id`,`name_functionality` FROM `functionality` WHERE id_parent = 0 AND is_deleted = 0 ;")  or sqlerr(__FILE__, __LINE__);
     while ($subrow = mysql_fetch_array($sub_res)){
        $functionality[$subrow['id']]= $subrow['name_functionality'];
     }

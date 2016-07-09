@@ -9,13 +9,13 @@
     // формируем переход между страниц и прочие данные
     $paginator = create_paginator($_GET['page'],$REL_CONFIG['per_page_department'],'department');
 
-    $res=sql_query("SELECT department.*, type_office.name_office as name_type_office FROM `department` LEFT JOIN type_office ON type_office.id = department.id_type_office ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
+    $res=sql_query("SELECT department.*, type_office.name_office as name_type_office FROM `department` LEFT JOIN type_office ON type_office.id = department.id_type_office WHERE department.is_deleted = 0 ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
         stderr("Ошибка","Подразделения базе не обнаружены","no");
     }
 
     //получаем список подразделений для родительских
-    $sub_res=sql_query("SELECT id,name_department FROM `department`;")  or sqlerr(__FILE__, __LINE__);
+    $sub_res=sql_query("SELECT id,name_department FROM `department` WHERE is_deleted = 0;")  or sqlerr(__FILE__, __LINE__);
     while ($subrow = mysql_fetch_array($sub_res)){
         $data_array_department[$subrow['id']]= $subrow['name_department'];
     }

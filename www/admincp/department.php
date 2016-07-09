@@ -80,12 +80,12 @@ if (!$_GET['action']){
 
     //получаем список подразделений для родительских
     /*НУЖЕН ЛИ ЭТОТ СПИСОК?*/
-    $sub_res=sql_query("SELECT id,name_department FROM `department`;")  or sqlerr(__FILE__, __LINE__);
+    $sub_res=sql_query("SELECT id,name_department FROM `department` WHERE is_deleted = 0;")  or sqlerr(__FILE__, __LINE__);
     while ($subrow = mysql_fetch_array($sub_res)){
         $data_array_department[$subrow['id']]= $subrow['name_department'];
     }
 
-    $res_office=sql_query("SELECT id,name_office FROM type_office;")  or sqlerr(__FILE__, __LINE__);
+    $res_office=sql_query("SELECT id,name_office FROM type_office WHERE is_deleted = 0;")  or sqlerr(__FILE__, __LINE__);
     while ($sub_office = mysql_fetch_array($res_office)){
         $data_array_office[$sub_office['id']]= $sub_office['name_office'];
     }

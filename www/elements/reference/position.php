@@ -9,7 +9,7 @@
     // формируем переход между страниц и прочие данные
     $paginator = create_paginator($_GET['page'],$REL_CONFIG['per_page_position'],'position');
 
-    $res=sql_query("SELECT * FROM `position` ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
+    $res=sql_query("SELECT * FROM `position` WHERE is_deleted = 0 ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
         stderr("Ошибка","Города базе не обнаружены","no");
     }

@@ -74,7 +74,7 @@ if (!$_GET['action']){
 SELECT location_place.id, location_place.id_address, location_place.floor, location_place.room, location_place.place, location_place.added, location_place.last_update,  location_city.name_city, location_address.name_address
 FROM `location_place`
 LEFT JOIN location_address ON location_address.id = location_place.id_address
-LEFT JOIN location_city ON location_city.id = location_address.id_city ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
+LEFT JOIN location_city ON location_city.id = location_address.id_city WHERE location_place.is_deleted = 0 ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
         stderr("Ошибка","Места базе не обнаружены","no");
     }

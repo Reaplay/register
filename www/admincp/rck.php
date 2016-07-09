@@ -52,7 +52,7 @@ if (!$_GET['action']){
     $paginator = create_paginator($_GET['page'],"30",'rck');
 
 
-    $res=sql_query("SELECT * FROM `rck` ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
+    $res=sql_query("SELECT * FROM `rck` WHERE is_deleted = 0 ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
         stderr("Ошибка","РЦК базе не обнаружено","no");
     }

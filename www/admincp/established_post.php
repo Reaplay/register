@@ -297,6 +297,7 @@ LEFT JOIN department ON department.id = established_post.id_department
 LEFT JOIN direction ON direction.id = established_post.id_direction
 LEFT JOIN mvz ON mvz.id = established_post.id_mvz
 LEFT JOIN location_city ON location_city.id = established_post.id_location_city
+WHERE established_post.is_deleted = 0
 ".$paginator['limit']."
 ");
     $i=0;

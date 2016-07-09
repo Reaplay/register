@@ -23,7 +23,7 @@
 
 	<div class="col-md-5th">
 		<h4>Добавить</h4>
-		<a href="action_admin.php?module=established_post">Штатная единица (no)</a><br />
+		<a href="action_admin.php?module=established_post">Штатная единица</a><br />
 		<a href="action_admin.php?module=employee">Человека (no)</a><br />
 		<a href="action_admin.php?module=position">Должность</a><br />
 		<a href="action_admin.php?module=department">Подразделение</a><br />

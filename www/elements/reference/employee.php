@@ -60,17 +60,17 @@ WHERE employee.is_deleted = 0 $where
         $i++;
     }
 
-$res_func = sql_query("SELECT id, name_functionality FROM functionality WHERE id_parent != 0");
+$res_func = sql_query("SELECT id, name_functionality FROM functionality WHERE id_parent != 0 AND is_deleted = 0");
     while ($row_func = mysql_fetch_array($res_func)){
         $data_functions .='<option value="'.$row_func['id'].'">'.$row_func['name_functionality'].'</option>';
 
     }
-    $res_city = sql_query("SELECT id, name_city FROM location_city");
+    $res_city = sql_query("SELECT id, name_city FROM location_city WHERE is_deleted = 0");
     while ($row_city = mysql_fetch_array($res_city)){
         $data_city .='<option value="'.$row_city['id'].'">'.$row_city['name_city'].'</option>';
 
     }
-    $res_position = sql_query("SELECT id, name_position FROM `position`");
+    $res_position = sql_query("SELECT id, name_position FROM `position` WHERE is_deleted = 0");
     while ($row_position = mysql_fetch_array($res_position)){
         $data_position .='<option value="'.$row_position['id'].'">'.$row_position['name_position'].'</option>';
 

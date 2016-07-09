@@ -65,13 +65,13 @@ if (!$_GET['action']){
     // формируем переход между страниц и прочие данные
     $paginator = create_paginator($_GET['page'],"30",'mvz');
 
-    $res=sql_query("SELECT * FROM `mvz` ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
+    $res=sql_query("SELECT * FROM `mvz` WHERE is_deleted = 0 ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
         stderr("Ошибка","МВЗ базе не обнаружен","no");
     }
 
     //получаем список рцк
-    $sub_res=sql_query("SELECT `id`,`name_rck` FROM `rck`;")  or sqlerr(__FILE__, __LINE__);
+    $sub_res=sql_query("SELECT `id`,`name_rck` FROM `rck` WHERE is_deleted = 0;")  or sqlerr(__FILE__, __LINE__);
     while ($subrow = mysql_fetch_array($sub_res)){
        $data_rck[$subrow['id']]= $subrow['name_rck'];
     }

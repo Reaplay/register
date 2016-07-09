@@ -32,7 +32,7 @@ FROM `employee`
 LEFT JOIN functionality ON functionality.id = employee.id_functionality
 LEFT JOIN location_place ON location_place.id = employee.id_location_place
 LEFT JOIN location_address ON location_address.id = location_place.id_address
-LEFT JOIN location_city ON location_city.id = location_address.id_city ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
+LEFT JOIN location_city ON location_city.id = location_address.id_city WHERE employee.is_deleted = 0 ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
         stderr("Ошибка","Люди в  базе не обнаружены","no");
     }
