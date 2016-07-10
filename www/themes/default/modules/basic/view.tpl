@@ -86,7 +86,7 @@ FTE (процент занятости): <b>{$employee}</b> <br>
                 <div class="panel-body">
                     <h6>Руководители</h6>
                     <div class="tab-content transparent">
-                        <table class="table table-striped table-hover table-bordered">
+                        <table class="table  table-hover table-bordered">
                             <thead>
                                 <tr>
                                     <th>Тип</th>
@@ -126,7 +126,7 @@ FTE (процент занятости): <b>{$employee}</b> <br>
 
                 <div class="panel-body">
                     <div class="tab-content transparent">
-                        <table class="table table-striped table-hover table-bordered">
+                        <table class="table table-hover table-bordered">
                             г. <b>{$employee.name_city}</b>, <b>{$employee.name_address}</b>.
                             Этаж <b>{$employee.floor}</b>, комната: <b>{$employee.room}</b>, место: <b>{$employee.place}</b> <br><br>
                             <thead>
@@ -140,7 +140,7 @@ FTE (процент занятости): <b>{$employee}</b> <br>
                                     <tr>
                                         <td>{if $employee.ready}Да{else}Нет{/if} {if $employee.date_ready}({$employee.date_ready}){/if}</td>
                                         <td>{if $employee.reservation}Да{else}Нет{/if} {if $employee.date_reservation}({$employee.date_reservation}){/if}</td>
-                                        <td>{if $employee.occupy}Да{else}Нет{/if}</> {if $employee.date_occupy}({$employee.date_occupy}){/if}</td>
+                                        <td>{if $employee.occupy}Да{else}Нет{/if} {if $employee.date_occupy}({$employee.date_occupy}){/if}</td>
                                     </tr>
                                 </tbody>
                         </table>
@@ -160,7 +160,7 @@ FTE (процент занятости): <b>{$employee}</b> <br>
 
 
                 <div class="panel-body">
-                    <table class="table table-striped table-hover table-bordered">
+                    <table class="table table-hover table-bordered">
                         <thead>
                             <tr>
                                 <th>РКЦ (МВЗ)</th>
