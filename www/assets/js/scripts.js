@@ -2872,7 +2872,17 @@ jQuery.easing.jswing=jQuery.easing.swing;jQuery.extend(jQuery.easing,{def:"easeO
 	resultSelect.attr('disabled', 'disabled'); // делаем список не активным
 	// послыаем AJAX запрос, который вернёт список для выбранной области
 	$.getJSON('elements/ajax.php', {action:'getlocation'+location, id:select.value}, function(resultList){
-		resultSelect.html(''); // очищаем список 
+		resultSelect.html(''); // очищаем список
+		if(location == 'address'){
+			$('span[id |= "select2-id_address"]').html('');
+			$('select[name="id_address"]').html('');
+			$('span[id |= "select2-id_place"]').html('');
+			$('select[name="id_place"]').html('');
+		}
+		if(location == 'place'){
+			$('span[id |= "select2-id_place"]').html('');
+			$('select[name="id_place"]').html('');
+		}
 		// заполняем список  новыми пришедшими данными
 		$.each(resultList, function(i){
 			if(i==0) {

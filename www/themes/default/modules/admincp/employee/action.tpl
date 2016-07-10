@@ -11,19 +11,16 @@
                         <select class="form-control  select2" name="uid_id">
                             <option value="0">Идентификатор ШЕ (если есть)</option>
                             {foreach from=$data_ep item=ep}
-                                <option value="{$ep.id}"{if $ep.id == $data.id_ep}selected="selected"{/if}>{$ep.uid_post}</option>
+                                <option value="{$ep.id}"{if $ep.id == $data.id_uid_post}selected="selected"{/if}>{$ep.uid_post}</option>
                             {/foreach}
 
                         </select>
                     </div>
                     <div class="col-md-6 col-sm-6">
-                        {*<select class="form-control  select2" name="id_position">
-                            <option value="0">Должность</option>
-                            {foreach from=$data_position item=position}
-                                <option value="{$position.id}"{if $position.id == $data.id_position}selected="selected"{/if}>{$position.name_position}</option>
-                            {/foreach}
-
-                        </select>*}
+                        <label class="input">
+                            <i class="ico-prepend fa fa-user"></i>
+                            <input type="text" name="name_employee" class="form-control" placeholder="ФИО сотрудника" value="{$data.name_employee}">
+                        </label>
                     </div>
                 </div>
             </div>
@@ -44,12 +41,18 @@
                         <select class="form-control  select2" name="id_address" onchange="load_location(this,'place')">
                             <option value="0">Адрес</option>
 
+                            {foreach from=$data_address item=address}
+                                <option value="{$address.id}" {if $address.id == $data.id_location_address}selected="selected"{/if}>{$address.name_address}</option>
+                            {/foreach}
+
                         </select>
                     </div>
                     <div class="col-md-4 col-sm-4">
                         <select class="form-control  select2" name="id_place">
                             <option value="0">Место</option>
-
+                            {foreach from=$data_place item=place}
+                                <option value="{$place.id}" {if $place.id == $data.id_location_place}selected="selected"{/if}>{$place.name_place}</option>
+                            {/foreach}
                         </select>
                     </div>
 
@@ -60,7 +63,7 @@
                     <div class="col-md-6 col-sm-6">
                         <label class="input">
                             <i class="ico-prepend fa fa-envelope-o"></i>
-                            <input type="text" name="uid_post" class="form-control" placeholder="Email" value="{$data.uid_post}">
+                            <input type="text" name="uid_post" class="form-control" placeholder="Email" value="{$data.email}">
                         </label>
                     </div>
                     <div class="col-md-6 col-sm-6">
@@ -81,13 +84,13 @@
                     <div class="col-md-6 col-sm-6">
                         <label class="input">
                             <i class="ico-prepend fa fa-calendar"></i>
-                            <input type="text" class="form-control datepicker required" data-format="dd/mm/yyyy" data-lang="ru" data-RTL="false" name="date_employment" placeholder="Дата приема на работу">
+                            <input type="text" class="form-control datepicker required" data-format="dd/mm/yyyy" data-lang="ru" data-RTL="false" name="date_employment" placeholder="Дата приема на работу" value="{$data.date_employment}">
                         </label>
                     </div>
                     <div class="col-md-6 col-sm-6">
                         <label class="input">
                             <i class="ico-prepend fa fa-calendar"></i>
-                            <input type="text" class="form-control datepicker required" data-format="dd/mm/yyyy" data-lang="ru" data-RTL="false" name="date_transfer" placeholder="Дата перевода">
+                            <input type="text" class="form-control datepicker required" data-format="dd/mm/yyyy" data-lang="ru" data-RTL="false" name="date_transfer" placeholder="Дата перевода" value="{$data.date_transfer}">
                         </label>
                     </div>
                 </div>
