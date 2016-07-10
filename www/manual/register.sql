@@ -3,18 +3,12 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Июл 04 2016 г., 23:21
+-- Время создания: Июл 10 2016 г., 19:42
 -- Версия сервера: 5.5.25
 -- Версия PHP: 5.5.37
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
 
 --
 -- База данных: `register`
@@ -26,14 +20,13 @@ SET time_zone = "+00:00";
 -- Структура таблицы `block`
 --
 
-DROP TABLE IF EXISTS `block`;
 CREATE TABLE IF NOT EXISTS `block` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name_block` varchar(255) NOT NULL,
   `added` int(11) NOT NULL DEFAULT '0',
   `last_update` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -41,7 +34,6 @@ CREATE TABLE IF NOT EXISTS `block` (
 -- Структура таблицы `cache_stats`
 --
 
-DROP TABLE IF EXISTS `cache_stats`;
 CREATE TABLE IF NOT EXISTS `cache_stats` (
   `cache_name` varchar(255) NOT NULL,
   `cache_value` text,
@@ -54,7 +46,6 @@ CREATE TABLE IF NOT EXISTS `cache_stats` (
 -- Структура таблицы `changelog`
 --
 
-DROP TABLE IF EXISTS `changelog`;
 CREATE TABLE IF NOT EXISTS `changelog` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `added` int(10) NOT NULL,
@@ -63,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `changelog` (
   `text` text NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -71,7 +62,6 @@ CREATE TABLE IF NOT EXISTS `changelog` (
 -- Структура таблицы `department`
 --
 
-DROP TABLE IF EXISTS `department`;
 CREATE TABLE IF NOT EXISTS `department` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name_department` varchar(255) NOT NULL,
@@ -83,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `department` (
   `level` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=191 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -91,7 +81,6 @@ CREATE TABLE IF NOT EXISTS `department` (
 -- Структура таблицы `direction`
 --
 
-DROP TABLE IF EXISTS `direction`;
 CREATE TABLE IF NOT EXISTS `direction` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name_direction` varchar(255) NOT NULL,
@@ -100,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `direction` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -108,7 +97,6 @@ CREATE TABLE IF NOT EXISTS `direction` (
 -- Структура таблицы `employee`
 --
 
-DROP TABLE IF EXISTS `employee`;
 CREATE TABLE IF NOT EXISTS `employee` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name_employee` varchar(255) NOT NULL,
@@ -121,10 +109,10 @@ CREATE TABLE IF NOT EXISTS `employee` (
   `added` int(10) NOT NULL,
   `fte` float NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
-  `id_strategic_poject` int(10) NOT NULL DEFAULT '0',
+  `id_strategic_project` int(10) NOT NULL DEFAULT '0',
   `id_employee_model` int(10) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1533 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -132,7 +120,6 @@ CREATE TABLE IF NOT EXISTS `employee` (
 -- Структура таблицы `employee_model`
 --
 
-DROP TABLE IF EXISTS `employee_model`;
 CREATE TABLE IF NOT EXISTS `employee_model` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name_model` varchar(255) NOT NULL,
@@ -140,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `employee_model` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_delete` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -148,7 +135,6 @@ CREATE TABLE IF NOT EXISTS `employee_model` (
 -- Структура таблицы `established_post`
 --
 
-DROP TABLE IF EXISTS `established_post`;
 CREATE TABLE IF NOT EXISTS `established_post` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `uid_post` int(10) NOT NULL DEFAULT '0',
@@ -167,8 +153,9 @@ CREATE TABLE IF NOT EXISTS `established_post` (
   `draft` tinyint(1) DEFAULT '0',
   `transfer` tinyint(1) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `id_parent_ep` int(10) NOT NULL DEFAULT '0' COMMENT 'Нужно для поиска истории и исходной записи (ту что изменяли самой первой)',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1533 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -176,7 +163,6 @@ CREATE TABLE IF NOT EXISTS `established_post` (
 -- Структура таблицы `functionality`
 --
 
-DROP TABLE IF EXISTS `functionality`;
 CREATE TABLE IF NOT EXISTS `functionality` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name_functionality` varchar(266) NOT NULL,
@@ -185,7 +171,7 @@ CREATE TABLE IF NOT EXISTS `functionality` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=87 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -193,7 +179,6 @@ CREATE TABLE IF NOT EXISTS `functionality` (
 -- Структура таблицы `location_address`
 --
 
-DROP TABLE IF EXISTS `location_address`;
 CREATE TABLE IF NOT EXISTS `location_address` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `id_city` int(10) NOT NULL DEFAULT '0',
@@ -202,7 +187,7 @@ CREATE TABLE IF NOT EXISTS `location_address` (
   `last_update` int(10) DEFAULT NULL,
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -210,7 +195,6 @@ CREATE TABLE IF NOT EXISTS `location_address` (
 -- Структура таблицы `location_city`
 --
 
-DROP TABLE IF EXISTS `location_city`;
 CREATE TABLE IF NOT EXISTS `location_city` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name_city` varchar(255) NOT NULL,
@@ -219,7 +203,7 @@ CREATE TABLE IF NOT EXISTS `location_city` (
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   `co` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=62 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 -- --------------------------------------------------------
 
@@ -227,7 +211,6 @@ CREATE TABLE IF NOT EXISTS `location_city` (
 -- Структура таблицы `location_place`
 --
 
-DROP TABLE IF EXISTS `location_place`;
 CREATE TABLE IF NOT EXISTS `location_place` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `id_address` int(10) NOT NULL DEFAULT '0',
@@ -244,7 +227,7 @@ CREATE TABLE IF NOT EXISTS `location_place` (
   `last_update` int(10) DEFAULT NULL,
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=178 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -252,7 +235,6 @@ CREATE TABLE IF NOT EXISTS `location_place` (
 -- Структура таблицы `mvz`
 --
 
-DROP TABLE IF EXISTS `mvz`;
 CREATE TABLE IF NOT EXISTS `mvz` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `id_rck` tinyint(2) NOT NULL DEFAULT '0',
@@ -261,7 +243,7 @@ CREATE TABLE IF NOT EXISTS `mvz` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=44 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -269,7 +251,6 @@ CREATE TABLE IF NOT EXISTS `mvz` (
 -- Структура таблицы `orbital_blocks`
 --
 
-DROP TABLE IF EXISTS `orbital_blocks`;
 CREATE TABLE IF NOT EXISTS `orbital_blocks` (
   `bid` int(10) NOT NULL AUTO_INCREMENT,
   `title` varchar(60) NOT NULL,
@@ -294,7 +275,6 @@ CREATE TABLE IF NOT EXISTS `orbital_blocks` (
 -- Структура таблицы `position`
 --
 
-DROP TABLE IF EXISTS `position`;
 CREATE TABLE IF NOT EXISTS `position` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name_position` varchar(255) NOT NULL,
@@ -305,7 +285,7 @@ CREATE TABLE IF NOT EXISTS `position` (
   `status` tinyint(1) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=81 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -313,7 +293,6 @@ CREATE TABLE IF NOT EXISTS `position` (
 -- Структура таблицы `rck`
 --
 
-DROP TABLE IF EXISTS `rck`;
 CREATE TABLE IF NOT EXISTS `rck` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name_rck` varchar(255) NOT NULL,
@@ -321,7 +300,7 @@ CREATE TABLE IF NOT EXISTS `rck` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -329,7 +308,6 @@ CREATE TABLE IF NOT EXISTS `rck` (
 -- Структура таблицы `sessions`
 --
 
-DROP TABLE IF EXISTS `sessions`;
 CREATE TABLE IF NOT EXISTS `sessions` (
   `sid` varchar(32) NOT NULL,
   `uid` int(10) NOT NULL DEFAULT '0',
@@ -351,7 +329,6 @@ CREATE TABLE IF NOT EXISTS `sessions` (
 -- Структура таблицы `strategic_project`
 --
 
-DROP TABLE IF EXISTS `strategic_project`;
 CREATE TABLE IF NOT EXISTS `strategic_project` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name_project` varchar(255) NOT NULL,
@@ -359,7 +336,7 @@ CREATE TABLE IF NOT EXISTS `strategic_project` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_delete` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -367,7 +344,6 @@ CREATE TABLE IF NOT EXISTS `strategic_project` (
 -- Структура таблицы `type_office`
 --
 
-DROP TABLE IF EXISTS `type_office`;
 CREATE TABLE IF NOT EXISTS `type_office` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name_office` varchar(255) NOT NULL,
@@ -375,7 +351,7 @@ CREATE TABLE IF NOT EXISTS `type_office` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -383,7 +359,6 @@ CREATE TABLE IF NOT EXISTS `type_office` (
 -- Структура таблицы `users`
 --
 
-DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `login` varchar(9) NOT NULL,
@@ -404,8 +379,4 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `added` (`added`),
   KEY `ip` (`ip`),
   KEY `user` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=2 ;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1 ;

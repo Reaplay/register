@@ -233,11 +233,15 @@ WHERE position.is_head = 1");
 }
 elseif($_POST['action'] == "edit"){
 
-    $res=sql_query("SELECT established_post.added FROM established_post WHERE established_post.id = '".$_POST['id']."'")  or sqlerr(__FILE__, __LINE__);
+    $res=sql_query("SELECT established_post.added, id, id_parent_ep FROM established_post WHERE established_post.id = '".$_POST['id']."'")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
         stderr("Ошибка","Такая штатная единица отсутствует в базе","no");
     }
     $row = mysql_fetch_array($res);
+    if($row['id_parent_ep'])
+        $id_parent_ep = $row['id_parent_ep'];
+    else
+        $id_parent_ep = $row['id'];
 
     /*$uid_post = (int)$_POST['uid_post'];
     $date_entry	= unix_time($_POST['date_entry']);
@@ -269,7 +273,7 @@ elseif($_POST['action'] == "edit"){
 
     $data = prepeared_data($_POST);
     //добавляем новую запись
-    sql_query("INSERT INTO established_post (uid_post, id_position, id_block, id_department, id_direction, id_rck, id_mvz, date_entry, added, id_location_city, id_functional_manager, id_administrative_manager, draft, transfer, last_update) VALUES ('".$data['uid_post']."', '".$data['id_position']."', '".$data['id_block']."', '".$data['id_department']."', '".$data['id_direction']."', '".$data['id_rck']."', '".$data['id_mvz']."', '".$data['date_entry']."', '".$row['added']."', '".$data['id_city']."', '".$data['id_functional_manager']."', '".$data['id_administrative_manager']."', '".$data['draft']."', '".$data['transfer']."', '".time()."');") or sqlerr(__FILE__, __LINE__);
+    sql_query("INSERT INTO established_post (uid_post, id_position, id_block, id_department, id_direction, id_rck, id_mvz, date_entry, added, id_location_city, id_functional_manager, id_administrative_manager, draft, transfer, last_update, id_parent_ep) VALUES ('".$data['uid_post']."', '".$data['id_position']."', '".$data['id_block']."', '".$data['id_department']."', '".$data['id_direction']."', '".$data['id_rck']."', '".$data['id_mvz']."', '".$data['date_entry']."', '".$row['added']."', '".$data['id_city']."', '".$data['id_functional_manager']."', '".$data['id_administrative_manager']."', '".$data['draft']."', '".$data['transfer']."', '".time()."', '".$id_parent_ep."');") or sqlerr(__FILE__, __LINE__);
     $new_id = mysql_insert_id();
     // отмечаем старую на удаление
     sql_query("UPDATE `established_post` SET last_update = '".time()."', is_deleted = '1' WHERE id ='".$_POST['id']."' ;");
