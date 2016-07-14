@@ -11,5 +11,7 @@ require_once ("include/connect.php");
 dbconn();
 
 $REL_TPL->stdhead("Главная страница");
-$REL_TPL->stdfoot();
+    $_GET['type'] = "short";
+    require_once("elements/register/register_short.php");
+//$REL_TPL->stdfoot();
 
