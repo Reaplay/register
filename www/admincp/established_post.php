@@ -163,7 +163,8 @@ elseif($_GET['action'] == "edit"){
         stderr("Ошибка","Такая штатная единица отсутствует в базе","no");
     }
     $data = mysql_fetch_array($res);
-    $data['date_entry'] = mkprettytime($data['date_entry'],false);
+    //$data['date_entry'] = mkprettytime($data['date_entry'],false);
+    $data['date_entry'] = date('d/m/Y',$data['date_entry']);
     $data['id_department'] = explode(",",$data['id_department']);
     //получаем список блоков
     $res_block=sql_query("SELECT `id`,`name_block` FROM `block` ;")  or sqlerr(__FILE__, __LINE__);
