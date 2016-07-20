@@ -8,7 +8,7 @@
             <div class="row">
                 <div class="form-group">
                     <div class="col-md-6 col-sm-6">
-                        <select class="form-control  select2" name="uid_id">
+                        <select class="form-control  select2" name="id_uid_post">
                             <option value="0">Идентификатор ШЕ (если есть)</option>
                             {foreach from=$data_ep item=ep}
                                 <option value="{$ep.id}"{if $ep.id == $data.id_uid_post}selected="selected"{/if}>{$ep.uid_post}</option>
@@ -63,7 +63,7 @@
                     <div class="col-md-6 col-sm-6">
                         <label class="input">
                             <i class="ico-prepend fa fa-envelope-o"></i>
-                            <input type="text" name="uid_post" class="form-control" placeholder="Email" value="{$data.email}">
+                            <input type="text" name="email" class="form-control" placeholder="Email" value="{$data.email}">
                         </label>
                     </div>
                     <div class="col-md-6 col-sm-6">

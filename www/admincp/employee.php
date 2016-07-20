@@ -6,6 +6,27 @@
  * Time: 17:11
  */
 
+    function prepeared_data($input_data){
+        //переводим данные
+        $data['id_uid_post'] = (int)$input_data['id_uid_post'];
+        $data['date_employment']	= unix_time($input_data['date_employment']);
+        $data['date_transfer']	= unix_time($input_data['date_transfer']);
+        $data['id_employee_model'] = (int)$input_data['id_employee_model'];
+        $data['id_functionality'] = (int)$input_data['id_functionality'];
+        $data['id_strategic_poject'] = (int)$input_data['id_strategic_poject'];
+        $data['name_employee'] = trim($input_data['name_employee']);
+        if(validemail($input_data['email'])) {
+            $data['email'] = trim($input_data['email']);
+        }
+
+
+        if((int)$input_data['id_place'] >0 AND (int)$input_data['id_city'] >0 AND (int)$input_data['id_address'] >0) {
+            $data['id_place'] = (int)$input_data['id_place'];
+        }
+
+        return $data;
+    }
+
 
 $REL_TPL->stdhead('Список людей');
 
@@ -52,22 +73,33 @@ if($_GET['action'] == "add"){
 }
 elseif($_POST['action'] == "add"){
 
+    $data = prepeared_data($_POST);
+
+    sql_query("INSERT INTO employee (id_uid_post,name_employee,email,date_transfer,date_employment,id_location_place,id_strategic_project,id_employee_model,id_functionality,added)
+    VALUES ('".$data['id_uid_post']."','".$data['name_employee']."','".$data['email']."','".$data['date_transfer']."','".$data['date_employment']."','".$data['id_place']."','".$data['id_strategic_poject']."','".$data['id_employee_model']."','".$data['id_functionality']."', '".time()."');") or sqlerr(__FILE__, __LINE__);
+
 }
 elseif($_GET['action'] == "edit"){
 
     $action	="edit";
-
+$id = (int)$_GET['id'];
     //получаем данные сотрудника
     $res=sql_query("
-SELECT employee.*, location_city.id as id_location_city, location_address.id as id_location_address, location_place.id as id_location_place
+SELECT employee.*, location_city.name_city, location_address.name_address, location_place.floor, location_place.place, location_place.room, functionality.name_functionality, strategic_project.id as id_strategic_poject, location_address.id as id_location_address, location_city.id as id_location_city,
+established_post.id as id_uid_post
 FROM `employee`
+LEFT JOIN functionality ON functionality.id = employee.id_functionality
+LEFT JOIN established_post ON established_post.id = employee.id_uid_post
+LEFT JOIN  strategic_project ON strategic_project.id = employee.id_strategic_project
 LEFT JOIN location_place ON location_place.id = employee.id_location_place
 LEFT JOIN location_address ON location_address.id = location_place.id_address
-LEFT JOIN location_city ON location_city.id = location_address.id_city
-WHERE employee.id = '".$_GET['id']."'")  or sqlerr(__FILE__, __LINE__);
+LEFT JOIN location_city ON location_city.id = location_address.id_city WHERE employee.is_deleted = 0 AND employee.id = $id;")  or sqlerr(__FILE__, __LINE__);
+    if(mysql_num_rows($res) == 0){
+        stderr("Ошибка","Люди в  базе не обнаружены","no");
+    }
     $data = mysql_fetch_array($res);
-    $data['date_employment'] =mkprettytime($data['date_employment'],false);
-    $data['date_transfer'] =mkprettytime($data['date_transfer'],false);
+    $data['date_employment'] = date('d/m/Y',$data['date_employment']);
+    $data['date_transfer'] = date('d/m/Y',$data['date_transfer']);
 
     //получаем ШЭ
     $res_ep=sql_query("SELECT `id`,`uid_post` FROM `established_post` WHERE uid_post != 0 AND is_deleted = 0")  or sqlerr(__FILE__, __LINE__);
@@ -80,20 +112,18 @@ WHERE employee.id = '".$_GET['id']."'")  or sqlerr(__FILE__, __LINE__);
     while ($row_city = mysql_fetch_array($res_city)){
         $data_city[] = $row_city;
     }
-
-    // если место определено и задано, получаем доп. данные
-    if($data['id_location_place']) {
-        // получаем список адресов
-        $res_address = sql_query ("SELECT `id`,`name_address` FROM `location_address` WHERE id_city = '".$data['id_location_city']."'") or sqlerr (__FILE__, __LINE__);
-        while ($row_address = mysql_fetch_array ($res_address)) {
-            $data_address[] = $row_address;
-        }
-        // получаем список мест
-        $res_place = sql_query ("SELECT id,floor,room,place FROM `location_place` WHERE id_address = '".$data['id_location_address']."'") or sqlerr (__FILE__, __LINE__);
-        while ($row_place = mysql_fetch_array ($res_place)) {
-            $data_place[$row_place['id']]['id'] = $row_place['id'];
-            $data_place[$row_place['id']]['name_place'] = "Этаж ".$row_place['floor'].", комната ".$row_place['room'].", место ".$row_place['place'];
-        }
+    //получаем список адресов
+    $res_address=sql_query("SELECT `id`,`name_address` FROM `location_address` WHERE id_city = ".$data['id_location_city'].";")  or sqlerr(__FILE__, __LINE__);
+    while ($row_address = mysql_fetch_array($res_address)){
+        $data_address[] = $row_address;
+    }
+    //получаем список мест
+    $res_place=sql_query("SELECT `id`,floor,room,place FROM `location_place` WHERE id_address = ".$data['id_location_address']."")  or sqlerr(__FILE__, __LINE__);
+    $i = 0;
+    while ($row_place = mysql_fetch_array($res_place)){
+        $data_place[$i]['id'] =  $row_place['id'];
+        $data_place[$i]['name_place'] =  "Этаж ".$row_place['floor'].", комната ".$row_place['room'].", место ".$row_place['place'];
+        $i++;
     }
     //получаем функционала
     $res_functionality=sql_query("SELECT `id`,`name_functionality` FROM `functionality`")  or sqlerr(__FILE__, __LINE__);
@@ -113,10 +143,13 @@ WHERE employee.id = '".$_GET['id']."'")  or sqlerr(__FILE__, __LINE__);
         $data_employee_model[] = $row_model;
     }
 
+
+
+
     $REL_TPL->assignByRef('id',$_GET['id']);
     $REL_TPL->assignByRef("action",$action);
-    $REL_TPL->assignByRef("data",$data);
     $REL_TPL->assignByRef("data_ep",$data_ep);
+    $REL_TPL->assignByRef("data",$data);
     $REL_TPL->assignByRef("data_city",$data_city);
     $REL_TPL->assignByRef("data_address",$data_address);
     $REL_TPL->assignByRef("data_place",$data_place);

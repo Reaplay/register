@@ -21,7 +21,7 @@
 
         <tr data-id="{$employee.id}">
             <td>
-                {$employee.name_employee}
+               <a href="view.php?eid={$employee.id}"> {$employee.name_employee}</a>
             </td>
             <td>
                {if $employee.id_uid_post}В штате{else}Вне штата{/if}
