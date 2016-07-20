@@ -786,6 +786,9 @@ dbconn();
             if($update) {
                 sql_query ("UPDATE `employee` SET $update WHERE `id` = $id_employee;") or sqlerr (__FILE__, __LINE__);
             }
+
+
+
         }
         $REL_TPL->stdmsg('Выполнено','Добавление данных завершено.');
 
