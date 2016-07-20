@@ -1,31 +1,12 @@
 <?php
-
     /**
      * Created by PhpStorm.
      * User: Reaplay
-     * Date: 23.06.2016
-     * Time: 22:27
+     * Date: 11.07.2016
+     * Time: 22:18
      */
 
-    require_once ("include/connect.php");
 
-    dbconn();
-    $REL_TPL->stdhead("Список персонала");
-    if (!$_GET['type']) {
-        stderr("Ошибка","Данной страницы не существует");
-    }
-    elseif($_GET['type'] == 'short'){
-        require_once("elements/register/register_short.php");
-    }
-    elseif($_GET['type'] == 'full'){
-        require_once("elements/register/register_short.php");
-    }
-    elseif($_GET['type'] == 'user'){
-        require_once("elements/register/register_user.php");
-    }
-
-
-    die();
     $left_join = "LEFT JOIN functionality ON functionality.id = employee.id_functionality
 LEFT JOIN location_place ON location_place.id = employee.id_location_place
 LEFT JOIN location_address ON location_address.id = location_place.id_address
@@ -36,6 +17,29 @@ LEFT JOIN rck ON rck.id = established_post.id_rck
 LEFT JOIN mvz ON mvz.id = established_post.id_mvz
 
 ";
+
+    if((int)$_GET['direction'] >0){
+        $where .= "AND established_post.id_direction = '".(int)$_GET['direction']."'";
+    }
+    if((int)$_GET['rck'] >0){
+        $where .= "AND established_post.id_rck = '".(int)$_GET['rck']."'";
+    }
+    if((int)$_GET['model'] >0){
+        $where .= "AND employee.id_employee_model = '".(int)$_GET['model']."'";
+    }
+    if((int)$_GET['ep'] == 1){
+        $where .= "AND established_post.uid_post != '0'";
+    }
+    elseif((int)$_GET['ep'] == 2){
+        $where .= "AND established_post.uid_post = '0'";
+    }
+    if((int)$_GET['city'] >0){
+        $where .= "AND (location_city.id = '".(int)$_GET['city']."' OR established_post.id_location_city = '".(int)$_GET['city']."') ";
+    }
+    if((int)$_GET['department'] >0){
+        //$where .= "AND established_post.id_department = IN ('".(int)$_GET['id_department']."')";
+    }
+
 
     $paginator = create_paginator($_GET['page'],$REL_CONFIG['per_page_employee'],'employee',$left_join, $where);
 // получаем основной список сотрудников
@@ -55,7 +59,7 @@ $left_join
 WHERE employee.is_deleted = 0  $where
 ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
-        stderr("Ошибка","Люди в  базе не обнаружены");
+        stderr("Ошибка","Люди в  базе не обнаружены","no");
     }
 
     //получаем список групп функций
@@ -125,7 +129,7 @@ WHERE employee.is_deleted = 0  $where
         $data_employee[$i]['func_mgr'] = select_manager($row['id_functional_manager']);
         //выбираем административного рук-ля
         $data_employee[$i]['adm_mgr'] = select_manager($row['id_administrative_manager']);
-       // узнаем ID родителя функции
+        // узнаем ID родителя функции
         $id_parent =  $array_functionality[$row['id_functionality']]['id_parent'];
         //прописываем название  функции
         $data_employee[$i]['group_functionality'] = $array_functionality[$id_parent]['name'];
@@ -158,17 +162,22 @@ WHERE employee.is_deleted = 0  $where
     $REL_TPL->assignByRef('add_sort',$sort['link']);
     $REL_TPL->assignByRef('sort',$sort);
 
-    $REL_TPL->stdhead("Список персонала");
+    //$REL_TPL->stdhead("Список персонала");
     $REL_TPL->assignByRef('data_employee',$data_employee);
     $REL_TPL->assignByRef('data_functions',$data_functions);
     $REL_TPL->assignByRef('data_city',$data_city);
     $REL_TPL->assignByRef('data_position',$data_position);
 
+    $data_filter = filer_register();
+
+    $REL_TPL->assignByRef('data_filter',$data_filter);
+
+    $REL_TPL->output("filter", "register");
     if($_GET['type'] == "short")
         $REL_TPL->output("register_short", "register");
     elseif($_GET['type'] == "full") {
         $REL_TPL->output ("register_full", "register");
-       $add_js = '<style>#doublescroll { overflow: auto; overflow-y: hidden; }
+        $add_js = '<style>#doublescroll { overflow: auto; overflow-y: hidden; }
 #doublescroll p { margin: 0; padding: 1em; white-space: nowrap; }</style>
 <script>
 function DoubleScroll(element) {

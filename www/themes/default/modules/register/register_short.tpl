@@ -1,3 +1,4 @@
+
 {paginator page='register' add_value='type=short&' add_link=$add_link add_sort=$add_sort  num_page=$paginator.page max_page=$paginator.max_page count=$paginator.count}
 <table class="table table-striped table-hover table-bordered" id="list_employee">
     <thead>

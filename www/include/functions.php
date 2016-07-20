@@ -414,6 +414,11 @@ function unix_time ($date){
 
     return $time;
 }
+    //проверяем email
+    function validemail($email) {
+        return filter_var($email, FILTER_VALIDATE_EMAIL)?true:false;
+    }
+
     // определяем данные для создания переключателя страниц
     function create_paginator($page, $per_page, $table, $left_join = "", $where = ""){
         $paginator['page'] = (int) $page;
@@ -467,4 +472,35 @@ LEFT JOIN position ON position.id = established_post.id_position
 LEFT JOIN location_city ON location_city.id = established_post.id_location_city
 WHERE established_post.id = '".$id_manager."'");
         return mysql_fetch_array($res);
+    }
+
+    //данные для фильтра реестра
+    function filer_register(){
+
+        //дирекция
+        $res_direction = sql_query("SELECT id, name_direction FROM direction WHERE is_deleted = 0");
+        while ($row_direction = mysql_fetch_array($res_direction)) {
+            $array['direction'][$row_direction['id']] = $row_direction['name_direction'];
+        }
+        // ФР/АР
+        //ЦО/РЦК/РП
+        $res_rck = sql_query("SELECT id, name_rck FROM rck WHERE is_deleted = 0");
+        while ($row_rck = mysql_fetch_array($res_rck)) {
+            $array['rck'][$row_rck['id']] = $row_rck['name_rck'];
+        }
+        //модель
+        $res_model = sql_query("SELECT id, name_model FROM employee_model WHERE is_deleted = 0");
+        while ($row_model = mysql_fetch_array($res_model)) {
+            $array['model'][$row_model['id']] = $row_model['name_model'];
+        }
+
+
+        //город
+        $res_city = sql_query("SELECT id, name_city FROM location_city WHERE is_deleted = 0");
+        while ($row_city = mysql_fetch_array($res_city)) {
+            $array['city'][$row_city['id']] = $row_city['name_city'];
+        }
+
+        //подразделение
+    return $array;
     }
