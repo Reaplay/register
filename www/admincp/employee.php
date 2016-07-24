@@ -64,6 +64,7 @@ if($_GET['action'] == "add"){
     }
 
     $REL_TPL->assignByRef("action",$action);
+    $REL_TPL->assignByRef('id',$_GET['id']);
     $REL_TPL->assignByRef("data_ep",$data_ep);
     $REL_TPL->assignByRef("data_city",$data_city);
     $REL_TPL->assignByRef("data_functionality",$data_functionality);
@@ -98,8 +99,16 @@ LEFT JOIN location_city ON location_city.id = location_address.id_city WHERE emp
         stderr("Ошибка","Люди в  базе не обнаружены","no");
     }
     $data = mysql_fetch_array($res);
-    $data['date_employment'] = date('d/m/Y',$data['date_employment']);
-    $data['date_transfer'] = date('d/m/Y',$data['date_transfer']);
+    if($data['date_employment']){
+        $data['date_employment'] = date('d/m/Y',$data['date_employment']);
+    }
+    else
+        $data['date_employment'] = '';
+    if($data['date_transfer']) {
+        $data['date_transfer'] = date ('d/m/Y', $data['date_transfer']);
+    }
+    else
+        $data['date_transfer']='';
 
     //получаем ШЭ
     $res_ep=sql_query("SELECT `id`,`uid_post` FROM `established_post` WHERE uid_post != 0 AND is_deleted = 0")  or sqlerr(__FILE__, __LINE__);
@@ -161,6 +170,26 @@ LEFT JOIN location_city ON location_city.id = location_address.id_city WHERE emp
 }
 elseif($_POST['action'] == "edit"){
 
+    $res=sql_query("SELECT employee.added, id, id_parent_ee FROM employee WHERE employee.id = '".$_POST['id']."'")  or sqlerr(__FILE__, __LINE__);
+    if(mysql_num_rows($res) == 0){
+        stderr("Ошибка","Такой сотрудник отсутствует в базе","no");
+    }
+    $row = mysql_fetch_array($res);
+    if($row['id_parent_ep'])
+        $id_parent_ee = $row['id_parent_ee'];
+    else
+        $id_parent_ee = $row['id'];
+
+    $data = prepeared_data($_POST);
+
+    sql_query("INSERT INTO employee (id_uid_post,name_employee,email,date_transfer,date_employment,id_location_place,id_strategic_project,id_employee_model,id_functionality,added, id_parent_ee)
+    VALUES ('".$data['id_uid_post']."','".$data['name_employee']."','".$data['email']."','".$data['date_transfer']."','".$data['date_employment']."','".$data['id_place']."','".$data['id_strategic_poject']."','".$data['id_employee_model']."','".$data['id_functionality']."', '".time()."', '".$id_parent_ee."');") or sqlerr(__FILE__, __LINE__);
+
+    $new_id = mysql_insert_id();
+    // отмечаем старую на удаление
+    sql_query("UPDATE `employee` SET last_update = '".time()."', is_deleted = '1' WHERE id ='".$_POST['id']."' ;") or sqlerr(__FILE__, __LINE__);
+    // обновляем привязанные записи к сотруднику
+    sql_query("UPDATE `direction` SET id_employee = '".$new_id."' WHERE id_employee ='".$_POST['id']."' ;") or sqlerr(__FILE__, __LINE__);
 }
 
 
