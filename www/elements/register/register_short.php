@@ -36,6 +36,12 @@ LEFT JOIN mvz ON mvz.id = established_post.id_mvz
     if((int)$_GET['city'] >0){
         $where .= "AND (location_city.id = '".(int)$_GET['city']."' OR established_post.id_location_city = '".(int)$_GET['city']."') ";
     }
+    if((int)$_GET['id_fr'] >0){
+        $where .= "AND established_post.id_functional_manager =  '".(int)$_GET['id_fr']."' ";
+    }
+    if((int)$_GET['id_ar'] >0){
+        $where .= "AND established_post.id_administrative_manager =  '".(int)$_GET['id_ar']."' ";
+    }
     if((int)$_GET['department'] >0){
         //$where .= "AND established_post.id_department = IN ('".(int)$_GET['id_department']."')";
     }
@@ -108,6 +114,9 @@ WHERE employee.is_deleted = 0  $where
     while ($row_office = mysql_fetch_array($res_office)) {
         $array_office[$row_office['id']] = $row_office['name_office'];
     }
+
+
+
 
     $i=0;
 

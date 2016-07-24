@@ -512,6 +512,11 @@ WHERE established_post.id = '".$id_manager."'");
             $array['city'][$row_city['id']] = $row_city['name_city'];
         }
 
+        //получаем руководителей
+        $res_name_r = sql_query("SELECT established_post.id, employee.name_employee FROM `position` LEFT JOIN established_post ON established_post.id_position = position.id LEFT JOIN employee ON employee.id_uid_post = established_post.id WHERE `position`.is_head = 1");
+        while ($row_name_r = mysql_fetch_array($res_name_r)) {
+            $array['name_r'][$row_name_r['id']] = $row_name_r['name_employee'];
+        }
         //подразделение
     return $array;
     }

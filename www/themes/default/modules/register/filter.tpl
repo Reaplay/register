@@ -23,10 +23,10 @@
                     <div class="col-md-3">
                         <h4>ФИО ФР</h4>
                         <div class="fancy-form fancy-form-select">
-                            <select class="form-control select2" name="name_fr" style="width: 253px">
+                            <select class="form-control select2" name="id_fr" style="width: 253px">
                                 <option value="0">Все</option>
                                 {foreach from=$data_filter.name_r key=id item=name}
-                                    <option value="{$id}" {if $id==$smarty.get.name_fr}selected="selected"{/if}>{$name}</option>
+                                    <option value="{$id}" {if $id==$smarty.get.id_fr}selected="selected"{/if}>{$name}</option>
                                 {/foreach}
                             </select>
                             <i class="fancy-arrow"></i>
@@ -36,10 +36,10 @@
                     <div class="col-md-3">
                         <h4>ФИО АР</h4>
                         <div class="fancy-form fancy-form-select">
-                            <select class="form-control select2" name="name_ar" style="width: 253px">
+                            <select class="form-control select2" name="id_ar" style="width: 253px">
                                 <option value="0">Все</option>
                                 {foreach from=$data_filter.name_r key=id item=name}
-                                    <option value="{$id}" {if $id==$smarty.get.name_ar}selected="selected"{/if}>{$name}</option>
+                                    <option value="{$id}" {if $id==$smarty.get.id_ar}selected="selected"{/if}>{$name}</option>
                                 {/foreach}
                             </select>
                             <i class="fancy-arrow"></i>
