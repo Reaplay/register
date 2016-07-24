@@ -200,4 +200,16 @@ DoubleScroll(document.getElementById(\'scroll\'));
 </script>
        ';
     }
+    elseif($_GET['type'] == "user") {
+        if ($CURUSER['register_user']) {
+
+            $array_user_view = explode (",", $CURUSER['register_user']);
+            foreach ($array_user_view as $array) {
+                $user_view[$array] = $array;
+            }
+
+            $REL_TPL->assignByRef ('user_view', $user_view);
+        }
+        $REL_TPL->output ("register_user", "register");
+    }
     $REL_TPL->stdfoot($add_js);

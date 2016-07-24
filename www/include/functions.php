@@ -419,6 +419,17 @@ function unix_time ($date){
         return filter_var($email, FILTER_VALIDATE_EMAIL)?true:false;
     }
 
+
+    function loggedinorreturn() {
+        global $CURUSER;
+        if (!$CURUSER) {
+            header("Location: login.php");
+            exit();
+        }
+        return;
+    }
+
+
     // определяем данные для создания переключателя страниц
     function create_paginator($page, $per_page, $table, $left_join = "", $where = ""){
         $paginator['page'] = (int) $page;

@@ -21,7 +21,7 @@
         require_once("elements/register/register_short.php");
     }
     elseif($_GET['type'] == 'user'){
-        require_once("elements/register/register_user.php");
+        require_once("elements/register/register_short.php");
     }
 
 
