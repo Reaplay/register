@@ -14,7 +14,7 @@ define("RELVERSION","0.0.1");
 // подключемся к базе
 
 function dbconn($lightmode = false) {
-    global $mysql_host, $mysql_user, $mysql_pass, $mysql_db, $mysql_charset, $REL_CONFIG, $REL_CACHE, $REL_DB, $REL_TPL;
+    global $mysql_host, $mysql_user, $mysql_pass, $mysql_db, $mysql_charset, $REL_CONFIG, $REL_CACHE, $REL_DB, $REL_TPL, $REL_GROUP;
 
     require_once(ROOT_PATH . 'classes/database/database.class.php');
     require_once(ROOT_PATH . 'classes/database/database.class.mysqli.php');
@@ -23,7 +23,7 @@ function dbconn($lightmode = false) {
     // configcache init
     $REL_CONFIG=$REL_CACHE->get('system','config');
     //$REL_CONFIG=false;
-    if ($REL_CONFIG===false) {
+        if ($REL_CONFIG===false) {
 
         $REL_CONFIG = array();
 
@@ -34,7 +34,21 @@ function dbconn($lightmode = false) {
 
         $REL_CACHE->set('system','config',$REL_CONFIG);
     }
+    // config group
+    $REL_GROUP = $REL_CACHE->get('system', 'user_group');
+    if ($REL_GROUP===false) {
 
+        $REL_GROUP = array();
+
+        $group_row = sql_query("SELECT * FROM user_group");
+        $i=0;
+        while ($group_res = mysql_fetch_array($group_row)) {
+            $REL_GROUP[$group_res['id']]['name'] = $group_res['name'];
+            $REL_GROUP[$group_res['id']]['load_data'] = $group_res['load_data'];
+        }
+
+        $REL_CACHE->set('system','user_group',$REL_GROUP);
+    }
 
     if (!$lightmode)
         userlogin();

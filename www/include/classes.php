@@ -66,4 +66,18 @@ switch ($class) {
 function is_valid_user_class($class) {
 	return (is_numeric($class) && floor($class) == $class && $class >= UC_USER && $class <= UC_ADMINISTRATOR) || $class==-1;
 }
+
+
+	function check_access_group($type,$page){
+		global $REL_GROUP, $CURUSER;
+		$data = strripos($REL_GROUP[$CURUSER['user_group']][$type],$page);
+
+		if ($data === false) {
+			return false;
+		}
+		else
+			return true;
+
+	}
+
 ?>

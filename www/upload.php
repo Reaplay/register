@@ -9,6 +9,10 @@
 require_once ("include/connect.php");
 
 dbconn();
+    if (!check_access_group('load_data','sap')){
+        stderr("Ошибка","Доступ запрещен");
+
+    }
     $REL_TPL->stdhead("Загрузка первых данных");
 
     //функция обработки для простых данных где только название и время добавляется

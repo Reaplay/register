@@ -400,9 +400,29 @@ CREATE TABLE IF NOT EXISTS `users` (
   `last_update` int(10) NOT NULL,
   `register_user` varchar(255) NOT NULL,
   `notifs` varchar(255) NOT NULL,
+  `user_group` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`login`),
   KEY `added` (`added`),
   KEY `ip` (`ip`),
   KEY `user` (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=2 ;
+
+--
+-- Структура таблицы `user_group`
+--
+
+CREATE TABLE IF NOT EXISTS `user_group` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `load_data` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+
+--
+-- Дамп данных таблицы `user_group`
+--
+
+INSERT INTO `user_group` (`id`, `name`, `load_data`) VALUES
+  (1, 'Администраторская', 'basic, sap'),
+  (2, 'Общаяя', 'sap');
