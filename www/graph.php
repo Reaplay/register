@@ -52,13 +52,16 @@ GROUP BY location_city.name_city
 
 
    // $res = sql_query("SELECT SUM(1) as num, rck.name_rck,established_post.uid_post  FROM employee LEFT JOIN established_post ON established_post.id = employee.id_uid_post LEFT JOIN mvz ON mvz.id = established_post.id_mvz LEFT JOIN rck ON rck.id = mvz.id_rck GROUP BY rck.name_rck,established_post.uid_post");
+    //$data = array();
     while ($row = mysql_fetch_array($res)) {
-$data_num .= '"'.$row['num'].'",';
+$data_num = $row['num'];
     if(!$row['name_rck'])
-        $data_name .= '"N/A",';
+        $data_name = "N/A";
     else
-        $data_name .= '"'.$row['name_rck'].'",';
-
+        $data_name = $row['name_rck'];
+        if($data_f)
+            $data_f .=",";
+        $data_f .= '{ label: "'.$data_name.'",  data: [[1,'.$data_num.']]}';
     }
     $data_color =  '"#F7464A","#46BFBD","#FDB45C","#949FB1","#4D5360","#FFFFFF",';
 
@@ -78,6 +81,7 @@ $data_num .= '"'.$row['num'].'",';
         $data_rck[$row['id']]['name']= $row['name_rck'];
     }
 
+/*
 $add_js = "
 <script type=\"text/javascript\">
 
@@ -134,7 +138,75 @@ loadScript(plugin_path + 'chart.chartjs/Chart.min.js', function() {
 });
 
 
-</script>";
+</script>";*/
+$add_js ="
+    	<script type=\"text/javascript\">
+			loadScript(plugin_path + \"chart.flot/jquery.flot.min.js\", function(){
+				loadScript(plugin_path + \"chart.flot/jquery.flot.resize.min.js\", function(){
+					loadScript(plugin_path + \"chart.flot/jquery.flot.time.min.js\", function(){
+						loadScript(plugin_path + \"chart.flot/jquery.flot.fillbetween.min.js\", function(){
+							loadScript(plugin_path + \"chart.flot/jquery.flot.orderBars.min.js\", function(){
+								loadScript(plugin_path + \"chart.flot/jquery.flot.pie.min.js\", function(){
+									loadScript(plugin_path + \"chart.flot/jquery.flot.tooltip.min.js\", function(){
+
+
+
+									/*	var data_pie = [];
+				var series = Math.floor(Math.random() * 10) + 1;
+				for (var i = 0; i < series; i++) {
+					data_pie[i] = {
+						label : \"Series\" + (i + 1),
+						data : Math.floor(Math.random() * 100) + 1
+					}
+				}*/
+var data_pie = [
+			".$data_f."
+		];
+				jQuery.plot(jQuery(\"#flot-pie\"), data_pie, {
+					series : {
+						pie : {
+							show : true,
+							innerRadius : 0.5,
+							radius : 1,
+							label : {
+								show : true,
+								//radius : 2 / 3,
+								formatter : function(label, series) {
+									return '<div style=\"font-size:11px;text-align:center;padding:4px;color:black;\">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+								},
+								threshold : 0.1
+							}
+						}
+					},
+					legend : {
+						show : true,
+						noColumns : 1, // number of colums in legend table
+						labelFormatter : null, // fn: string -> string
+						labelBoxBorderColor : \"#000\", // border color for the little label boxes
+						container : null, // container (as jQuery object) to put legend in, null means default on top of graph
+						position : \"ne\", // position of default legend container within plot
+						margin : [5, 10], // distance from grid edge to default legend container within plot
+						backgroundColor : \"#efefef\", // null means auto-detect
+						backgroundOpacity : 1 // set to 0 to avoid background
+					},
+					grid : {
+						hoverable : true,
+						clickable : true
+					},
+				});
+
+									});
+								});
+							});
+						});
+					});
+				});
+			});
+		</script>
+
+
+
+    ";
     $REL_TPL->stdhead("Графики");
     $REL_TPL->assignByRef('data_rck',$data_rck);
     $REL_TPL->assignByRef('data_es',$data_es);

@@ -9,10 +9,10 @@
 
 		<!-- WEB FONTS : use %7C instead of | (pipe) -->
 		<link href="assets/css/web_fonts.css" rel="stylesheet" type="text/css" />
-		
+
 		<!-- CORE CSS -->
 		<link href="assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-		
+
 		<!-- THEME CSS -->
 		<link href="assets/css/essentials.css" rel="stylesheet" type="text/css" />
 		<link href="assets/css/layout.css" rel="stylesheet" type="text/css" />
@@ -20,7 +20,7 @@
 		<!-- PAGE LEVEL SCRIPTS -->
 		<link href="assets/css/header-1.css" rel="stylesheet" type="text/css" />
 		<link href="assets/css/color_scheme/green.css" rel="stylesheet" type="text/css" id="color_scheme" />
-		
+
 	
 	</head>
 
