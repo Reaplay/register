@@ -407,7 +407,15 @@ dbconn();
         // получаем нужные данные из базы ввиде массива
         $data_rck = select_data_base("rck","name_rck");
         $data_mvz = select_data_base("mvz","name_mvz");
-        $data_employee = select_data_base("employee","name_employee");
+        //$data_employee = select_data_base("employee","name_employee");
+        //Запрос для сотрудников, если вдруг есть схожие ФИО
+        $res_emp=sql_query("SELECT id, name_employee, date_employment   FROM employee;")  or sqlerr(__FILE__, __LINE__);
+
+        while($row_emp = mysql_fetch_array($res_emp)){
+
+            $data_employee[$row_emp['id']]=$row_emp['name_employee'].",".$row_emp['date_employment'];
+        }
+
         $data_established_post = select_data_base("established_post","uid_post");
         $data_department = select_data_base("department","name_department");
         $data_block = select_data_base("block","name_block");
@@ -449,7 +457,10 @@ dbconn();
             // ищем в массивах соответствия имени и ИД
             $id_rck = (int)array_search($data['22'],$data_rck);
             $id_mvz = (int)array_search($data['23'],$data_mvz);
-            $id_employee = (int)array_search($data['1'],$data_employee);
+            //ищем дату принятия, что бы потом найти нужное ФИО, если вдруг есть полные тезки
+            $date_employment = unix_time ($data['31']);
+            $search_emp =
+            $id_employee = (int)array_search($data['1'].",".$date_employment,$data_employee);
             $id_established_post = (int)array_search($data['0'],$data_established_post);
             // ищем вложенные подразделения
             $id_block = (int)array_search(str_replace("\"","",$data['3']),$data_block);
@@ -475,22 +486,7 @@ dbconn();
            $id_type_office = (int)array_search($data['5'],$data_type_office);
            $id_office =  (int)array_search(str_replace ("\"", "", $data['6']),$data_department);
 
-          /*  if(trim($data['9'])){
-                $id_department = (int)array_search($data['9'],$data_department);
-            }
-            elseif(trim($data['8'])){
-                $id_department = (int)array_search($data['8'],$data_department);
-            }
-            elseif(trim($data['7'])){
-                $id_department = (int)array_search($data['7'],$data_department);
-            }
-            elseif(trim($data['6'])){
-                $id_department = (int)array_search($data['6'],$data_department);
-            }
-            else{
-                $id_department = '0';
-            }
-*/
+
             $id_direction = (int)array_search($data['10'],$data_direction);
             $id_position = (int)array_search($data['2'],$data_position);
             $id_city = (int)array_search($data['33'],$data_city);
