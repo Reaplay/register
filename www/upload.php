@@ -203,7 +203,7 @@ dbconn();
 
             /*ОБРАБАТЫВАЕМ СОТРУДНИКОВ*/
             //ФИО
-            $employee = $data['1'];
+            $employee = trim($data['1']);
             // дата приема и перевода
             $date_employment = unix_time ($data['31']);
             $date_transfer = unix_time ($data['32']);
@@ -625,6 +625,7 @@ dbconn();
 
             }
 
+
             if((int)$data['0'] >0){
                 $id_established_post = (int)array_search($data['0'],$data_established_post);
                 sql_query ("UPDATE `established_post` SET `id_administrative_manager` = '".$id_administrative_manager."', `id_functional_manager` = '".$id_functional_manager."' WHERE `id` = $id_established_post;") or sqlerr(__FILE__, __LINE__);
@@ -679,9 +680,18 @@ dbconn();
                 $id_position = (int)array_search($data['2'],$data_position);
                 $id_city = (int)array_search($data['33'],$data_city);
 
-
-               /* if($data['1'] == "Худенко Семён Владимирович")
+                /*if($i == 57){
+                    print trim ($data['1']);
+                    print "<br>";
+                    print $data_emp[24];
+                    $id_ep = (int)array_search (trim ($data['1']), $data_emp);
+                    print $id_ep;
+                    die();
+                }*/
+               // if($data['1'] == "Худенко Семён Владимирович")
+               /* if($i== 20000 )
                 {print  $id_ep = (int)array_search (trim ($data['1']), $data_emp);
+                    print $data['1'];
                    // print_r($data_emp);
                     $id_ep = (int)array_search (trim ($data['1']), $data_emp);
                     print "UPDATE `established_post` SET `id_administrative_manager` = '".$id_administrative_manager."', `id_functional_manager` = '".$id_functional_manager."' WHERE `id` =$id_ep;";
