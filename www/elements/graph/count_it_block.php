@@ -64,7 +64,7 @@ GROUP BY location_city.name_city
             $data_f .=",";
         $data_f .= '{ label: "'.$data_name.'",  data: [[1,'.$data_num.']]}';
     }
-    $data_color =  '"#F7464A","#46BFBD","#FDB45C","#949FB1","#4D5360","#FFFFFF",';
+   // $data_color =  '"#F7464A","#46BFBD","#FDB45C","#949FB1","#4D5360","#FFFFFF",';
 
     $res=sql_query("SELECT SUM(1) as num, rck.id FROM employee LEFT JOIN established_post ON established_post.id = employee.id_uid_post LEFT JOIN rck ON rck.id = established_post.id_rck WHERE established_post.uid_post !=0 AND employee.is_deleted = 0 GROUP BY rck.name_rck  ORDER BY rck.name_rck");
     while ($row = mysql_fetch_array($res)) {
@@ -212,6 +212,6 @@ var data_pie = [
     $REL_TPL->assignByRef('data_rck',$data_rck);
     $REL_TPL->assignByRef('data_es',$data_es);
     $REL_TPL->assignByRef('data_no_es',$data_no_es);
-    $REL_TPL->output("index", "graph");
+    $REL_TPL->output("count_it_block", "graph");
 
     $REL_TPL->stdfoot($add_js);
