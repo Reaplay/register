@@ -73,7 +73,7 @@ FTE (процент занятости): <b>{$employee}</b> <br>
                     <div class="table-responsive">
                         <table class="table table-striped table-hover table-bordered">
                             <b>ФИО:</b> {$employee.em_name}<br />
-                            <b>ID ШЕ:</b>  <a href="view.php?uid={$employee.uid_post}">{$employee.uid_post}</a> <i class="fa fa-external-link"></i><br />
+                            <b>ID ШЕ:</b>  <a href="view.php?uid={$employee.uid_post}">{$employee.uid_post}</a>  <i class="fa fa-external-link"></i><br />
                             <b>Должность:</b> {$employee.name_position}<br />
                             <b>Подразделение:</b> {$employee.name_block} => {$employee.department}<br />
                             <b>Дирекция:</b> {$employee.name_direction} ({$employee.name_curator})<br />
@@ -98,13 +98,13 @@ FTE (процент занятости): <b>{$employee}</b> <br>
                             <tbody>
                                 <tr>
                                     <td>Функц.</td>
-                                    <td>{$employee.data_f_m.name_employee} ({$employee.rck_curator})</td>
+                                    <td><a href="view.php?eid={$employee.data_f_m.e_id}">{$employee.data_f_m.name_employee}</a> <i class="fa fa-external-link"></i> ({$employee.rck_curator})</td>
                                     <td>{$employee.data_f_m.email}</td>
                                     <td>{$employee.data_f_m.name_position}</td>
                                 </tr>
                                 <tr>
                                     <td>Адм.</td>
-                                    <td>{$employee.data_a_m.name_employee}</td>
+                                    <td><a href="view.php?eid={$employee.data_a_m.e_id}">{$employee.data_a_m.name_employee}</a> <i class="fa fa-external-link"></i></td>
                                     <td>{$employee.data_a_m.email}</td>
                                     <td>{$employee.data_a_m.name_position}</td>
                                 </tr>
