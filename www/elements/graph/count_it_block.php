@@ -60,9 +60,9 @@ GROUP BY location_city.name_city
             $data_name = "N/A";
         else
             $data_name = $row['name_rck'];
-        if($data_f)
-            $data_f .=",";
-        $data_f .= '{ label: "'.$data_name.'",  data: [[1,'.$data_num.']]}';
+        if($chart_flot['data'])
+            $chart_flot['data'] .=",";
+        $chart_flot['data'] .= '{ label: "'.$data_name.'",  data: [[1,'.$data_num.']]}';
     }
    // $data_color =  '"#F7464A","#46BFBD","#FDB45C","#949FB1","#4D5360","#FFFFFF",';
 
@@ -140,7 +140,7 @@ GROUP BY location_city.name_city
 
 
     </script>";*/
-    $add_js ="
+   /* $add_js ="
     	<script type=\"text/javascript\">
 			loadScript(plugin_path + \"chart.flot/jquery.flot.min.js\", function(){
 				loadScript(plugin_path + \"chart.flot/jquery.flot.resize.min.js\", function(){
@@ -159,7 +159,7 @@ GROUP BY location_city.name_city
 						label : \"Series\" + (i + 1),
 						data : Math.floor(Math.random() * 100) + 1
 					}
-				}*/
+				}*//*
 var data_pie = [
 			".$data_f."
 		];
@@ -207,11 +207,13 @@ var data_pie = [
 
 
 
-    ";
+    ";*/
     $REL_TPL->stdhead("Графики");
     $REL_TPL->assignByRef('data_rck',$data_rck);
     $REL_TPL->assignByRef('data_es',$data_es);
     $REL_TPL->assignByRef('data_no_es',$data_no_es);
+    $REL_TPL->assignByRef('chart_flot',$chart_flot);
     $REL_TPL->output("count_it_block", "graph");
 
-    $REL_TPL->stdfoot($add_js);
+   // $REL_TPL->stdfoot($add_js);
+    $REL_TPL->stdfoot();

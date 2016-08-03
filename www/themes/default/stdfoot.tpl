@@ -53,6 +53,7 @@
 		<script type="text/javascript" src="assets/js/scripts.js"></script>
 
 		{/literal}
+{if $chart_flot}{chart_flot data=$chart_flot['data']}{/if}
 		{$js_add}
 	</body>
 </html>

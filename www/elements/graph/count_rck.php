@@ -35,16 +35,16 @@ ORDER BY location_city.name_city ");
                 $data_name = "N/A";
             else
                 $data_name = $row['name_city'];
-            if ($data_f)
-                $data_f .= ",";
-            $data_f .= '{ label: "' . $data_name . '",  data: [[1,' . $data_num . ']]}';
+            if ($chart_flot['data'])
+                $chart_flot['data'] .= ",";
+            $chart_flot['data'] .= '{ label: "' . $data_name . '",  data: [[1,' . $data_num . ']]}';
 
             $data_city[$i]['name_city'] = $row['name_city'];
             $data_city[$i]['num'] = $row['num'];
             $i++;
         }
 
-        $add_js = "
+    /*    $add_js = "
     	<script type=\"text/javascript\">
 			loadScript(plugin_path + \"chart.flot/jquery.flot.min.js\", function(){
 				loadScript(plugin_path + \"chart.flot/jquery.flot.resize.min.js\", function(){
@@ -63,7 +63,7 @@ ORDER BY location_city.name_city ");
 						label : \"Series\" + (i + 1),
 						data : Math.floor(Math.random() * 100) + 1
 					}
-				}*/
+				}*//*
 var data_pie = [
 			" . $data_f . "
 		];
@@ -111,8 +111,9 @@ var data_pie = [
 
 
 
-    ";
+    ";*/
         $REL_TPL->assignByRef('data_city',$data_city);
+        $REL_TPL->assignByRef('chart_flot',$chart_flot);
     }
     $REL_TPL->stdhead("График распределения сотрудников");
     $REL_TPL->assignByRef('data_rck',$data_rck);
@@ -121,4 +122,5 @@ var data_pie = [
  //   $REL_TPL->assignByRef('data_no_es',$data_no_es);
     $REL_TPL->output("count_rck", "graph");
 
-    $REL_TPL->stdfoot($add_js);
+    //$REL_TPL->stdfoot($add_js);
+    $REL_TPL->stdfoot();
