@@ -19,4 +19,7 @@
     elseif($_GET['action'] == 'count_it_block'){
         require_once("elements/graph/count_it_block.php");
     }
+    elseif($_GET['action'] == 'count_direction'){
+        require_once("elements/graph/count_direction.php");
+    }
 
