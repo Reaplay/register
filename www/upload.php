@@ -407,7 +407,7 @@ dbconn();
         // получаем нужные данные из базы ввиде массива
         $data_rck = select_data_base("rck","name_rck");
         $data_mvz = select_data_base("mvz","name_mvz");
-        //$data_employee = select_data_base("employee","name_employee");
+        $data_employee_rc = select_data_base("employee","name_employee");
         //Запрос для сотрудников, если вдруг есть схожие ФИО
         $res_emp=sql_query("SELECT id, name_employee, date_employment   FROM employee;")  or sqlerr(__FILE__, __LINE__);
 
@@ -490,7 +490,7 @@ dbconn();
             $id_direction = (int)array_search($data['10'],$data_direction);
             $id_position = (int)array_search($data['2'],$data_position);
             $id_city = (int)array_search($data['33'],$data_city);
-            $id_functional_manager = (int)array_search(trim($data['14']),$data_employee);
+            $id_functional_manager = (int)array_search(trim($data['14']),$data_employee_rc);
            // $id_administrative_manager = (int)array_search(trim($data['17']),$data_employee);
 
 
