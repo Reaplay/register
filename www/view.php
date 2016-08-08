@@ -96,12 +96,12 @@ while($row = mysql_fetch_array($res)) {
     }
 
     ksort ($department);
-    foreach ($department as $val) {
+   /* foreach ($department as $val) {
         if ($data_department)
             $data_department .= ", ";
         $data_department .= $val;
-    }
-    $data_employee[$i]['department'] = $data_department;
+    }*/
+    $data_employee[$i]['department'] = $department;
 //определеяем где сидит функц. рукль;
     $cur_res = sql_query ("SELECT name_rck FROM rck LEFT JOIN employee ON employee.id = " . $row['id_administrative_manager'] . " LEFT JOIN established_post ON established_post.id = employee.id_uid_post WHERE rck.id = established_post.id_rck");
     $cur_row = mysql_fetch_array ($cur_res);

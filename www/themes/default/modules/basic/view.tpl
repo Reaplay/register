@@ -51,8 +51,8 @@ FTE (процент занятости): <b>{$employee}</b> <br>
 Дата занятия: <b>{if $employee.date_occupy}{$employee.date_occupy}{else}Нет{/if}</b> <br>
 *}
 
-{foreach from=$data_employee item=employee name=foo}
-    {if $smarty.foreach.foo.total > 1}
+{foreach from=$data_employee item=employee name=count_emp}
+    {if $smarty.foreach.count_emp.total > 1}
         <div class="toggle">
         <label>{$smarty.foreach.foo.index + 1}. {$employee.em_name}</label>
         <div class="toggle-content" style="display: none;">
@@ -72,11 +72,15 @@ FTE (процент занятости): <b>{$employee}</b> <br>
                     <h6>Основные</h6>
                     <div class="table-responsive">
                         <table class="table table-striped table-hover table-bordered">
-                            <b>ФИО:</b> {$employee.em_name}<br />
-                            <b>ID ШЕ:</b>  <a href="view.php?uid={$employee.uid_post}">{$employee.uid_post}</a>  <i class="fa fa-external-link"></i><br />
-                            <b>Должность:</b> {$employee.name_position}<br />
-                            <b>Подразделение:</b> {$employee.name_block} => {$employee.department}<br />
-                            <b>Дирекция:</b> {$employee.name_direction} ({$employee.name_curator})<br />
+                            <b>ФИО:</b>&nbsp;{$employee.em_name}<br />
+                            <b>ID ШЕ:</b>&nbsp;<a href="view.php?uid={$employee.uid_post}">{$employee.uid_post}</a>  <i class="fa fa-external-link"></i><br />
+                            <b>Должность:</b>&nbsp;{$employee.name_position}<br />
+                            <b>Блок:</b>&nbsp;{$employee.name_block}<br />
+                            {foreach from=$employee.department item=name_department name=count_dep}
+
+                                <b>Вложенное подразделение {$smarty.foreach.count_dep.iteration}:</b>{$name_department}<br />{if !$smarty.foreach.count_dep.last}&nbsp;&nbsp;{/if}
+                            {/foreach}
+                            <b>Дирекция:</b>&nbsp;{$employee.name_direction} ({$employee.name_curator})<br />
                             <b>Куратор в ЦО:</b><br />
                             <b>:</b><br />
                         </table>
