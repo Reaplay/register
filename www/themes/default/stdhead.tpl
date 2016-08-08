@@ -202,7 +202,9 @@
 
 
 									</li>
-
+									<li>
+										<a href="create.php?action=light">Сформировать выгрузку</a>
+									</li>
 									{if $IS_ADMINISTRATOR}
 									<!-- ADMINISTRATOR -->
 									<li class="dropdown active">
