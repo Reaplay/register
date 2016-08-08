@@ -8,7 +8,7 @@
                 <div class="row margin-bottom-10">
 
                     <div class="col-md-3">
-                        <h4>Фильтр дирекции</h4>
+                        <h4>Дирекции</h4>
                         <div class="fancy-form fancy-form-select">
                             <select class="form-control select2" name="direction" style="width: 253px">
                                 <option value="0">Все</option>
@@ -60,7 +60,7 @@
                     </div>
 
                     <div class="col-md-3">
-                        <h4>Фильтр по модели</h4>
+                        <h4>По модели</h4>
                         <div class="fancy-form fancy-form-select">
                             <select class="form-control select2" name="model" style="width: 253px">
                                 <option value="0">Все</option>
@@ -99,7 +99,7 @@
                     </div>
 
                     <div class="col-md-3">
-                        <h4>Фильтр подразделению</h4>
+                        <h4>По подразделению</h4>
                         <div class="fancy-form fancy-form-select">
                             <select class="form-control select2" name="department" style="width: 253px">
                                 <option value="0">Все</option>
