@@ -1,4 +1,4 @@
-<div class="row" >
+{*<div class="row" >
 <form  action="graph.php" method="get">
     <input type="hidden" name="action" value="{$smarty.get.action}">
 <div class="col-md-3">
@@ -21,9 +21,9 @@
 </div>
 </form>
 </div>
-
-{if $smarty.get.id_rck}
-    <br/><br/>
+*}
+{*{if $smarty.get.id_rck}*}
+  {*  <br/><br/>*}
 <div class="row">
     <div class="col-md-8">
     <!--Распределение сотрудников-->
@@ -72,4 +72,4 @@
 
 
 </div>
-{/if}
+{*{/if}*}

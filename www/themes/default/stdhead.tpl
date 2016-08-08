@@ -195,7 +195,7 @@
 									<li class="dropdown">
 										<a class="dropdown-toggle" href="#">Отчеты</a>
 										<ul class="dropdown-menu">
-											<li><a href="graph.php?action=count_rck">Кол-во сотрудников по РЦК/РП</a></li>
+											<li><a href="graph.php?action=count_rck">Кол-во сотрудников в РЦК</a></li>
 											<li><a href="graph.php?action=count_direction">Кол-во сотрудников по дирекциям</a></li>
 											<li><a href="graph.php?action=count_it_block">Численность сотрудников IT блока</a></li>
 										</ul>

@@ -11,21 +11,25 @@
  */
 
 
-        $res_rck = sql_query("SELECT id, name_rck FROM rck WHERE is_deleted = 0");
+   /*     $res_rck = sql_query("SELECT id, name_rck FROM rck WHERE is_deleted = 0");
         while ($row_rck = mysql_fetch_array($res_rck)) {
             $data_rck[$row_rck['id']] = $row_rck['name_rck'];
-        }
+        }*/
 
 
-    if($_GET['id_rck']){
-    $id_rck = (int)$_GET['id_rck'];
+    //if($_GET['id_rck']){
+    //$id_rck = (int)$_GET['id_rck'];
+    $id_rck = 1;
+    $id_block = 1;
         $res = sql_query ("
 SELECT SUM(1) as num, location_city.name_city
 FROM employee
 LEFT JOIN established_post ON established_post.id = employee.id_uid_post
+/*LEFT JOIN block ON block.id = established_post.id_block*/
 LEFT JOIN location_city ON location_city.id = established_post.id_location_city
+
 /*LEFT JOIN rck ON rck.id = established_post.id_rck*/
-WHERE  employee.is_deleted = 0 AND established_post.id_rck = '".$id_rck."'
+WHERE  employee.is_deleted = 0 AND established_post.id_rck = '".$id_rck."' AND established_post.id_block = '".$id_block."'
 GROUP BY location_city.name_city
 ORDER BY location_city.name_city ");
         $i=0;
@@ -114,7 +118,7 @@ var data_pie = [
     ";*/
         $REL_TPL->assignByRef('data_city',$data_city);
         $REL_TPL->assignByRef('chart_flot',$chart_flot);
-    }
+  //  }
     $REL_TPL->stdhead("График распределения сотрудников");
     $REL_TPL->assignByRef('data_rck',$data_rck);
    // $REL_TPL->assignByRef('data_rck',$data_rck);
