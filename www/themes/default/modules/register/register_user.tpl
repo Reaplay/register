@@ -14,7 +14,7 @@
             {if !$user_view.8}<th>Вложенное подразделение 2</th>{/if}
             {if !$user_view.9}<th>Вложенное подразделение 3</th>{/if}
             {if !$user_view.10}<th>Вложенное подразделение 4</th>{/if}
-            {if !$user_view.11}<th>Дирекция ДРО</th>{/if}
+            {if !$user_view.11}<th>Дирекция ЦО</th>{/if}
             {if !$user_view.12}<th>Курирующий член УК</th>{/if}
             {if !$user_view.13}<th>Куратор в ЦО</th>{/if}
             {if !$user_view.14}<th>ФР в ЦО или регионе</th>{/if}
