@@ -59,6 +59,9 @@
                         </div>
                     </div>
 
+
+                </div>
+                <div class="row margin-bottom-10">
                     <div class="col-md-3">
                         <h4>По модели</h4>
                         <div class="fancy-form fancy-form-select">
@@ -99,13 +102,64 @@
                     </div>
 
                     <div class="col-md-3">
-                        <h4>По подразделению</h4>
+                        {*<h4>По подразделению 1</h4>
                         <div class="fancy-form fancy-form-select">
                             <select class="form-control select2" name="department" style="width: 253px">
                                 <option value="0">Все</option>
                                 {foreach from=$data_filter.department key=id item=name}
                                     <option value="{$id}" {if $id==$smarty.get.department}selected="selected"{/if}>{$name}</option>
                                 {/foreach}
+                            </select>
+                            <i class="fancy-arrow"></i>
+                        </div>*}
+                    </div>
+
+                </div>
+                <div class="row margin-bottom-10">
+                    <div class="col-md-3">
+                        <h4>По подразделению 1</h4>
+                        <div class="fancy-form fancy-form-select">
+                            <select class="form-control select2" name="department[]" style="width: 253px"">
+                                <option value="0">Все</option>
+                            {foreach from=$data_filter.department item=department}
+                                {if $department.level == 0}<option value="{$department.id}" {if $department.id == $data.id_department.0}selected="selected"{/if}>{$department.name_department}</option>{/if}
+                            {/foreach}
+                            </select>
+                            <i class="fancy-arrow"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <h4>По подразделению 2</h4>
+                        <div class="fancy-form fancy-form-select">
+                            <select class="form-control select2" name="department[]" style="width: 253px"">
+                            <option value="0">Все</option>
+                            {foreach from=$data_filter.department item=department}
+                                {if $department.level == 1}<option value="{$department.id}" {if $department.id == $data.id_department.1}selected="selected"{/if}>{$department.name_department}</option>{/if}
+                            {/foreach}
+                            </select>
+                            <i class="fancy-arrow"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <h4>По подразделению 3</h4>
+                        <div class="fancy-form fancy-form-select">
+                            <select class="form-control select2" name="department[]" style="width: 253px"">
+                            <option value="0">Все</option>
+                            {foreach from=$data_filter.department item=department}
+                                {if $department.level == 2}<option value="{$department.id}" {if $department.id == $data.id_department.2}selected="selected"{/if}>{$department.name_department}</option>{/if}
+                            {/foreach}
+                            </select>
+                            <i class="fancy-arrow"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <h4>По подразделению 4</h4>
+                        <div class="fancy-form fancy-form-select">
+                            <select class="form-control select2" name="department[]" style="width: 253px"">
+                            <option value="0">Все</option>
+                            {foreach from=$data_filter.department item=department}
+                                {if $department.level == 3}<option value="{$department.id}" {if $department.id == $data.id_department.3}selected="selected"{/if}>{$department.name_department}</option>{/if}
+                            {/foreach}
                             </select>
                             <i class="fancy-arrow"></i>
                         </div>

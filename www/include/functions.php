@@ -532,5 +532,9 @@ WHERE established_post.id = '".$id_manager."'");
             $array['name_r'][$row_name_r['id']] = $row_name_r['name_employee'];
         }
         //подразделение
+        $res_department = sql_query("SELECT id, name_department, level FROM department WHERE is_deleted = 0");
+        while ($row_department = mysql_fetch_array($res_department)) {
+            $array['department'][] = $row_department;
+        }
     return $array;
     }

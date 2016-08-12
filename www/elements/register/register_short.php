@@ -50,11 +50,40 @@ LEFT JOIN mvz ON mvz.id = established_post.id_mvz
         $where .= "AND established_post.id_administrative_manager =  '".(int)$_GET['id_ar']."' ";
         $add_link .="&id_ar=".$_GET['id_ar'];
     }
-    if((int)$_GET['department'] >0){
-        $reg_exp_id = (int)$_GET['department'];
-        $regexp = "(,".$reg_exp_id.",)|(,".$reg_exp_id."$)|(,".$reg_exp_id."\\m)|(^".$reg_exp_id.",)|(^".$reg_exp_id."$)";
-        $where .= "AND established_post.id_department  REGEXP '".$regexp."' ";
-        $add_link .="&department=".$_GET['department'];
+    //нужна оптимизация
+    if($_GET['department']){
+
+        if(!is_array($_GET['department']) AND (int)$_GET['department'] >0){
+            $reg_exp_id = (int)$_GET['department'];
+            $regexp = "(,".$reg_exp_id.",)|(,".$reg_exp_id."$)|(,".$reg_exp_id."\\m)|(^".$reg_exp_id.",)|(^".$reg_exp_id."$)";
+            $where .= "AND established_post.id_department  REGEXP '".$regexp."' ";
+            $add_link .="&department=".$_GET['department'];
+
+        }
+        elseif(is_array($_GET['department'])){
+            $c_d=0;
+            foreach($_GET['department'] as $dep){
+                $id = (int)$dep;
+                if ($id == 0)
+                    continue;
+                if($department)
+                    $department .= ",";
+                $department .= $id;
+
+                $add_link_department .="&department[]=".$id;
+                $c_d++;
+            }
+            if($c_d >1) {
+                $add_link .= $add_link_department;
+                $where .= "AND established_post.id_department ='" . $department . "'";
+            }
+            elseif($c_d == 1){
+                $regexp = "(,".$department.",)|(,".$department."$)|(,".$department."\\m)|(^".$department.",)|(^".$department."$)";
+                $where .= "AND established_post.id_department  REGEXP '".$regexp."' ";
+                $add_link .="&department=".$_GET['department'];
+            }
+        }
+
     }
 
 
