@@ -20,35 +20,47 @@ LEFT JOIN mvz ON mvz.id = established_post.id_mvz
 
     if((int)$_GET['direction'] >0){
         $where .= "AND established_post.id_direction = '".(int)$_GET['direction']."'";
+        $add_link .="&direction=".$_GET['direction'];
     }
     if((int)$_GET['rck'] >0){
         $where .= "AND established_post.id_rck = '".(int)$_GET['rck']."'";
+        $add_link .="&rck=".$_GET['rck'];
     }
     if((int)$_GET['model'] >0){
         $where .= "AND employee.id_employee_model = '".(int)$_GET['model']."'";
+        $add_link .="&model=".$_GET['model'];
     }
     if((int)$_GET['ep'] == 1){
         $where .= "AND established_post.uid_post != '0'";
+        $add_link .="&ep=1";
     }
     elseif((int)$_GET['ep'] == 2){
         $where .= "AND established_post.uid_post = '0'";
+        $add_link .="&ep=2";
     }
     if((int)$_GET['city'] >0){
         $where .= "AND (location_city.id = '".(int)$_GET['city']."' OR established_post.id_location_city = '".(int)$_GET['city']."') ";
+        $add_link .="&city=".$_GET['city'];
     }
     if((int)$_GET['id_fr'] >0){
         $where .= "AND established_post.id_functional_manager =  '".(int)$_GET['id_fr']."' ";
+        $add_link .="&id_fr=".$_GET['id_fr'];
     }
     if((int)$_GET['id_ar'] >0){
         $where .= "AND established_post.id_administrative_manager =  '".(int)$_GET['id_ar']."' ";
+        $add_link .="&id_ar=".$_GET['id_ar'];
     }
     if((int)$_GET['department'] >0){
-        //$where .= "AND established_post.id_department = IN ('".(int)$_GET['id_department']."')";
+        $reg_exp_id = (int)$_GET['department'];
+        $regexp = "(,".$reg_exp_id.",)|(,".$reg_exp_id."$)|(,".$reg_exp_id."\\m)|(^".$reg_exp_id.",)|(^".$reg_exp_id."$)";
+        $where .= "AND established_post.id_department  REGEXP '".$regexp."' ";
+        $add_link .="&department=".$_GET['department'];
     }
 
 
     $paginator = create_paginator($_GET['page'],$REL_CONFIG['per_page_employee'],'employee',$left_join, $where);
 // получаем основной список сотрудников
+
     $res=sql_query("
 SELECT
 established_post.id,established_post.uid_post,established_post.id_position, established_post.id_functional_manager, established_post.id_administrative_manager, established_post.draft,established_post.transfer, established_post.date_entry, established_post.id_direction, established_post.id_department, established_post.id_block,
@@ -180,6 +192,7 @@ WHERE employee.is_deleted = 0  $where
     $data_filter = filer_register();
 
     $REL_TPL->assignByRef('data_filter',$data_filter);
+    $REL_TPL->assignByRef('add_link',$add_link);
 
     $REL_TPL->output("filter", "register");
     if($_GET['type'] == "short")

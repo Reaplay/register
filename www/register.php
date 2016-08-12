@@ -12,7 +12,7 @@
     dbconn();
     $REL_TPL->stdhead("Список персонала");
     if (!$_GET['type']) {
-        stderr("Ошибка","Данной страницы не существует");
+        stderr("Ошибка","Данной страницы не существует","no");
     }
     elseif($_GET['type'] == 'short'){
         require_once("elements/register/register_short.php");
