@@ -47,7 +47,7 @@ var data_pie = [
 						}
 					},
 					legend : {
-						show : true,
+						show : false,
 						noColumns : 1, // number of colums in legend table
 						labelFormatter : null, // fn: string -> string
 						labelBoxBorderColor : \"#000\", // border color for the little label boxes

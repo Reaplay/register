@@ -41,7 +41,7 @@ ORDER BY location_city.name_city ");
                 $data_name = $row['name_city'];
             if ($chart_flot['data'])
                 $chart_flot['data'] .= ",";
-            $chart_flot['data'] .= '{ label: "' . $data_name . '",  data: [[1,' . $data_num . ']]}';
+            $chart_flot['data'] .= '{ label: "' . $data_name . ' ('.$data_num.')",  data: [[1,' . $data_num . ']]}';
 
             $data_city[$i]['name_city'] = $row['name_city'];
             $data_city[$i]['num'] = $row['num'];
