@@ -64,7 +64,7 @@ FTE (процент занятости): <b>{$employee}</b> <br>
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <span class="title elipsis">
-                        <strong>Сведения о сотруднике</strong>
+                        <strong>Сведения о сотруднике [<a href="action_admin.php?module=employee&action=edit&id={$employee.eid}">Редактировать</a>]</strong>
                     </span>
                 </div>
 

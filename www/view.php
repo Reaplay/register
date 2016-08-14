@@ -39,7 +39,7 @@ $res=sql_query("
 SELECT established_post.*,
 position.name_position,
 name_block,
-employee.name_employee AS em_name, employee.date_employment, employee.date_transfer, employee.id_functionality, employee.fte,
+employee.name_employee AS em_name, employee.date_employment, employee.date_transfer, employee.id_functionality, employee.fte, employee.id as eid,
 location_city.name_city,
 location_place.place, location_place.floor, location_place.room, location_place.id_address AS lp_ia, location_place.ready, location_place.date_ready, location_place.reservation, location_place.date_reservation, location_place.occupy, location_place.date_occupy,
 location_address.name_address, location_address.id_city AS la_id_city,
