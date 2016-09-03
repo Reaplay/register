@@ -90,7 +90,7 @@ while($row = mysql_fetch_array($res)) {
     $data_employee[$i]['name_direction'] = "<a href='register.php?type=short&direction=".$data_employee[$i]['did']."'>".$data_employee[$i]['name_direction']."</a>";
 //$row['id_department'];
 
-    $sub_res = sql_query ("SELECT department.id, department.name_department, department.id_parent, type_office.name_office as type_office, department.level  FROM department LEFT JOIN type_office ON type_office.id = department.id_type_office WHERE department.id IN (" . $row['id_department'] . ")");
+    $sub_res = sql_query ("SELECT department.id, department.name_department, /*department.id_parent,*/ type_office.name_office as type_office, department.level  FROM department LEFT JOIN type_office ON type_office.id = department.id_type_office WHERE department.id IN (" . $row['id_department'] . ")");
     //   $i=0;
     while ($sub_row = mysql_fetch_array ($sub_res)) {
         $department[$sub_row['level']] = '<a href="register.php?type=short&department='.$sub_row['id'].'">'.$sub_row['name_department'].'</a>';
