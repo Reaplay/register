@@ -213,7 +213,8 @@
 										</a>
 										<ul class="dropdown-menu">
 											<li><a href="admincp.php">Настройки</a></li>
-											<li><a href="upload.php">Загрузка</a></li>
+											<li><a href="upload.php">Первоначальная загрузка</a></li>
+											<li><a href="upload_sap.php">Загрузка из SAP</a></li>
 										</ul>
 									</li>
 									{/if}
