@@ -164,9 +164,12 @@ dbconn();
         sql_query("TRUNCATE `rck`;");
         sql_query("TRUNCATE `strategic_project`;");
         sql_query("TRUNCATE `type_office`;");
+        sql_query("TRUNCATE `revision_established_post`;");
+        sql_query("TRUNCATE `revision_employee`;");
+        $count = 0;
 
         //сначала формируем список основных данных, которые загонять будем в базу
-        for ($i = $t; $i < count ($mass); $i++) {
+        for ($i = $t; $i < count ($mass); $i++,$count++) {
 
             $mass[$i] = mb_convert_encoding ($mass[$i], 'utf-8', "cp1251");
 
@@ -224,22 +227,22 @@ dbconn();
             /*ОБРАБАТЫВАЕМ РЦК*/
             $array_rck[] = $data['22'];
             /*ОБРАБАТЫВАЕМ МВЗ*/
-            $array_mvz[$i] = $data['23'];
+            $array_mvz[$count] = $data['23'];
             /*ОБРАБАТЫВАЕМ НАЗВАНИЯ ГОРОДОВ*/
             $array_city[] = $data['33'];
             /*ОБРАБАТЫВАЕМ АДРЕСА*/
-            $array_address[] = $data['34'];
+            $array_address[] = trim($data['34']);
             /*ОБРАБАТЫВАЕМ МЕСТА*/
-            $array_place[$i]['floor'] = $data['35'];
-            $array_place[$i]['room'] = $data['36'];
-            $array_place[$i]['place'] = $data['37'];
-            $array_place[$i]['ready'] = $data['38'];
-            $array_place[$i]['date_ready'] = $data['39'];
-            $array_place[$i]['reservation'] = $data['40'];
-            $array_place[$i]['date_reservation'] = $data['41'];
-            $array_place[$i]['occupy'] = $data['42'];
-            $array_place[$i]['busy'] = $data['43'];
-            $array_place[$i]['date_occupy'] = $data['44'];
+            $array_place[$count]['floor'] = $data['35'];
+            $array_place[$count]['room'] = $data['36'];
+            $array_place[$count]['place'] = $data['37'];
+            $array_place[$count]['ready'] = $data['38'];
+            $array_place[$count]['date_ready'] = $data['39'];
+            $array_place[$count]['reservation'] = $data['40'];
+            $array_place[$count]['date_reservation'] = $data['41'];
+            $array_place[$count]['occupy'] = $data['42'];
+            $array_place[$count]['busy'] = $data['43'];
+            $array_place[$count]['date_occupy'] = $data['44'];
 
             /*ОБРАБАТЫВАЕМ ДИРЕКЦИИ*/
             $array_direction[] = $data['10'];
@@ -252,8 +255,11 @@ dbconn();
             //пропускаем первую строчку
             if ($i != $t) {
                 if ($uid_post > 0) {
-                    $insert_established_post .= ", ";
-                    $insert_employee .= ", ";
+                    if($insert_established_post)
+                        $insert_established_post .= ", ";
+
+                    if($insert_employee)
+                        $insert_employee .= ", ";
                 }
                // $insert_employee .= ", ";
 
@@ -459,7 +465,7 @@ dbconn();
             $id_mvz = (int)array_search($data['23'],$data_mvz);
             //ищем дату принятия, что бы потом найти нужное ФИО, если вдруг есть полные тезки
             $date_employment = unix_time ($data['31']);
-            $search_emp =
+           // $search_emp =
             $id_employee = (int)array_search($data['1'].",".$date_employment,$data_employee);
             $id_established_post = (int)array_search($data['0'],$data_established_post);
             // ищем вложенные подразделения
@@ -571,7 +577,7 @@ dbconn();
         $data_department = select_data_base("department","name_department");
         $data_direction = select_data_base("direction","name_direction");
         $data_position = select_data_base("position","name_position");
-        $data_city = select_data_base("location_city","name_city");
+        //$data_city = select_data_base("location_city","name_city");
 
         $res=sql_query("SELECT id, floor, room, place, date_ready FROM location_place;")  or sqlerr(__FILE__, __LINE__);
 
@@ -639,7 +645,7 @@ dbconn();
                 //очищаем массив
                 $id_block = (int)array_search(str_replace("\"","",$data['3']),$data_block);
                 unset($array_department);
-                $array_department[] = (int)array_search($data['3'],$data_department);
+                //$array_department[] = (int)array_search($data['3'],$data_department);
                 $array_department[] = (int)array_search($data['4'],$data_department);
                 $array_department[] = (int)array_search($data['6'],$data_department);
                 $array_department[] = (int)array_search($data['7'],$data_department);
