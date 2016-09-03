@@ -181,15 +181,38 @@ elseif($_POST['action'] == "edit"){
         $id_parent_ee = $row['id'];
 
     $data = prepeared_data($_POST);
+//копируем в таблицу ревизий
+    sql_query("INSERT INTO revision_employee
+(`id_employee`, `name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change`)
+SELECT
+`id`, `name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change` FROM employee WHERE employee.id =  '".$_POST['id']."'") or sqlerr(__FILE__, __LINE__);
+    //обновляем
+    sql_query("UPDATE `employee` SET
 
-    sql_query("INSERT INTO employee (id_uid_post,name_employee,email,date_transfer,date_employment,id_location_place,id_strategic_project,id_employee_model,id_functionality,added, id_parent_ee)
+ `id_uid_post` = '".$data['id_uid_post']."',
+ `name_employee` = '".$data['name_employee']."',
+ `email` = '".$data['email']."',
+ `date_transfer` = '".$data['date_transfer']."',
+ `date_employment` = '".$data['date_employment']."',
+ `id_location_place` = '".$data['id_place']."',
+ `id_strategic_project` = '".$data['id_strategic_poject']."',
+ `id_employee_model` = '".$data['id_employee_model']."',
+ `id_functionality` = '".$data['id_functionality']."',
+ `last_update` = '".time()."',
+ `id_parent_ee` = '".$id_parent_ee."',
+ `revision` = `revision` + 1,
+ `id_user_change` = '".$CURUSER['id']."'
+
+ WHERE `id` ='".$_POST['id']."';") or sqlerr(__FILE__, __LINE__);
+
+   /* sql_query("INSERT INTO employee (id_uid_post,name_employee,email,date_transfer,date_employment,id_location_place,id_strategic_project,id_employee_model,id_functionality,added, id_parent_ee)
     VALUES ('".$data['id_uid_post']."','".$data['name_employee']."','".$data['email']."','".$data['date_transfer']."','".$data['date_employment']."','".$data['id_place']."','".$data['id_strategic_poject']."','".$data['id_employee_model']."','".$data['id_functionality']."', '".time()."', '".$id_parent_ee."');") or sqlerr(__FILE__, __LINE__);
-
-    $new_id = mysql_insert_id();
+*/
+  //  $new_id = mysql_insert_id();
     // отмечаем старую на удаление
-    sql_query("UPDATE `employee` SET last_update = '".time()."', is_deleted = '1' WHERE id ='".$_POST['id']."' ;") or sqlerr(__FILE__, __LINE__);
+  //  sql_query("UPDATE `employee` SET last_update = '".time()."', is_deleted = '1' WHERE id ='".$_POST['id']."' ;") or sqlerr(__FILE__, __LINE__);
     // обновляем привязанные записи к сотруднику
-    sql_query("UPDATE `direction` SET id_employee = '".$new_id."' WHERE id_employee ='".$_POST['id']."' ;") or sqlerr(__FILE__, __LINE__);
+   // sql_query("UPDATE `direction` SET id_employee = '".$new_id."' WHERE id_employee ='".$_POST['id']."' ;") or sqlerr(__FILE__, __LINE__);
 }
 
 
