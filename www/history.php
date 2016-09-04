@@ -10,8 +10,9 @@
 
     dbconn();
 
-    if(!$_GET['id'] or !is_valid_id($_GET['id']))
-        stderr("Ошибка","Не возможно отобразить историю");
+    if(!$_GET['id'] or !is_valid_id($_GET['id'])) {
+        stderr ("Ошибка", "Не возможно отобразить историю");
+    }
     else{
         require_once("elements/basic/history.php");
 
