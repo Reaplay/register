@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Авг 02 2016 г., 22:56
+-- Время создания: Сен 04 2016 г., 22:18
 -- Версия сервера: 5.5.25
 -- Версия PHP: 5.5.37
 
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `block` (
   `added` int(11) NOT NULL DEFAULT '0',
   `last_update` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -39,7 +39,6 @@ CREATE TABLE IF NOT EXISTS `cache_stats` (
   `cache_value` text,
   PRIMARY KEY (`cache_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 --
 -- Дамп данных таблицы `cache_stats`
@@ -66,7 +65,6 @@ INSERT INTO `cache_stats` (`cache_name`, `cache_value`) VALUES
   ('use_gzip', '1'),
   ('yourcopy', '© {datenow} Используйте на свой страх и риск');
 
-
 -- --------------------------------------------------------
 
 --
@@ -81,7 +79,14 @@ CREATE TABLE IF NOT EXISTS `changelog` (
   `text` text NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Дамп данных таблицы `changelog`
+--
+
+INSERT INTO `changelog` (`id`, `added`, `date`, `rev`, `text`) VALUES
+  (1, 1463399298, 1463342400, '0.0.1', '<p>Начаты работы по реестру<br></p>');
 
 -- --------------------------------------------------------
 
@@ -92,15 +97,13 @@ CREATE TABLE IF NOT EXISTS `changelog` (
 CREATE TABLE IF NOT EXISTS `department` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name_department` varchar(255) NOT NULL,
-  `id_parent` int(10) NOT NULL DEFAULT '0',
-  `id_child` int(10) NOT NULL DEFAULT '0',
   `added` int(10) NOT NULL DEFAULT '0',
   `last_update` int(10) NOT NULL DEFAULT '0',
   `id_type_office` smallint(3) NOT NULL DEFAULT '0',
   `level` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=370 ;
 
 -- --------------------------------------------------------
 
@@ -116,7 +119,7 @@ CREATE TABLE IF NOT EXISTS `direction` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=16 ;
 
 -- --------------------------------------------------------
 
@@ -140,8 +143,10 @@ CREATE TABLE IF NOT EXISTS `employee` (
   `id_strategic_project` int(10) NOT NULL DEFAULT '0',
   `id_employee_model` int(10) NOT NULL DEFAULT '0',
   `id_parent_ee` int(10) NOT NULL,
+  `revision` int(10) NOT NULL DEFAULT '1',
+  `id_user_change` int(10) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1789 ;
 
 -- --------------------------------------------------------
 
@@ -156,7 +161,7 @@ CREATE TABLE IF NOT EXISTS `employee_model` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -183,8 +188,9 @@ CREATE TABLE IF NOT EXISTS `established_post` (
   `transfer` tinyint(1) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   `id_parent_ep` int(10) NOT NULL DEFAULT '0' COMMENT 'Нужно для поиска истории и исходной записи (ту что изменяли самой первой)',
+  `revision` int(10) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1422 ;
 
 -- --------------------------------------------------------
 
@@ -195,12 +201,12 @@ CREATE TABLE IF NOT EXISTS `established_post` (
 CREATE TABLE IF NOT EXISTS `functionality` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name_functionality` varchar(266) NOT NULL,
-  `id_parent` smallint(3) NOT NULL DEFAULT '0',
+  `id_parent` int(10) NOT NULL DEFAULT '0',
   `added` int(10) NOT NULL DEFAULT '0',
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=88 ;
 
 -- --------------------------------------------------------
 
@@ -216,7 +222,7 @@ CREATE TABLE IF NOT EXISTS `location_address` (
   `last_update` int(10) DEFAULT NULL,
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
 
 -- --------------------------------------------------------
 
@@ -232,7 +238,7 @@ CREATE TABLE IF NOT EXISTS `location_city` (
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   `co` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=62 ;
 
 -- --------------------------------------------------------
 
@@ -256,7 +262,7 @@ CREATE TABLE IF NOT EXISTS `location_place` (
   `last_update` int(10) DEFAULT NULL,
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=339 ;
 
 -- --------------------------------------------------------
 
@@ -272,7 +278,7 @@ CREATE TABLE IF NOT EXISTS `mvz` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=44 ;
 
 -- --------------------------------------------------------
 
@@ -296,7 +302,7 @@ CREATE TABLE IF NOT EXISTS `orbital_blocks` (
   KEY `title` (`title`),
   KEY `weight` (`weight`),
   KEY `active` (`active`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -314,7 +320,7 @@ CREATE TABLE IF NOT EXISTS `position` (
   `status` tinyint(1) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=81 ;
 
 -- --------------------------------------------------------
 
@@ -329,7 +335,65 @@ CREATE TABLE IF NOT EXISTS `rck` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `revision_employee`
+--
+
+CREATE TABLE IF NOT EXISTS `revision_employee` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id_employee` int(10) NOT NULL,
+  `name_employee` varchar(255) NOT NULL,
+  `id_uid_post` int(10) NOT NULL DEFAULT '0',
+  `id_location_place` int(10) NOT NULL DEFAULT '0',
+  `email` varchar(255) NOT NULL,
+  `date_employment` int(10) NOT NULL DEFAULT '0',
+  `date_transfer` int(10) NOT NULL DEFAULT '0',
+  `id_functionality` varchar(20) NOT NULL DEFAULT '0',
+  `added` int(10) NOT NULL,
+  `last_update` int(10) NOT NULL,
+  `fte` float NOT NULL DEFAULT '0',
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `id_strategic_project` int(10) NOT NULL DEFAULT '0',
+  `id_employee_model` int(10) NOT NULL DEFAULT '0',
+  `id_parent_ee` int(10) NOT NULL,
+  `revision` int(10) NOT NULL DEFAULT '1',
+  `id_user_change` int(10) NOT NULL DEFAULT '0',
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=255 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `revision_established_post`
+--
+
+CREATE TABLE IF NOT EXISTS `revision_established_post` (
+  `id_revision` int(10) NOT NULL AUTO_INCREMENT,
+  `id_established_post` int(10) NOT NULL,
+  `uid_post` int(10) NOT NULL DEFAULT '0',
+  `id_position` int(10) NOT NULL DEFAULT '0',
+  `id_block` tinyint(2) NOT NULL DEFAULT '0',
+  `id_department` varchar(15) NOT NULL DEFAULT '0',
+  `id_direction` smallint(3) NOT NULL DEFAULT '0',
+  `id_rck` tinyint(3) NOT NULL DEFAULT '0',
+  `id_mvz` smallint(3) NOT NULL DEFAULT '0',
+  `date_entry` int(10) NOT NULL DEFAULT '0',
+  `added` int(10) NOT NULL DEFAULT '0',
+  `last_update` int(10) DEFAULT '0',
+  `id_location_city` int(10) NOT NULL DEFAULT '0',
+  `id_functional_manager` int(10) NOT NULL DEFAULT '0',
+  `id_administrative_manager` int(10) NOT NULL DEFAULT '0',
+  `draft` tinyint(1) DEFAULT '0',
+  `transfer` tinyint(1) NOT NULL DEFAULT '0',
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `id_parent_ep` int(10) NOT NULL DEFAULT '0' COMMENT 'Нужно для поиска истории и исходной записи (ту что изменяли самой первой)',
+  `revision` int(10) NOT NULL,
+  UNIQUE KEY `id` (`id_revision`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=293 ;
 
 -- --------------------------------------------------------
 
@@ -365,7 +429,7 @@ CREATE TABLE IF NOT EXISTS `strategic_project` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_delete` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 -- --------------------------------------------------------
 
@@ -380,7 +444,7 @@ CREATE TABLE IF NOT EXISTS `type_office` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -411,7 +475,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `added` (`added`),
   KEY `ip` (`ip`),
   KEY `user` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=2 ;
 
 -- --------------------------------------------------------
 
