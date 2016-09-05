@@ -206,9 +206,9 @@ elseif($_GET['action'] == "edit"){
     }
 
     //получаем список пользователей к которым можно прикрепить как к руклю
-    $res_emp = sql_query("SELECT employee.id, employee.name_employee
+    $res_emp = sql_query("SELECT employee.id_uid_post, employee.name_employee,`position`.is_head
 FROM employee
-LEFT JOIN established_post ON established_post.uid_post = employee.id_uid_post
+LEFT JOIN established_post ON established_post.id = employee.id_uid_post
 LEFT JOIN position ON position.id = established_post.id_position
 WHERE position.is_head = 1");
     while ($row_emp = mysql_fetch_array($res_emp)){
@@ -274,13 +274,44 @@ elseif($_POST['action'] == "edit"){
 
     $data = prepeared_data($_POST);
     //добавляем новую запись
+
+
+    sql_query("INSERT INTO revision_established_post
+(id_established_post, uid_post, id_position, id_block, id_department, id_direction, id_rck, id_mvz, date_entry, added, id_location_city, id_functional_manager, id_administrative_manager, draft, transfer, last_update, id_user_change,revision)
+SELECT
+id, uid_post, id_position, id_block, id_department, id_direction, id_rck, id_mvz, date_entry, added, id_location_city, id_functional_manager, id_administrative_manager, draft, transfer, last_update, id_user_change,revision FROM established_post WHERE established_post.id =  '".$_POST['id']."'") or sqlerr(__FILE__, __LINE__);
+    //обновляем
+    sql_query("UPDATE `established_post` SET
+
+ `uid_post` = '".$data['uid_post']."',
+ `id_position` = '".$data['id_position']."',
+ `id_block` = '".$data['id_block']."',
+ `id_department` = '".$data['id_department']."',
+ `id_direction` = '".$data['id_direction']."',
+ `id_rck` = '".$data['id_rck']."',
+ `id_mvz` = '".$data['id_mvz']."',
+ `date_entry` = '".$data['date_entry']."',
+ `id_location_city` = '".$data['id_city']."',
+ `id_functional_manager` = '".$data['id_functional_manager']."',
+ `id_administrative_manager` = '".$data['id_administrative_manager']."',
+ `draft` = '".$data['draft']."',
+ `transfer` = '".$data['transfer']."',
+ `last_update` = '".time()."',
+
+ `revision` = `revision` + 1,
+ `id_user_change` = '".$CURUSER['id']."'
+
+ WHERE `id` ='".$_POST['id']."';") or sqlerr(__FILE__, __LINE__);
+
+
+    /*
     sql_query("INSERT INTO established_post (uid_post, id_position, id_block, id_department, id_direction, id_rck, id_mvz, date_entry, added, id_location_city, id_functional_manager, id_administrative_manager, draft, transfer, last_update, id_parent_ep) VALUES ('".$data['uid_post']."', '".$data['id_position']."', '".$data['id_block']."', '".$data['id_department']."', '".$data['id_direction']."', '".$data['id_rck']."', '".$data['id_mvz']."', '".$data['date_entry']."', '".$row['added']."', '".$data['id_city']."', '".$data['id_functional_manager']."', '".$data['id_administrative_manager']."', '".$data['draft']."', '".$data['transfer']."', '".time()."', '".$id_parent_ep."');") or sqlerr(__FILE__, __LINE__);
     $new_id = mysql_insert_id();
     // отмечаем старую на удаление
     sql_query("UPDATE `established_post` SET last_update = '".time()."', is_deleted = '1' WHERE id ='".$_POST['id']."' ;");
     // обновляем привязанных к нему сотрудников
     sql_query("UPDATE `employee` SET id_uid_post = '".$new_id."' WHERE id_uid_post ='".$_POST['id']."' ;");
-
+*/
 
    /* sql_query("UPDATE `established_post` SET `uid_post`='".$uid_post."', `date_entry`='".$date_entry."', `id_administrative_manager`='".$id_administrative_manager."',`id_functional_manager`='".$id_functional_manager."',`id_location_city`='".$id_city."',`id_department`='".$id_department."',`id_direction`='".$id_direction."',`id_mvz`='".$id_mvz."', `id_position`='".$id_position."', `draft`='".$draft."', `transfer`='".$transfer."' WHERE id='".$_POST['id']."';") or sqlerr(__FILE__, __LINE__);*/
 }

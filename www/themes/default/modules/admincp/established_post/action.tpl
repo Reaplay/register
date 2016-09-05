@@ -153,7 +153,7 @@
                         <select class="form-control  select2" name="id_functional_manager">
                             <option value="0">Выберите функционального руководителя</option>
                             {foreach from=$data_employee item=employee}
-                                <option value="{$employee.id}"{if $employee.id == $data.id_functional_manager}selected="selected"{/if}>{$employee.name}</option>
+                                <option value="{$employee.id_uid_post}"{if $employee.id_uid_post == $data.id_functional_manager}selected="selected"{/if}>{$employee.name_employee}</option>
                             {/foreach}
 
                         </select>
@@ -162,7 +162,7 @@
                         <select class="form-control  select2" name="id_administrative_manager">
                             <option value="0">Выберите административного руководителя</option>
                             {foreach from=$data_employee item=employee}
-                                <option value="{$employee.id}"{if $employee.id == $data.id_administrative_manager}selected="selected"{/if}>{$employee.name}</option>
+                                <option value="{$employee.id_uid_post}"{if $employee.id_uid_post == $data.id_administrative_manager}selected="selected"{/if}>{$employee.name_employee}</option>
                             {/foreach}
 
                         </select>
