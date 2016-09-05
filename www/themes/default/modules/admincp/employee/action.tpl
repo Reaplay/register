@@ -124,7 +124,7 @@
 
             <div class="row col-md-12">
 
-                <button type="submit" class="btn btn-3d btn-teal btn-slg btn-block" type="submit">
+                <button type="submit" class="btn btn-3d btn-teal btn-slg btn-block">
                     {if $action=="add"}Добавить{else}Изменить{/if}
                 </button>
                 <input type="hidden" name="action" value="{$action}">
