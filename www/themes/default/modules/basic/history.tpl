@@ -11,17 +11,18 @@
             <div class="panel-body">
                 {*<input type="hidden" value="contact_send" name="action">*}
                 <div class="row">
-                    
+                    <form class="nomargin sky-form " method="get" action="history.php?id={$data_emp.id}">
+                        <input type="hidden" name="id" value="{$data_emp.id}">
                     <div class="form-group">
 
                         <div class="col-md-6 col-sm-6">
-
-                            <input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" data-lang="ru" data-RTL="false">
+                            <input type="text" class="form-control datepicker" data-format="dd/mm/yyyy" data-lang="ru" data-RTL="false" placeholder="Выберите дату" name="date_history">
                         </div>
                         <div class="col-md-6 col-sm-6">
-                            <button type="button" class="btn btn-primary">Применить</button>
+                            <button type="submit" class="btn btn-primary">Применить</button>
                         </div>
                     </div>
+                    </form>
                 </div>
                 <div class="row">
                     <div class="col-md-12 col-sm-12">

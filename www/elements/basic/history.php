@@ -9,7 +9,7 @@
     $id = (int)$_GET['id'];
 
 
-    $res_emp = sql_query("SELECT id_uid_post,name_employee,added, last_update, revision FROM employee WHERE id = ".$id."; " )  or sqlerr(__FILE__, __LINE__);
+    $res_emp = sql_query("SELECT id, id_uid_post,name_employee,added, last_update, revision FROM employee WHERE id = ".$id."; " )  or sqlerr(__FILE__, __LINE__);
     $row_emp = mysql_fetch_array($res_emp);
 
     if($row_emp['last_update']){
@@ -20,6 +20,7 @@
 
     $data_employee['name_employee'] = $row_emp['name_employee'];
     $data_employee['revision'] = $row_emp['revision'];
+    $data_employee['id'] = $row_emp['id'];
    // $content .= "История струдника ".$row_emp['name_employee']."<br />";
 
     //$content .= "Текущая ревизия сотрудника №".$row_emp['revision']." от ".$date_emp."<br />";

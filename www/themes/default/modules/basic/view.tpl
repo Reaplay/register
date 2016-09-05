@@ -50,11 +50,16 @@ FTE (процент занятости): <b>{$employee}</b> <br>
 Занято?: <b>{if $employee.occupy}Да{else}Нет{/if}</b> <br>
 Дата занятия: <b>{if $employee.date_occupy}{$employee.date_occupy}{else}Нет{/if}</b> <br>
 *}
+{if $date_history}
+<div class="alert alert-danger margin-bottom-30">
+    <strong>Внимание</strong> Вы просматриваете исторические данные от {$date_history}
 
+</div>
+{/if}
 {foreach from=$data_employee item=employee name=count_emp}
     {if $smarty.foreach.count_emp.total > 1}
         <div class="toggle">
-        <label>{$smarty.foreach.foo.index + 1}. {$employee.em_name}</label>
+        <label>{$smarty.foreach.count_emp.index + 1}. {$employee.em_name}</label>
         <div class="toggle-content" style="display: none;">
     {/if}
 
@@ -205,7 +210,7 @@ FTE (процент занятости): <b>{$employee}</b> <br>
 
         </div>
     </div>
-    {if $smarty.foreach.foo.total > 1}
+    {if $smarty.foreach.count_emp.total > 1}
         </div>
         </div>
     {/if}

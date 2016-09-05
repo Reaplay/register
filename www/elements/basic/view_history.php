@@ -1,45 +1,25 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: U_03MDH
- * Date: 17.05.2016
- * Time: 10:49
- */
+    /**
+     * Created by PhpStorm.
+     * User: Reaplay
+     * Date: 04.09.2016
+     * Time: 21:53
+     */
 
-require_once ("include/connect.php");
 
 dbconn();
-if($_GET['id']){
-    if(!is_valid_id($_GET['id'])){
-        stderr("Ошибка","Не правильный идентификатор");
-    }
-    $WHERE = "established_post.id='".$_GET['id']."'";
-}
-elseif($_GET['uid']){
-    if(!is_valid_id($_GET['uid'])){
-        stderr("Ошибка","Не правильный идентификатор");
-    }
-    $WHERE = "established_post.uid_post='".$_GET['uid']."'";
-}
-elseif($_GET['eid']){
-    if(!is_valid_id($_GET['eid'])){
-        stderr("Ошибка","Не правильный идентификатор");
-    }
-    $WHERE = "employee.id='".$_GET['eid']."' AND employee.is_deleted = 0";
-}
-    else
-        stderr("Ошибка","Не правильный идентификатор");
 
+    $date_history_start = unix_time($_GET['date_history']);
+    $date_history_end = $date_history_start + 60*60*24;
 // получение менеджеров
 
-
-
+$id = (int)$_GET['id'];
 
 $res=sql_query("
-SELECT established_post.*,
+SELECT revision_established_post.*,
 position.name_position,
 name_block,
-employee.name_employee AS em_name, employee.date_employment, employee.date_transfer, employee.id_functionality, employee.fte, employee.id as eid,
+revision_employee.name_employee AS em_name, revision_employee.date_employment, revision_employee.date_transfer, revision_employee.id_functionality, revision_employee.fte, revision_employee.id as eid,
 location_city.name_city,
 location_place.place, location_place.floor, location_place.room, location_place.id_address AS lp_ia, location_place.ready, location_place.date_ready, location_place.reservation, location_place.date_reservation, location_place.occupy, location_place.date_occupy,
 location_address.name_address, location_address.id_city AS la_id_city,
@@ -47,18 +27,25 @@ direction.name_direction,direction.id_employee AS id_curator,direction.id as did
 mvz.name_mvz,
 rck.name_rck,
 employee_model.name_model
-FROM established_post
-LEFT JOIN `position` ON position.id = established_post.id_position
-LEFT JOIN `block` ON block.id = established_post.id_block
-LEFT JOIN employee ON employee.id_uid_post = established_post.id
-LEFT JOIN location_city ON location_city.id = established_post.id_location_city
-LEFT JOIN location_place ON location_place.id = employee.id_location_place
+FROM revision_established_post
+LEFT JOIN `position` ON position.id = revision_established_post.id_position
+LEFT JOIN `block` ON block.id = revision_established_post.id_block
+LEFT JOIN revision_employee ON revision_employee.id_uid_post = revision_established_post.id_established_post
+LEFT JOIN location_city ON location_city.id = revision_established_post.id_location_city
+LEFT JOIN location_place ON location_place.id = revision_employee.id_location_place
 LEFT JOIN location_address ON location_address.id = location_place.id_address
-LEFT JOIN direction ON direction.id = established_post.id_direction
-LEFT JOIN mvz ON mvz.id = established_post.id_mvz
+LEFT JOIN direction ON direction.id = revision_established_post.id_direction
+LEFT JOIN mvz ON mvz.id = revision_established_post.id_mvz
 LEFT JOIN rck ON rck.id = mvz.id_rck
-LEFT JOIN employee_model ON employee_model.id = employee.id_employee_model
-WHERE $WHERE AND established_post.is_deleted = 0
+LEFT JOIN employee_model ON employee_model.id = revision_employee.id_employee_model
+WHERE revision_employee.id_employee = $id
+
+AND if(revision_employee.last_update >0, revision_employee.last_update > '".$date_history_start."' AND revision_employee.last_update < '".$date_history_end."', revision_employee.added > '".$date_history_start."' AND revision_employee.added < '".$date_history_end."')
+AND if(revision_established_post.last_update >0, revision_established_post.last_update > '".$date_history_start."' AND revision_established_post.last_update < '".$date_history_end."', revision_established_post.added > '".$date_history_start."' AND revision_established_post.added < '".$date_history_end."')
+
+
+/*AND ((revision_employee.last_update > '".$date_history_start."' AND revision_employee.last_update < '".$date_history_end."') OR (revision_employee.added > '".$date_history_start."' AND revision_employee.added < '".$date_history_end."'))
+AND ((revision_established_post.last_update > '".$date_history_start."' AND revision_established_post.last_update < '".$date_history_end."') OR (revision_established_post.added > '".$date_history_start."' AND revision_established_post.added < '".$date_history_end."'))*/
 /*WHERE established_post.id='".$_GET['id']."'*/
 ") or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
@@ -66,7 +53,7 @@ WHERE $WHERE AND established_post.is_deleted = 0
     }
 
     $i=0;
-$row = array();
+//$row = array();
 while($row = mysql_fetch_array($res)) {
     $data_employee[$i] = $row;
 
@@ -97,17 +84,19 @@ while($row = mysql_fetch_array($res)) {
     }
 
     ksort ($department);
-   /* foreach ($department as $val) {
-        if ($data_department)
-            $data_department .= ", ";
-        $data_department .= $val;
-    }*/
+    /* foreach ($department as $val) {
+         if ($data_department)
+             $data_department .= ", ";
+         $data_department .= $val;
+     }*/
     $data_employee[$i]['department'] = $department;
 //определеяем где сидит функц. рукль;
-    $cur_res = sql_query ("SELECT name_rck FROM rck LEFT JOIN employee ON employee.id = " . $row['id_administrative_manager'] . " LEFT JOIN established_post ON established_post.id = employee.id_uid_post WHERE rck.id = established_post.id_rck");
-    $cur_row = mysql_fetch_array ($cur_res);
-    $data_employee[$i]['rck_curator'] = $cur_row['name_rck'];
+    if($row['id_administrative_manager']) {
 
+        $cur_res = sql_query ("SELECT name_rck FROM rck LEFT JOIN employee ON employee.id = " . $row['id_administrative_manager'] . " LEFT JOIN established_post ON established_post.id = employee.id_uid_post WHERE rck.id = established_post.id_rck");
+        $cur_row = mysql_fetch_array ($cur_res);
+        $data_employee[$i]['rck_curator'] = $cur_row['name_rck'];
+    }
 //разбиваем на массив
     $functionality = explode (",", $row['id_functionality']);
     foreach ($functionality as $value) {
@@ -133,11 +122,13 @@ while($row = mysql_fetch_array($res)) {
 if($department) {
     $data_department = array_reverse ($department);
 }*/
+
 $REL_TPL->stdhead("Просмотр");
 $REL_TPL->assignByRef('data_employee',$data_employee);
 $REL_TPL->assignByRef('data_f_m',$data_f_m);
 $REL_TPL->assignByRef('data_a_m',$data_a_m);
 $REL_TPL->assignByRef('data_department',$data_department);
 $REL_TPL->assignByRef('list_functionality',$list_functionality);
+$REL_TPL->assignByRef('date_history',$_GET['date_history']);
 $REL_TPL->output("view","basic");
 $REL_TPL->stdfoot();
