@@ -8,7 +8,7 @@
             {if !$user_view.2}<th>ФИО</th>{/if}
             {if !$user_view.3}<th>Должность</th>{/if}
             {if !$user_view.4}<th>Функц. сфера</th>{/if}
-            {if !$user_view.5}<th>Название подразделение</th>{/if}
+            {if !$user_view.5}<th>Название подразделения</th>{/if}
             {if !$user_view.6}<th>ДО/ОО</th>{/if}
             {if !$user_view.7}<th>Вложенное подразделение 1</th>{/if}
             {if !$user_view.8}<th>Вложенное подразделение 2</th>{/if}

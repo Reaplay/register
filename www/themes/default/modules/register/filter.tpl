@@ -8,7 +8,7 @@
                 <div class="row margin-bottom-10">
 
                     <div class="col-md-3">
-                        <h4>Дирекции</h4>
+                        <h4>Дирекция ЦО</h4>
                         <div class="fancy-form fancy-form-select">
                             <select class="form-control select2" name="direction" style="width: 253px">
                                 <option value="0">Все</option>
@@ -63,7 +63,7 @@
                 </div>
                 <div class="row margin-bottom-10">
                     <div class="col-md-3">
-                        <h4>По модели</h4>
+                        <h4>Модель</h4>
                         <div class="fancy-form fancy-form-select">
                             <select class="form-control select2" name="model" style="width: 253px">
                                 <option value="0">Все</option>
@@ -89,7 +89,7 @@
                     </div>
 
                     <div class="col-md-3">
-                        <h4>По городу</h4>
+                        <h4>Город</h4>
                         <div class="fancy-form fancy-form-select">
                             <select class="form-control select2" name="city" style="width: 253px">
                                 <option value="0">Все</option>
@@ -117,7 +117,7 @@
                 </div>
                 <div class="row margin-bottom-10">
                     <div class="col-md-3">
-                        <h4>По подразделению 1</h4>
+                        <h4>Подразделение 1</h4>
                         <div class="fancy-form fancy-form-select">
                             <select class="form-control select2" name="department[]" style="width: 253px"">
                                 <option value="0">Все</option>
@@ -129,7 +129,7 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <h4>По подразделению 2</h4>
+                        <h4>Подразделение 2</h4>
                         <div class="fancy-form fancy-form-select">
                             <select class="form-control select2" name="department[]" style="width: 253px"">
                             <option value="0">Все</option>
@@ -141,7 +141,7 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <h4>По подразделению 3</h4>
+                        <h4>Подразделение 3</h4>
                         <div class="fancy-form fancy-form-select">
                             <select class="form-control select2" name="department[]" style="width: 253px"">
                             <option value="0">Все</option>
@@ -153,7 +153,7 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <h4>По подразделению 4</h4>
+                        <h4>Подразделение 4</h4>
                         <div class="fancy-form fancy-form-select">
                             <select class="form-control select2" name="department[]" style="width: 253px"">
                             <option value="0">Все</option>
