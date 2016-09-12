@@ -7,6 +7,7 @@
 *}
 {if !$step}
 <form enctype="multipart/form-data" action="upload.php?type=upload_client" method="POST" accept-charset="utf-8">
+    <input type="text" class="form-control datepicker" data-format="dd/mm/yyyy" data-lang="ru" data-RTL="false" placeholder="Выберите дату данных" name="date_data">
     <input class="custom-file-upload" type="file" id="file" name="attachment" id="contact:attachment" data-btn-text="Выберите файл" accept=".csv" />
     <small class="text-muted block">Максимальный размер файла: 2Mb (только .csv)</small>
   {*  <select class="form-control  select2" name="action">

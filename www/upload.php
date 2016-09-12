@@ -15,9 +15,27 @@ dbconn();
     }
     $REL_TPL->stdhead("Загрузка первых данных");
 
+    //удаляем повторяющиеся элементы, даже если разные регистры написания
+    function array_del_no_unique($array){
+        $array_unique = array_unique($array);
+        //$array_lower_case = array_unique(array_change_key_case($array_unique, CASE_LOWER));
+        $array_lower_case = array();
+        foreach($array_unique as $value){
+            $lower_value = mb_strtolower($value);
+            if(!array_search($lower_value,$array_lower_case)){
+                $array_lower_case[] = $lower_value;
+                $array_return[] = $value;
+            }
+        }
+        return $array_return;
+    }
+
+
     //функция обработки для простых данных где только название и время добавляется
     function processing_data($data,$id=''){
-        $data_array = array_unique ($data);
+        GLOBAL $date_data;
+     //   $data_array = array_unique ($data);
+       $data_array = array_del_no_unique($data);
         foreach ($data_array as $array) {
             if (!trim ($array))
                 continue;
@@ -32,7 +50,7 @@ dbconn();
             if($id){
                 $data_id = ", '".$id."'";
             }
-            $return .= "('$array',".time()."$data_id)";
+            $return .= "('$array',".$date_data."$data_id)";
 
 
         }
@@ -88,6 +106,9 @@ dbconn();
         return $temp_array;
     }
 
+
+
+
     // с какой строчки начинаем
     $t = 2;
 
@@ -109,7 +130,7 @@ dbconn();
                     echo "Size: " . ($_FILES["attachment"]["size"] / 1024) . " kB<br>";
                     echo "Temp file: " . $_FILES["attachment"]["tmp_name"] . "<br>";
                 }
-                $time = time ();
+                $time = time();
                 move_uploaded_file ($_FILES["attachment"]["tmp_name"], "upload/upload_reestr_" . $time . ".csv");
                 //echo "Файл загружен: " . "upload/r_" . $time.".txt <br />";
             }
@@ -142,10 +163,25 @@ dbconn();
         elseif($_POST['name'])
             $time = $_POST['name'];
         else
-            stderr("Ошибка","Некорректные данные");
+            stderr("Ошибка","Некорректные данные","no");
         $mass = file ("upload/upload_reestr_" . $time . ".csv");
 
     }
+
+    if($_GET['type']=='upload_client' OR $_GET['step']){
+        if($_POST['date_data']){
+            $date_data = unix_time($_POST['date_data']);
+        }
+        elseif($_GET['date_data']){
+            $date_data = (int)$_GET['date_data'];
+        }
+        else {
+            die();
+            $date_data = $date_data;
+        }
+    }
+
+
 //добавляем основные данные
     if($_POST['step'] == '1') {
 
@@ -269,15 +305,15 @@ dbconn();
             }
 
             if ($uid_post > 0) {
-                $insert_established_post .= "($uid_post, $date_entry, $draft, $transfer, " . time () . ")";
-                $insert_employee .= "('" . $employee . "', '$date_employment' ,'$date_transfer',  $fte, " . time () . ")";
+                $insert_established_post .= "($uid_post, $date_entry, $draft, $transfer, " . $date_data . ")";
+                $insert_employee .= "('" . $employee . "', '$date_employment' ,'$date_transfer',  $fte, " . $date_data . ")";
             }
             else{
-                sql_query("INSERT INTO established_post (uid_post, date_entry, draft, transfer, added) VALUES ($uid_post, $date_entry, $draft, $transfer, " . time () . "); ") or sqlerr(__FILE__, __LINE__);
+                sql_query("INSERT INTO established_post (uid_post, date_entry, draft, transfer, added) VALUES ($uid_post, $date_entry, $draft, $transfer, " . $date_data . "); ") or sqlerr(__FILE__, __LINE__);
                 $id_ep = mysql_insert_id();
-                $insert_employee_no_ep .= "('" . $employee . "','".$id_ep."', '$date_employment' ,'$date_transfer',  $fte, " . time () . ")";
+                $insert_employee_no_ep .= "('" . $employee . "','".$id_ep."', '$date_employment' ,'$date_transfer',  $fte, " . $date_data . ")";
             }
-            //$insert_employee .= "('" . $employee . "', '$date_employment' ,'$date_transfer',  $fte, " . time () . ")";
+            //$insert_employee .= "('" . $employee . "', '$date_employment' ,'$date_transfer',  $fte, " . $date_data . ")";
 
 
         }
@@ -286,7 +322,7 @@ dbconn();
         $insert_position = processing_data ($array_postion);
         /*ОБРАБАТЫВАЕМ ПОДРАЗДЕЛЕНИЯ*/
         $insert_block = processing_data ($array_block);
-        $date = time();
+        $date = $date_data;
         foreach ($array_department as $sub_array_department) {
              foreach($sub_array_department as $key => $value){
                 if(!$value)
@@ -317,7 +353,7 @@ dbconn();
                   $insert_type_office .=", ";
               }
 
-              $insert_type_office .= "('$array',".time().")";
+              $insert_type_office .= "('$array',".$date_data.")";
 
           }
       */
@@ -370,9 +406,8 @@ dbconn();
             if ($insert_place) {
                 $insert_place .= ", ";
             }
-            $insert_place .= "('". $data_place['floor']."','".$data_place['room']."','".$data_place['place']."','".$data_place['ready']."','".$data_place['date_ready']."','".$data_place['reservation']."','".$data_place['date_reservation']."','". $data_place['occupy']."','". $data_place['date_occupy']."','".time()."')";
+            $insert_place .= "('". $data_place['floor']."','".$data_place['room']."','".$data_place['place']."','".$data_place['ready']."','".$data_place['date_ready']."','".$data_place['reservation']."','".$data_place['date_reservation']."','". $data_place['occupy']."','". $data_place['date_occupy']."','".$date_data."')";
         }
-
 
         /*ОБРАБАТЫВАЕМ ДИРЕКЦИИ*/
         $insert_direction = processing_data ($array_direction);
@@ -385,7 +420,8 @@ dbconn();
         sql_query("INSERT INTO established_post (uid_post, date_entry, draft, transfer, added) VALUES ".$insert_established_post."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO employee (name_employee, date_employment, date_transfer, fte, added) VALUES ".$insert_employee."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO employee (name_employee, id_uid_post, date_employment, date_transfer, fte, added) VALUES ".$insert_employee_no_ep."; ") or sqlerr(__FILE__, __LINE__);
-        sql_query("INSERT INTO employee_model (name_model,added) VALUES ".$insert_model."; ") or sqlerr(__FILE__, __LINE__);
+        if($insert_model)
+            sql_query("INSERT INTO employee_model (name_model,added) VALUES ".$insert_model."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO position (name_position, added) VALUES ".$insert_position."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO block (name_block, added) VALUES ".$insert_block."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO department (level, name_department, added) VALUES ".$insert_department."; ") or sqlerr(__FILE__, __LINE__);
@@ -399,11 +435,12 @@ dbconn();
 
         sql_query("INSERT INTO functionality (`name_functionality`, added) VALUES ".$insert_functionality_group.";") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO functionality (`name_functionality`, added, id_parent) VALUES ".$insert_functionality_function.";") or sqlerr(__FILE__, __LINE__);
-        sql_query("INSERT INTO strategic_project (`name_project`, added) VALUES ".$insert_project.";") or sqlerr(__FILE__, __LINE__);
+        if ($insert_project)
+            sql_query("INSERT INTO strategic_project (`name_project`, added) VALUES ".$insert_project.";") or sqlerr(__FILE__, __LINE__);
 
         $REL_TPL->stdmsg('Выполнено','Добавление данных завершено. Шаг 1 завершен. Происходит создание связей (1/3). Не перезагружайте страницу');
         $step = 2;
-        safe_redirect("upload.php?step=2&name=".$time."",1);
+        safe_redirect("upload.php?step=2&name=".$time."&date_data=".$date_data."",1);
 
         $REL_TPL->stdfoot();
         die();
@@ -549,7 +586,7 @@ dbconn();
 
         $REL_TPL->stdmsg('Выполнено','Добавление данных завершено. Шаг 2 завершен. Происходит создание связей (2/3). Не перезагружайте страницу');
         $step = 3;
-        safe_redirect("upload.php?step=3&name=".$time."",1);
+        safe_redirect("upload.php?step=3&name=".$time."&date_data=".$date_data."",1);
 
         $REL_TPL->assignByRef('step',$step);
         $REL_TPL->assignByRef('file',$time);
@@ -748,7 +785,7 @@ dbconn();
 
         $REL_TPL->stdmsg('Выполнено','Добавление данных завершено. Шаг 3 завершен. Происходит создание связей (3/3). Не перезагружайте страницу');
         $step = 4;
-        safe_redirect("upload.php?step=4&name=".$time."",1);
+        safe_redirect("upload.php?step=4&name=".$time."&date_data=".$date_data."",1);
 
         $REL_TPL->assignByRef('step',$step);
         $REL_TPL->assignByRef('file',$time);
@@ -779,7 +816,8 @@ dbconn();
 
             $id_functionality = (int)array_search(trim($data['20']),$data_functionality);
             $id_project = (int)array_search(trim($data['21']),$data_project);
-            $id_model = (int)array_search(trim($data['24']),$data_model);
+            if($data_model)
+                $id_model = (int)array_search(trim($data['24']),$data_model);
 
             $update = "";
             if($id_functionality >0){
