@@ -53,6 +53,8 @@
 
 
     }
+
+
     $res_rev_esp = sql_query("SELECT added, last_update, revision FROM revision_established_post WHERE id_established_post = '".$row_emp['id_uid_post']."'; " )  or sqlerr(__FILE__, __LINE__);
     while($row_rev_esp = mysql_fetch_array($res_rev_esp)){
 
@@ -67,6 +69,7 @@
 
 
     }
+
 
     $REL_TPL->stdhead("Просмотр истории");
     $REL_TPL->assignByRef('data_emp',$data_employee);

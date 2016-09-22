@@ -7,16 +7,31 @@
      */
 
 
-dbconn();
+
 
     $date_history_start = unix_time($_GET['date_history']);
+    //изменения за день
     $date_history_end = $date_history_start + 60*60*24;
 // получение менеджеров
 
 $id = (int)$_GET['id'];
+    $res_emp = sql_query("SELECT established_post.revision, established_post.last_update,revision_employee.last_update as re_last_update FROM established_post LEFT JOIN revision_employee ON revision_employee.id_employee = '".$id."' WHERE established_post.id = revision_employee.id_uid_post AND if(revision_employee.last_update >0, revision_employee.last_update >= '".$date_history_start."' AND revision_employee.last_update <= '".$date_history_end."', revision_employee.added >= '".$date_history_start."' AND revision_employee.added <= '".$date_history_end."')  ") or sqlerr(__FILE__, __LINE__);
+    $row_emp = mysql_fetch_array($res_emp);
+    if($row_emp['revision'] == 1) {
+        $table_emp = 'established_post';
+        $left_join = "LEFT JOIN revision_employee ON revision_employee.id_uid_post = ".$table_emp.".id";
+    }
+    elseif($row_emp['last_update'] <= $row_emp['re_last_update']){
+        $table_emp = 'established_post';
+        $left_join = "LEFT JOIN revision_employee ON revision_employee.id_uid_post = ".$table_emp.".id";
+    }
+    else {
+        $table_emp = 'revision_established_post';
+        $left_join = "LEFT JOIN revision_employee ON revision_employee.id_uid_post = ".$table_emp.".id_established_post";
+    }
 
 $res=sql_query("
-SELECT revision_established_post.*,
+SELECT ".$table_emp.".*,
 position.name_position,
 name_block,
 revision_employee.name_employee AS em_name, revision_employee.date_employment, revision_employee.date_transfer, revision_employee.id_functionality, revision_employee.fte, revision_employee.id as eid,
@@ -27,21 +42,27 @@ direction.name_direction,direction.id_employee AS id_curator,direction.id as did
 mvz.name_mvz,
 rck.name_rck,
 employee_model.name_model
-FROM revision_established_post
-LEFT JOIN `position` ON position.id = revision_established_post.id_position
-LEFT JOIN `block` ON block.id = revision_established_post.id_block
-LEFT JOIN revision_employee ON revision_employee.id_uid_post = revision_established_post.id_established_post
-LEFT JOIN location_city ON location_city.id = revision_established_post.id_location_city
+FROM ".$table_emp."
+LEFT JOIN `position` ON position.id = ".$table_emp.".id_position
+LEFT JOIN `block` ON block.id = ".$table_emp.".id_block
+$left_join
+LEFT JOIN location_city ON location_city.id = ".$table_emp.".id_location_city
 LEFT JOIN location_place ON location_place.id = revision_employee.id_location_place
 LEFT JOIN location_address ON location_address.id = location_place.id_address
-LEFT JOIN direction ON direction.id = revision_established_post.id_direction
-LEFT JOIN mvz ON mvz.id = revision_established_post.id_mvz
+LEFT JOIN direction ON direction.id = ".$table_emp.".id_direction
+LEFT JOIN mvz ON mvz.id = ".$table_emp.".id_mvz
 LEFT JOIN rck ON rck.id = mvz.id_rck
 LEFT JOIN employee_model ON employee_model.id = revision_employee.id_employee_model
 WHERE revision_employee.id_employee = $id
 
-AND if(revision_employee.last_update >0, revision_employee.last_update > '".$date_history_start."' AND revision_employee.last_update < '".$date_history_end."', revision_employee.added > '".$date_history_start."' AND revision_employee.added < '".$date_history_end."')
-AND if(revision_established_post.last_update >0, revision_established_post.last_update > '".$date_history_start."' AND revision_established_post.last_update < '".$date_history_end."', revision_established_post.added > '".$date_history_start."' AND revision_established_post.added < '".$date_history_end."')
+AND if(revision_employee.last_update >0, revision_employee.last_update >= '".$date_history_start."' AND revision_employee.last_update <= '".$date_history_end."', revision_employee.added >= '".$date_history_start."' AND revision_employee.added <= '".$date_history_end."')
+
+AND ".$table_emp.".last_update <= revision_employee.last_update
+
+ORDER BY ".$table_emp.".`last_update` DESC LIMIT 1;
+
+
+/*AND if(".$table_emp.".last_update >0, ".$table_emp.".last_update >= '".$date_history_start."' AND ".$table_emp.".last_update <= '".$date_history_end."', ".$table_emp.".added >= '".$date_history_start."' AND ".$table_emp.".added <= '".$date_history_end."')*/
 
 
 /*AND ((revision_employee.last_update > '".$date_history_start."' AND revision_employee.last_update < '".$date_history_end."') OR (revision_employee.added > '".$date_history_start."' AND revision_employee.added < '".$date_history_end."'))
