@@ -69,7 +69,7 @@ FTE (процент занятости): <b>{$employee}</b> <br>
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <span class="title elipsis">
-                        <strong>Сведения о сотруднике [<a href="action_admin.php?module=employee&action=edit&id={$employee.eid}">Редактировать</a>] | [<a href="history.php?id={$employee.eid}">История</a>]</strong>
+                        <strong>Сведения о сотруднике {if !$date_history}[<a href="action_admin.php?module=employee&action=edit&id={$employee.eid}">Редактировать</a>] | [<a href="history.php?id={$employee.eid}">История</a>]{/if}</strong>
                     </span>
                 </div>
 
@@ -86,8 +86,8 @@ FTE (процент занятости): <b>{$employee}</b> <br>
                               {$name_department}<br />
                             {/foreach}
 
-                            <b>Куратор в ЦО:</b><br />
-                            <b>:</b><br />
+                            <b>Куратор в ЦО:</b> (пока не работает)<br />
+
                         </table>
                     </div>
                 </div>
