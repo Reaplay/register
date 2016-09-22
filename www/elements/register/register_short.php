@@ -7,11 +7,15 @@
      */
 
 
-    $left_join = "LEFT JOIN functionality ON functionality.id = employee.id_functionality
+    $left_join = "
+    LEFT JOIN employee ON  employee.id_uid_post = established_post.id
+
+    LEFT JOIN functionality ON functionality.id = employee.id_functionality
 LEFT JOIN location_place ON location_place.id = employee.id_location_place
 LEFT JOIN location_address ON location_address.id = location_place.id_address
-LEFT JOIN location_city ON location_city.id = location_address.id_city
-LEFT JOIN established_post ON established_post.id = employee.id_uid_post
+LEFT JOIN location_city ON location_city.id = established_post.id_location_city
+
+
 LEFT JOIN direction ON direction.id = established_post.id_direction
 LEFT JOIN rck ON rck.id = established_post.id_rck
 LEFT JOIN mvz ON mvz.id = established_post.id_mvz
@@ -73,11 +77,11 @@ LEFT JOIN mvz ON mvz.id = established_post.id_mvz
                 $add_link_department .="&department[]=".$id;
                 $c_d++;
             }
-            if($c_d >1) {
+            if($c_d == 1) {
                 $add_link .= $add_link_department;
                 $where .= "AND established_post.id_department ='" . $department . "'";
             }
-            elseif($c_d == 1){
+            elseif($c_d > 1){
                 $regexp = "(,".$department.",)|(,".$department."$)|(,".$department."\\m)|(^".$department.",)|(^".$department."$)";
                 $where .= "AND established_post.id_department  REGEXP '".$regexp."' ";
                 $add_link .="&department=".$_GET['department'];
@@ -87,7 +91,7 @@ LEFT JOIN mvz ON mvz.id = established_post.id_mvz
     }
 
 
-    $paginator = create_paginator($_GET['page'],$REL_CONFIG['per_page_employee'],'employee',$left_join, $where);
+    $paginator = create_paginator($_GET['page'],$REL_CONFIG['per_page_employee'],'established_post',$left_join, $where);
 // получаем основной список сотрудников
 
     $res=sql_query("
@@ -101,9 +105,9 @@ location_city.name_city,
 location_address.name_address,
 location_place.floor,location_place.room,location_place.place,location_place.ready, location_place.date_ready, location_place.reservation, location_place.date_reservation, location_place.occupy,location_place.date_occupy
 
-FROM `employee`
+FROM `established_post`
 $left_join
-WHERE employee.is_deleted = 0  $where
+WHERE IF(established_post.vacancy = 0, employee.is_deleted = 0,established_post.vacancy = 1 )    $where
 ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
         stderr("Ошибка","Люди в  базе не обнаружены","no");
@@ -164,6 +168,10 @@ WHERE employee.is_deleted = 0  $where
     while ($row = mysql_fetch_array($res)){
 
         $data_employee[$i]=$row;
+
+        if(!$data_employee[$i]['name_employee'])
+            $data_employee[$i]['name_employee'] = "Вакансия";
+
         $data_employee[$i]['date_employment']=mkprettytime($row['date_employment'],false);
         $data_employee[$i]['date_transfer'] = mkprettytime($row['date_transfer'], false);
         $data_employee[$i]['date_entry'] = mkprettytime($row['date_entry'], false);
