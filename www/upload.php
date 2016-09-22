@@ -111,6 +111,7 @@ dbconn();
 
     // с какой строчки начинаем
     $t = 2;
+    $reserve_name = "Вакансия";
 
     if($_GET['type']=='upload_client' AND $_POST['step'] == 1) {
         //начинаем проверку загрузку файла
@@ -176,7 +177,7 @@ dbconn();
             $date_data = (int)$_GET['date_data'];
         }
         else {
-            die();
+
             $date_data = $date_data;
         }
     }
@@ -243,6 +244,11 @@ dbconn();
             /*ОБРАБАТЫВАЕМ СОТРУДНИКОВ*/
             //ФИО
             $employee = trim($data['1']);
+
+            // если вдруг пустые строчки
+            if(!$uid_post AND !$employee)
+                continue;
+
             // дата приема и перевода
             $date_employment = unix_time ($data['31']);
             $date_transfer = unix_time ($data['32']);
@@ -294,24 +300,35 @@ dbconn();
                     if($insert_established_post)
                         $insert_established_post .= ", ";
 
-                    if($insert_employee)
+                    if($insert_employee AND $employee != $reserve_name)
                         $insert_employee .= ", ";
                 }
                // $insert_employee .= ", ";
 
             }
-            if($insert_employee_no_ep AND $uid_post < 1){
+            if($insert_employee_no_ep AND $uid_post < 1 AND $employee != $reserve_name){
                 $insert_employee_no_ep .= ", ";
             }
 
-            if ($uid_post > 0) {
-                $insert_established_post .= "($uid_post, $date_entry, $draft, $transfer, " . $date_data . ")";
-                $insert_employee .= "('" . $employee . "', '$date_employment' ,'$date_transfer',  $fte, " . $date_data . ")";
+            if ($employee == $reserve_name) {
+                $vacancy = 1;
             }
+            else
+                $vacancy = 0;
+
+            if ($uid_post > 0) {
+                $insert_established_post .= "($uid_post, $date_entry, $draft, $transfer, ".$date_data.", ".$vacancy.")";
+                if (!$vacancy){
+                    $insert_employee .= "('" . $employee . "', '$date_employment' ,'$date_transfer',  $fte, " . $date_data . ")";
+                }
+            }
+
             else{
-                sql_query("INSERT INTO established_post (uid_post, date_entry, draft, transfer, added) VALUES ($uid_post, $date_entry, $draft, $transfer, " . $date_data . "); ") or sqlerr(__FILE__, __LINE__);
+                sql_query("INSERT INTO established_post (uid_post, date_entry, draft, transfer, added, vacancy) VALUES ($uid_post, $date_entry, $draft, $transfer, ".$date_data.", ".$vacancy." ); ") or sqlerr(__FILE__, __LINE__);
                 $id_ep = mysql_insert_id();
-                $insert_employee_no_ep .= "('" . $employee . "','".$id_ep."', '$date_employment' ,'$date_transfer',  $fte, " . $date_data . ")";
+                if (!$vacancy) {
+                    $insert_employee_no_ep .= "('" . $employee . "','" . $id_ep . "', '$date_employment' ,'$date_transfer',  $fte, " . $date_data . ")";
+                }
             }
             //$insert_employee .= "('" . $employee . "', '$date_employment' ,'$date_transfer',  $fte, " . $date_data . ")";
 
@@ -417,7 +434,7 @@ dbconn();
         /*ОБРАБАТЫВАЕМ СТРАТЕГИЧЕСКИЕ ПРОЕКТЫ*/
         $insert_project = processing_data ($array_project);
 
-        sql_query("INSERT INTO established_post (uid_post, date_entry, draft, transfer, added) VALUES ".$insert_established_post."; ") or sqlerr(__FILE__, __LINE__);
+        sql_query("INSERT INTO established_post (uid_post, date_entry, draft, transfer, added, vacancy) VALUES ".$insert_established_post."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO employee (name_employee, date_employment, date_transfer, fte, added) VALUES ".$insert_employee."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO employee (name_employee, id_uid_post, date_employment, date_transfer, fte, added) VALUES ".$insert_employee_no_ep."; ") or sqlerr(__FILE__, __LINE__);
         if($insert_model)
@@ -837,7 +854,7 @@ dbconn();
                 $update .= "`id_employee_model` = '".$id_model."'";
 
             }
-            if($update) {
+            if($update AND $id_employee >0) {
                 sql_query ("UPDATE `employee` SET $update WHERE `id` = $id_employee;") or sqlerr (__FILE__, __LINE__);
             }
 
