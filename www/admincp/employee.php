@@ -122,17 +122,21 @@ LEFT JOIN location_city ON location_city.id = location_address.id_city WHERE emp
         $data_city[] = $row_city;
     }
     //получаем список адресов
-    $res_address=sql_query("SELECT `id`,`name_address` FROM `location_address` WHERE id_city = ".$data['id_location_city'].";")  or sqlerr(__FILE__, __LINE__);
-    while ($row_address = mysql_fetch_array($res_address)){
-        $data_address[] = $row_address;
+    if($data['id_location_city']){
+        $res_address=sql_query("SELECT `id`,`name_address` FROM `location_address` WHERE id_city = ".$data['id_location_city'].";")  or sqlerr(__FILE__, __LINE__);
+        while ($row_address = mysql_fetch_array($res_address)){
+            $data_address[] = $row_address;
+        }
     }
     //получаем список мест
-    $res_place=sql_query("SELECT `id`,floor,room,place FROM `location_place` WHERE id_address = ".$data['id_location_address']."")  or sqlerr(__FILE__, __LINE__);
-    $i = 0;
-    while ($row_place = mysql_fetch_array($res_place)){
-        $data_place[$i]['id'] =  $row_place['id'];
-        $data_place[$i]['name_place'] =  "Этаж ".$row_place['floor'].", комната ".$row_place['room'].", место ".$row_place['place'];
-        $i++;
+    if($data['id_location_address']) {
+        $res_place = sql_query ("SELECT `id`,floor,room,place FROM `location_place` WHERE id_address = " . $data['id_location_address'] . "") or sqlerr (__FILE__, __LINE__);
+        $i = 0;
+        while ($row_place = mysql_fetch_array ($res_place)) {
+            $data_place[$i]['id'] = $row_place['id'];
+            $data_place[$i]['name_place'] = "Этаж " . $row_place['floor'] . ", комната " . $row_place['room'] . ", место " . $row_place['place'];
+            $i++;
+        }
     }
     //получаем функционала
     $res_functionality=sql_query("SELECT `id`,`name_functionality` FROM `functionality`")  or sqlerr(__FILE__, __LINE__);
