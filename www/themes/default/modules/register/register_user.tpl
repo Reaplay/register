@@ -59,7 +59,7 @@
 
             <tr data-id="{$employee.id}">
                 {if !$user_view.1}<td>{if $employee.uid_post}{$employee.uid_post}{else}Вне штата{/if}</td>{/if}
-                {if !$user_view.2}<td><a href="view.php?eid={$employee.e_id}">{$employee.name_employee}</a> <i class="fa fa-external-link"></i></td>{/if}
+                {if !$user_view.2}<td>{if $employee.e_id}<a href="view.php?eid={$employee.e_id}">{$employee.name_employee}</a> <i class="fa fa-external-link"></i>{else}Вакансия{/if}</td>{/if}
                 {if !$user_view.3}<td>{$employee.name_position}</td>{/if}
                 {if !$user_view.4}<td>{$employee.name_block}</td>{/if}
                 {if !$user_view.5}<td>{$employee.department.0}</td>{/if}
