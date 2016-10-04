@@ -30,7 +30,12 @@
                         <select class="form-control  select2" name="id_city" onchange="load_location(this,'address')">
                             <option value="0">Выберите город</option>
                             {foreach from=$data_city item=city}
-                                <option value="{$city.id}" {if $city.id == $data.id_location_city}selected="selected"{/if}>{$city.name_city}</option>
+                                <option value="{$city.id}"
+                                        {if $data.id_location_city AND $city.id == $data.id_location_city}selected="selected"
+                                        {elseif !$data.id_location_city AND $data.ep_id_location_city AND $city.id == $data.ep_id_location_city}
+                                        selected="selected"
+                                        {/if}
+                                        >{$city.name_city}</option>
                             {/foreach}
 
                         </select>

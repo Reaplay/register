@@ -102,7 +102,7 @@
 
         if (!$data)
             return '';
-
+        $data =  str_replace ("\"", "", $data);
         foreach ($array as $item) {
             if($item[$level]['name'] != $data)
                 return "'".$data."', '".$level."'";
@@ -655,7 +655,15 @@
         $data_established_post = select_data_base("established_post","uid_post","WHERE revision = 999999");
         $data_position = select_data_base("position","name_position");
         $data_block = select_data_base("block","name_block");
-        $data_department = select_data_base("department","name_department");
+     //   $data_department = select_data_base("department","name_department");
+
+        //ищем подразделения так, т.к. они вложенные
+        $res_dep = sql_query("SELECT id, name_department, level FROM department") or sqlerr(__FILE__, __LINE__);
+        while($row_dep = mysql_fetch_array($res_dep)){
+            $data_department[$row_dep['id']]['level'] = $row_dep['level'];
+            $data_department[$row_dep['id']]['name'] = $row_dep['name_department'];
+        }
+
         $data_direction = select_data_base("direction","name_direction");
         $data_rck = select_data_base("rck","name_rck");
         $data_mvz = select_data_base("mvz","name_mvz");
@@ -689,11 +697,18 @@
 
             unset($array_department);
          //   $array_department[] = (int)array_search(str_replace ("\"", "", $data['3']),$data_department);
-            $array_department[] = (int)array_search(str_replace ("\"", "", $data['4']),$data_department);
+        /*    $array_department[] = (int)array_search(str_replace ("\"", "", $data['4']),$data_department);
             $array_department[] = (int)array_search(str_replace ("\"", "", $data['6']),$data_department);
             $array_department[] = (int)array_search(str_replace ("\"", "", $data['7']),$data_department);
             $array_department[] = (int)array_search(str_replace ("\"", "", $data['8']),$data_department);
-            $array_department[] = (int)array_search(str_replace ("\"", "", $data['9']),$data_department);
+            $array_department[] = (int)array_search(str_replace ("\"", "", $data['9']),$data_department);*/
+
+            $array_department[] = search_deaprtment_array($data_department,trim($data['4']), 0);
+            $array_department[] = search_deaprtment_array($data_department,trim($data['6']), 1);
+            $array_department[] = search_deaprtment_array($data_department,trim($data['7']), 2);
+            $array_department[] = search_deaprtment_array($data_department,trim($data['8']), 3);
+            $array_department[] = search_deaprtment_array($data_department,trim($data['9']), 4);
+
             $id_department = "";
             foreach ($array_department as $array) {
                 if($array < 1)
@@ -781,7 +796,7 @@
 
         $data_position = select_data_base("position","name_position");
         $data_block = select_data_base("block","name_block");
-        $data_department = select_data_base("department","name_department");
+    //    $data_department = select_data_base("department","name_department");
         $data_direction = select_data_base("direction","name_direction");
         $data_rck = select_data_base("rck","name_rck");
         $data_mvz = select_data_base("mvz","name_mvz");
@@ -792,6 +807,13 @@
             $data_place[$row['id']] = $row['floor'] . "," . $row['room'] . "," . $row['place'] . "," . $row['date_ready'];
         }
 
+        //ищем подразделения так, т.к. они вложенные
+        $res_dep = sql_query("SELECT id, name_department, level FROM department") or sqlerr(__FILE__, __LINE__);
+        while($row_dep = mysql_fetch_array($res_dep)){
+
+            $data_department[$row_dep['id']] = $row_dep['name_department'].$row_dep['level'];
+
+        }
 
         //получаем существующие UID POST к которым привязаны люди
         $res_mgr=sql_query("SELECT employee.name_employee, established_post.id FROM employee LEFT JOIN established_post ON established_post.id = employee.id_uid_post;") or sqlerr(__FILE__, __LINE__);
@@ -890,11 +912,16 @@
 
                     unset($array_department);
                    // $array_department[] = (int)array_search(str_replace ("\"", "", $data['3']),$data_department);
-                    $array_department[] = (int)array_search(str_replace ("\"", "", $data['4']),$data_department);
+                   /* $array_department[] = (int)array_search(str_replace ("\"", "", $data['4']),$data_department);
                     $array_department[] = (int)array_search(str_replace ("\"", "", $data['6']),$data_department);
                     $array_department[] = (int)array_search(str_replace ("\"", "", $data['7']),$data_department);
                     $array_department[] = (int)array_search(str_replace ("\"", "", $data['8']),$data_department);
-                    $array_department[] = (int)array_search(str_replace ("\"", "", $data['9']),$data_department);
+                    $array_department[] = (int)array_search(str_replace ("\"", "", $data['9']),$data_department);*/
+                    $array_department[] = (int)array_search(str_replace ("\"", "", $data['4']."0"),$data_department);
+                    $array_department[] = (int)array_search(str_replace ("\"", "", $data['6']."1"),$data_department);
+                    $array_department[] = (int)array_search(str_replace ("\"", "", $data['7']."2"),$data_department);
+                    $array_department[] = (int)array_search(str_replace ("\"", "", $data['8']."3"),$data_department);
+                    $array_department[] = (int)array_search(str_replace ("\"", "", $data['9']."4"),$data_department);
                     $id_department = "";
                     foreach ($array_department as $array) {
                         if($array < 1)

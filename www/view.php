@@ -89,20 +89,21 @@ while($row = mysql_fetch_array($res)) {
 // делаем кликабельной дирекцию
     $data_employee[$i]['name_direction'] = "<a href='register.php?type=short&direction=".$data_employee[$i]['did']."'>".$data_employee[$i]['name_direction']."</a>";
 //$row['id_department'];
-
+if($row['id_department']) {
     $sub_res = sql_query ("SELECT department.id, department.name_department, /*department.id_parent,*/ type_office.name_office as type_office, department.level  FROM department LEFT JOIN type_office ON type_office.id = department.id_type_office WHERE department.id IN (" . $row['id_department'] . ")");
     //   $i=0;
     while ($sub_row = mysql_fetch_array ($sub_res)) {
-        $department[$sub_row['level']] = '<a href="register.php?type=short&department='.$sub_row['id'].'">'.$sub_row['name_department'].'</a>';
+        $department[$sub_row['level']] = '<a href="register.php?type=short&department=' . $sub_row['id'] . '">' . $sub_row['name_department'] . '</a>';
     }
 
     ksort ($department);
-   /* foreach ($department as $val) {
-        if ($data_department)
-            $data_department .= ", ";
-        $data_department .= $val;
-    }*/
+    /* foreach ($department as $val) {
+         if ($data_department)
+             $data_department .= ", ";
+         $data_department .= $val;
+     }*/
     $data_employee[$i]['department'] = $department;
+}
 //определеяем где сидит функц. рукль;
     $cur_res = sql_query ("SELECT name_rck FROM rck LEFT JOIN employee ON employee.id = " . $row['id_administrative_manager'] . " LEFT JOIN established_post ON established_post.id = employee.id_uid_post WHERE rck.id = established_post.id_rck");
     $cur_row = mysql_fetch_array ($cur_res);

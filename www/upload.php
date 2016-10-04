@@ -178,7 +178,7 @@ dbconn();
         }
         else {
 
-            $date_data = $date_data;
+            $date_data = time();
         }
     }
 
@@ -477,7 +477,7 @@ dbconn();
         }
 
         $data_established_post = select_data_base("established_post","uid_post");
-        $data_department = select_data_base("department","name_department");
+       // $data_department = select_data_base("department","name_department");
         $data_block = select_data_base("block","name_block");
         $data_direction = select_data_base("direction","name_direction");
         $data_position = select_data_base("position","name_position");
@@ -495,6 +495,13 @@ dbconn();
             $data_place[$row['id']]=$row['floor'].",".$row['room'].",".$row['place'].",".$row['date_ready'];
 
         }
+        //ищем подразделения так, т.к. они вложенные
+        $res_dep = sql_query("SELECT id, name_department, level FROM department") or sqlerr(__FILE__, __LINE__);
+        while($row_dep = mysql_fetch_array($res_dep)){
+
+            $data_department[$row_dep['id']] = $row_dep['name_department'].$row_dep['level'];
+
+        }
 
 
         //обозначаем массивы для использования
@@ -506,7 +513,7 @@ dbconn();
         $used_address = array();
         $used_id_office = array();
 
-        for ($i = $t; $i < count($mass); $i++) {
+         for ($i = $t; $i < count($mass); $i++) {
 
 
 
@@ -525,12 +532,12 @@ dbconn();
             // ищем вложенные подразделения
             $id_block = (int)array_search(str_replace("\"","",$data['3']),$data_block);
             unset($array_department);
-            $array_department[] = (int)array_search(str_replace ("\"", "", $data['3']),$data_department);
-            $array_department[] = (int)array_search(str_replace ("\"", "", $data['4']),$data_department);
-            $array_department[] = (int)array_search(str_replace ("\"", "", $data['6']),$data_department);
-            $array_department[] = (int)array_search(str_replace ("\"", "", $data['7']),$data_department);
-            $array_department[] = (int)array_search(str_replace ("\"", "", $data['8']),$data_department);
-            $array_department[] = (int)array_search(str_replace ("\"", "", $data['9']),$data_department);
+            //$array_department[] = (int)array_search(str_replace ("\"", "", $data['3']."0"),$data_department);
+            $array_department[] = (int)array_search(str_replace ("\"", "", $data['4']."0"),$data_department);
+            $array_department[] = (int)array_search(str_replace ("\"", "", $data['6']."1"),$data_department);
+            $array_department[] = (int)array_search(str_replace ("\"", "", $data['7']."2"),$data_department);
+            $array_department[] = (int)array_search(str_replace ("\"", "", $data['8']."3"),$data_department);
+            $array_department[] = (int)array_search(str_replace ("\"", "", $data['9']."4"),$data_department);
             $id_department = "";
             foreach ($array_department as $array) {
                 if($array < 1)
@@ -542,7 +549,27 @@ dbconn();
                 $id_department .= $array;
             }
 
-            // обрабатываем ДО/ОО
+
+
+           /* $array_department[] = search_deaprtment_array($data_department,trim($data['4']), 0);
+            $array_department[] = search_deaprtment_array($data_department,trim($data['6']), 1);
+            $array_department[] = search_deaprtment_array($data_department,trim($data['7']), 2);
+            $array_department[] = search_deaprtment_array($data_department,trim($data['8']), 3);
+            $array_department[] = search_deaprtment_array($data_department,trim($data['9']), 4);
+
+            $id_department = "";
+            foreach ($array_department as $array) {
+                if($array < 1)
+                    continue;
+
+                if($id_department)
+                    $id_department .= ",";
+
+                $id_department .= $array;
+            }
+*/
+
+     // обрабатываем ДО/ОО
            $id_type_office = (int)array_search($data['5'],$data_type_office);
            $id_office =  (int)array_search(str_replace ("\"", "", $data['6']),$data_department);
 

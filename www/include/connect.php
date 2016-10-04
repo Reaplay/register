@@ -15,7 +15,7 @@ define('IN_SITE', true);
 @ini_set('ignore_repeated_errors', '1');
 @session_start();
 date_default_timezone_set('Europe/Moscow');
-date_default_timezone_set(date_default_timezone_get());
+//date_default_timezone_set(date_default_timezone_get());
 /**
  * Full path to releaser sources
  * @var string

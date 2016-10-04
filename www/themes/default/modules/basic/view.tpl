@@ -52,7 +52,7 @@ FTE (процент занятости): <b>{$employee}</b> <br>
 *}
 {if $date_history}
 <div class="alert alert-danger margin-bottom-30">
-    <strong>Внимание</strong> Вы просматриваете исторические данные от {$date_history}
+    <strong>Внимание</strong> Вы просматриваете исторические данные за {$date_history}
 
 </div>
 {/if}
@@ -62,7 +62,12 @@ FTE (процент занятости): <b>{$employee}</b> <br>
         <label>{$smarty.foreach.count_emp.index + 1}. {$employee.em_name}</label>
         <div class="toggle-content" style="display: none;">
     {/if}
-
+{if $date_history}
+    <div class="alert alert-default margin-bottom-30"><!-- DEFAULT -->
+        Последнее измнение сотрудника: {$employee.r_emp_lu} <br />
+        Последнее измнение ШЕ: {$employee.rep_lu}
+    </div>
+{/if}
     <div class="row">
     <div class="col-md-6">
 
@@ -147,9 +152,9 @@ FTE (процент занятости): <b>{$employee}</b> <br>
                             </thead>
                                 <tbody>
                                     <tr>
-                                        <td>{if $employee.ready}Да{else}Нет{/if} {if $employee.date_ready}({$employee.date_ready}){/if}</td>
-                                        <td>{if $employee.reservation}Да{else}Нет{/if} {if $employee.date_reservation}({$employee.date_reservation}){/if}</td>
-                                        <td>{if $employee.occupy}Да{else}Нет{/if} {if $employee.date_occupy}({$employee.date_occupy}){/if}</td>
+                                        <td>{if $employee.ready}Да{/if} {if $employee.date_ready}({$employee.date_ready}){/if}</td>
+                                        <td>{if $employee.reservation}Да{/if} {if $employee.date_reservation}({$employee.date_reservation}){/if}</td>
+                                        <td>{if $employee.occupy}Да{/if} {if $employee.date_occupy}({$employee.date_occupy}){/if}</td>
                                     </tr>
                                 </tbody>
                         </table>

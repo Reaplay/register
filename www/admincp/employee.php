@@ -87,7 +87,7 @@ $id = (int)$_GET['id'];
     //получаем данные сотрудника
     $res=sql_query("
 SELECT employee.*, location_city.name_city, location_address.name_address, location_place.floor, location_place.place, location_place.room, functionality.name_functionality, strategic_project.id as id_strategic_poject, location_address.id as id_location_address, location_city.id as id_location_city,
-established_post.id as id_uid_post
+established_post.id as id_uid_post, established_post.id_location_city as ep_id_location_city
 FROM `employee`
 LEFT JOIN functionality ON functionality.id = employee.id_functionality
 LEFT JOIN established_post ON established_post.id = employee.id_uid_post
