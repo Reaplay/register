@@ -204,7 +204,8 @@ dbconn();
         sql_query("TRUNCATE `revision_established_post`;");
         sql_query("TRUNCATE `revision_employee`;");
         $count = 0;
-
+        $i_ie = 1;
+        $i_ep = 1;
         //сначала формируем список основных данных, которые загонять будем в базу
         for ($i = $t; $i < count ($mass); $i++,$count++) {
 
@@ -317,17 +318,20 @@ dbconn();
                 $vacancy = 0;
 
             if ($uid_post > 0) {
-                $insert_established_post .= "($uid_post, $date_entry, $draft, $transfer, ".$date_data.", ".$vacancy.")";
+                $insert_established_post .= "('" . $i_ep . "',$uid_post, $date_entry, $draft, $transfer, ".$date_data.", ".$vacancy.",".$date_data.")";
+                $i_ep++;
                 if (!$vacancy){
-                    $insert_employee .= "('" . $employee . "', '$date_employment' ,'$date_transfer',  $fte, " . $date_data . ")";
+                    $insert_employee .= "('" . $i_ie . "','" . $employee . "', '$date_employment' ,'$date_transfer',  $fte, " . $date_data . ", " . $date_data . ")";
+                    $i_ie++;
                 }
             }
 
             else{
-                sql_query("INSERT INTO established_post (uid_post, date_entry, draft, transfer, added, vacancy) VALUES ($uid_post, $date_entry, $draft, $transfer, ".$date_data.", ".$vacancy." ); ") or sqlerr(__FILE__, __LINE__);
+                sql_query("INSERT INTO established_post (id_ep,uid_post, date_entry, draft, transfer, added, date_start, vacancy) VALUES ('" . $i_ep . "',$uid_post, $date_entry, $draft, $transfer, ".$date_data.", ".$date_data.", ".$vacancy." ); ") or sqlerr(__FILE__, __LINE__);
                 $id_ep = mysql_insert_id();
                 if (!$vacancy) {
-                    $insert_employee_no_ep .= "('" . $employee . "','" . $id_ep . "', '$date_employment' ,'$date_transfer',  $fte, " . $date_data . ")";
+                    $insert_employee_no_ep .= "('" . $i_ie . "','" . $employee . "','" . $id_ep . "', '$date_employment' ,'$date_transfer',  $fte, " . $date_data . ", " . $date_data . ")";
+                    $i_ie++;
                 }
             }
             //$insert_employee .= "('" . $employee . "', '$date_employment' ,'$date_transfer',  $fte, " . $date_data . ")";
@@ -434,9 +438,9 @@ dbconn();
         /*ОБРАБАТЫВАЕМ СТРАТЕГИЧЕСКИЕ ПРОЕКТЫ*/
         $insert_project = processing_data ($array_project);
 
-        sql_query("INSERT INTO established_post (uid_post, date_entry, draft, transfer, added, vacancy) VALUES ".$insert_established_post."; ") or sqlerr(__FILE__, __LINE__);
-        sql_query("INSERT INTO employee (name_employee, date_employment, date_transfer, fte, added) VALUES ".$insert_employee."; ") or sqlerr(__FILE__, __LINE__);
-        sql_query("INSERT INTO employee (name_employee, id_uid_post, date_employment, date_transfer, fte, added) VALUES ".$insert_employee_no_ep."; ") or sqlerr(__FILE__, __LINE__);
+        sql_query("INSERT INTO established_post (id_ep, uid_post, date_entry, draft, transfer, added, vacancy, date_start) VALUES ".$insert_established_post."; ") or sqlerr(__FILE__, __LINE__);
+        sql_query("INSERT INTO employee (id_employee, name_employee, date_employment, date_transfer, fte, added, date_start) VALUES ".$insert_employee."; ") or sqlerr(__FILE__, __LINE__);
+        sql_query("INSERT INTO employee (id_employee, name_employee, id_uid_post, date_employment, date_transfer, fte, added, date_start) VALUES ".$insert_employee_no_ep."; ") or sqlerr(__FILE__, __LINE__);
         if($insert_model)
             sql_query("INSERT INTO employee_model (name_model,added) VALUES ".$insert_model."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO position (name_position, added) VALUES ".$insert_position."; ") or sqlerr(__FILE__, __LINE__);
@@ -469,7 +473,7 @@ dbconn();
         $data_mvz = select_data_base("mvz","name_mvz");
         $data_employee_rc = select_data_base("employee","name_employee");
         //Запрос для сотрудников, если вдруг есть схожие ФИО
-        $res_emp=sql_query("SELECT id, name_employee, date_employment   FROM employee;")  or sqlerr(__FILE__, __LINE__);
+        $res_emp=sql_query("SELECT id, name_employee, date_employment  FROM employee;")  or sqlerr(__FILE__, __LINE__);
 
         while($row_emp = mysql_fetch_array($res_emp)){
 

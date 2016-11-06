@@ -91,8 +91,27 @@ LEFT JOIN mvz ON mvz.id = established_post.id_mvz
     }
 
 
-    $paginator = create_paginator($_GET['page'],$REL_CONFIG['per_page_employee'],'established_post',$left_join, $where);
+
 // получаем основной список сотрудников
+    $paginator = create_paginator($_GET['page'],$REL_CONFIG['per_page_employee'],'established_post',$left_join, $where);
+    $date_history = unix_time($_GET['date_history']);;
+    if($date_history){
+
+        $ress = sql_query("SELECT id FROM established_post WHERE date_start <=$date_history AND date_end <$date_history  GROUP BY id_ep ORDER BY date_end DESC ".$paginator['limit']."") or sqlerr(__FILE__, __LINE__);
+        while ($roww = mysql_fetch_array($ress)) {
+            if($sub_id)
+                $sub_id .=",";
+
+            $sub_id .= $roww['id'];
+        }
+        $where = "AND `established_post`.`id` IN ($sub_id)" ;
+        $add_link .="&date_history=".$_GET['date_history'];
+    }
+    else {
+        $from = "`established_post`";
+        $where = "AND employee.current = 1 AND established_post.current = 1";
+    }
+
 
     $res=sql_query("
 SELECT
@@ -105,9 +124,10 @@ location_city.name_city,
 location_address.name_address,
 location_place.floor,location_place.room,location_place.place,location_place.ready, location_place.date_ready, location_place.reservation, location_place.date_reservation, location_place.occupy,location_place.date_occupy
 
-FROM `established_post`
+FROM established_post
 $left_join
-WHERE IF(established_post.vacancy = 0, employee.is_deleted = 0,established_post.vacancy = 1 )    $where
+WHERE IF(established_post.vacancy = 0, employee.is_deleted = 0,established_post.vacancy = 1 )     $where
+GROUP BY id_ep
 ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
         stderr("Ошибка","Люди в  базе не обнаружены","no");
