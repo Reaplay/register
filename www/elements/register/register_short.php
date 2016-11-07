@@ -98,7 +98,11 @@ LEFT JOIN mvz ON mvz.id = established_post.id_mvz
 
     if($date_history){
 
-        $ress = sql_query("SELECT id FROM established_post WHERE date_start <=$date_history AND date_end <$date_history  GROUP BY id_ep ORDER BY date_end DESC ") or sqlerr(__FILE__, __LINE__);
+        $ress = sql_query("SELECT id FROM established_post WHERE date_start <=$date_history AND date_end > $date_history  GROUP BY id_ep ORDER BY date_end DESC ") or sqlerr(__FILE__, __LINE__);
+        if(mysql_num_rows($ress ) == 0){
+            stderr("Ошибка","Люди в  базе не обнаружены","no");
+        }
+
         while ($roww = mysql_fetch_array($ress)) {
             if($sub_id)
                 $sub_id .=",";

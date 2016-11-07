@@ -899,20 +899,38 @@
                     if($update !=0){
 
 
-                        sql_query("INSERT INTO employee
+                        sql_query("
+
+                        INSERT INTO employee (
+                        `name_employee`, `id_uid_post`, `id_location_place`,
+                        `email`, `date_employment`, `date_transfer`,
+                        `id_functionality`, `added`, `last_update`,
+                        `fte`, `id_strategic_project`,
+                        `id_employee_model`,  `revision`,
+                        `id_user_change`, `id_employee`,
+                         `date_start`)
+                        VALUES (
+                        '".$data_emp['name_employee']."', '".$data_esp['id']."','".$location_place."',
+                        '".$data_emp['email']."','".$data_emp['date_employment']."','".$date_transfer."',
+                        '".$id_functionality."','".$data_emp['added']."','".$date_data."',
+                        '".$fte."','".$id_project."',
+                        '".$id_employee_model."','".$data_emp['revision']."' + 1,
+                        '".$CURUSER['id']."','".$data_emp['id_employee']."',
+                        '".$date_data."'
+                        );"
+
+) or sqlerr(__FILE__, __LINE__);
+
+                      /*  sql_query("INSERT INTO employee
 (
  `name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change`, `id_employee`)
 SELECT
-`name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change`,`id_employee` FROM employee WHERE employee.id =  '".$data_emp['id']."';") or sqlerr(__FILE__, __LINE__);
-                        $last_id = mysql_insert_id();
-                        sql_query("UPDATE `employee` SET `id_uid_post` = '".$data_esp['id']."',  `id_location_place` = '".$location_place."',  `date_transfer` = '".$date_transfer."', `id_functionality` = '".$id_functionality."', `fte` = '".$fte."',  `id_strategic_project` = '".$id_project."',  `id_employee_model` = '".$id_employee_model."',  `last_update` = '".$date_data."',  `revision` = `revision` + 1,  `id_user_change` = '".$CURUSER['id']."', `date_start` = '".$date_data."'   WHERE `id` ='".$last_id."';") or sqlerr(__FILE__, __LINE__);
+`name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change`,`id_employee` FROM employee WHERE employee.id =  '".$data_emp['id']."';") or sqlerr(__FILE__, __LINE__);*/
+                      //  $last_id = mysql_insert_id();
+                      /*  sql_query("UPDATE `employee` SET `id_uid_post` = '".$data_esp['id']."',  `id_location_place` = '".$location_place."',  `date_transfer` = '".$date_transfer."', `id_functionality` = '".$id_functionality."', `fte` = '".$fte."',  `id_strategic_project` = '".$id_project."',  `id_employee_model` = '".$id_employee_model."',  `last_update` = '".$date_data."',  `revision` = `revision` + 1,  `id_user_change` = '".$CURUSER['id']."', `date_start` = '".$date_data."'   WHERE `id` ='".$last_id."';") or sqlerr(__FILE__, __LINE__);*/
                         //обновляем
                         sql_query("UPDATE `employee` SET `last_update` = '".$date_data."', `id_user_change` = '".$CURUSER['id']."', `current` = '0', `date_end` = '".$date_data."'   WHERE `id` ='".$data_emp['id']."';") or sqlerr(__FILE__, __LINE__);
 
-                        if($data_emp['id_uid_post'] == 2605){
-                            print $update;
-                            die();
-                        }
 
 /*
  * sql_query("INSERT INTO revision_employee (`id_employee`, `name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change`) SELECT `id`, `name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change` FROM employee WHERE employee.id =  '".$data_emp['id']."';") or sqlerr(__FILE__, __LINE__);
@@ -1019,7 +1037,7 @@ SELECT
 
 
                     if($update !=0){
-
+                        $last_id = 0;
                         sql_query("
 INSERT INTO established_post (`uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`,`revision`,`id_ep`)SELECT `uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`, `revision`,`id_ep`  FROM established_post WHERE established_post.id =  '".$data_esp['id']."';") or sqlerr(__FILE__, __LINE__);
                         $last_id = mysql_insert_id();
@@ -1041,7 +1059,7 @@ INSERT INTO established_post (`uid_post`, `id_position`, `id_block`, `id_departm
 
         foreach($array_not_used_emp as $a){
             if((int)$a >0){
-
+                $last_id = 0;
 
                 sql_query("INSERT INTO employee(`name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change`, `id_employee`) SELECT `name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change`,`id_employee` FROM employee WHERE employee.id =  '".$a."';") or sqlerr(__FILE__, __LINE__);
                 $last_id = mysql_insert_id();
@@ -1060,6 +1078,7 @@ INSERT INTO established_post (`uid_post`, `id_position`, `id_block`, `id_departm
         unset($query);*/
         foreach($array_not_used_esp as $a){
             if((int)$a >0){
+                $last_id = 0;
                 sql_query("INSERT INTO established_post (`uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`,`revision`,`id_ep`)SELECT `uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`, `revision`,`id_ep`  FROM established_post WHERE established_post.id =  '".$a."';") or sqlerr(__FILE__, __LINE__);
                 $last_id = mysql_insert_id();
                 sql_query("UPDATE `established_post` SET `revision` = `revision` +1, `date_start` = '".time()."'   WHERE `id` ='".$last_id."';") or sqlerr(__FILE__, __LINE__);
