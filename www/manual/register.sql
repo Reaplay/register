@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Сен 04 2016 г., 22:18
+-- Время создания: Ноя 16 2016 г., 00:51
 -- Версия сервера: 5.5.25
 -- Версия PHP: 5.5.37
 
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `block` (
   `added` int(11) NOT NULL DEFAULT '0',
   `last_update` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -39,31 +39,6 @@ CREATE TABLE IF NOT EXISTS `cache_stats` (
   `cache_value` text,
   PRIMARY KEY (`cache_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Дамп данных таблицы `cache_stats`
---
-
-INSERT INTO `cache_stats` (`cache_name`, `cache_value`) VALUES
-  ('adminemail', 'svdodonov@alfabank.ru'),
-  ('cache_template', '0'),
-  ('cache_template_time', '200'),
-  ('debug_mode', '1'),
-  ('defaultbaseurl', 'register'),
-  ('default_theme', 'default'),
-  ('deny_statistic', '1'),
-  ('per_page_department', '30'),
-  ('per_page_direction', '30'),
-  ('per_page_employee', '30'),
-  ('per_page_established_post', '30'),
-  ('per_page_mvz', '30'),
-  ('per_page_position', '30'),
-  ('siteemail', 'svdodonov@alfabank.ru'),
-  ('siteonline', '1'),
-  ('site_timezone', '4'),
-  ('use_blocks', '1'),
-  ('use_gzip', '1'),
-  ('yourcopy', '© {datenow} Используйте на свой страх и риск');
 
 -- --------------------------------------------------------
 
@@ -79,21 +54,13 @@ CREATE TABLE IF NOT EXISTS `changelog` (
   `text` text NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- Дамп данных таблицы `changelog`
---
-
-INSERT INTO `changelog` (`id`, `added`, `date`, `rev`, `text`) VALUES
-  (1, 1463399298, 1463342400, '0.0.1', '<p>Начаты работы по реестру<br></p>');
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 -- --------------------------------------------------------
 
 --
 -- Структура таблицы `department`
 --
-
 
 CREATE TABLE IF NOT EXISTS `department` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
@@ -103,8 +70,9 @@ CREATE TABLE IF NOT EXISTS `department` (
   `id_type_office` smallint(3) NOT NULL DEFAULT '0',
   `level` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  UNIQUE KEY `id` (`id`),
+  KEY `level` (`level`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=375 ;
 
 -- --------------------------------------------------------
 
@@ -119,8 +87,9 @@ CREATE TABLE IF NOT EXISTS `direction` (
   `added` int(10) NOT NULL DEFAULT '0',
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  PRIMARY KEY (`id`),
+  KEY `id_employee` (`id_employee`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
 
 -- --------------------------------------------------------
 
@@ -146,8 +115,13 @@ CREATE TABLE IF NOT EXISTS `employee` (
   `id_parent_ee` int(10) NOT NULL,
   `revision` int(10) NOT NULL DEFAULT '1',
   `id_user_change` int(10) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  `id_employee` int(10) NOT NULL,
+  `date_end` int(10) NOT NULL DEFAULT '1767139200' COMMENT 'Стоит дата 31/12/2025. Надеюсь до этого будет переделана все это в рамках Альфа 4.0 или что-там будет через 9 лет',
+  `current` tinyint(2) NOT NULL DEFAULT '1',
+  `date_start` int(10) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_uid_post` (`id_uid_post`,`id_location_place`,`id_functionality`,`id_strategic_project`,`id_employee_model`,`id_employee`,`date_end`,`current`,`date_start`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4726 ;
 
 -- --------------------------------------------------------
 
@@ -162,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `employee_model` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -192,8 +166,13 @@ CREATE TABLE IF NOT EXISTS `established_post` (
   `revision` int(10) NOT NULL DEFAULT '1',
   `id_user_change` int(11) NOT NULL DEFAULT '0',
   `vacancy` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  `current` tinyint(2) NOT NULL DEFAULT '1',
+  `date_start` int(11) NOT NULL,
+  `date_end` int(11) NOT NULL DEFAULT '1767139200',
+  `id_ep` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_position` (`id_position`,`id_block`,`id_department`,`id_direction`,`id_rck`,`id_mvz`,`id_location_city`,`current`,`date_start`,`date_end`,`id_ep`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7256 ;
 
 -- --------------------------------------------------------
 
@@ -208,8 +187,9 @@ CREATE TABLE IF NOT EXISTS `functionality` (
   `added` int(10) NOT NULL DEFAULT '0',
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  PRIMARY KEY (`id`),
+  KEY `id_parent` (`id_parent`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=97 ;
 
 -- --------------------------------------------------------
 
@@ -224,8 +204,9 @@ CREATE TABLE IF NOT EXISTS `location_address` (
   `added` int(10) DEFAULT NULL,
   `last_update` int(10) DEFAULT NULL,
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  PRIMARY KEY (`id`),
+  KEY `id_city` (`id_city`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
 
 -- --------------------------------------------------------
 
@@ -241,7 +222,7 @@ CREATE TABLE IF NOT EXISTS `location_city` (
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   `co` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=69 ;
 
 -- --------------------------------------------------------
 
@@ -264,8 +245,9 @@ CREATE TABLE IF NOT EXISTS `location_place` (
   `added` int(10) NOT NULL DEFAULT '0',
   `last_update` int(10) DEFAULT NULL,
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  PRIMARY KEY (`id`),
+  KEY `id_address` (`id_address`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=353 ;
 
 -- --------------------------------------------------------
 
@@ -280,8 +262,9 @@ CREATE TABLE IF NOT EXISTS `mvz` (
   `added` int(10) NOT NULL DEFAULT '0',
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  PRIMARY KEY (`id`),
+  KEY `id_rck` (`id_rck`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=48 ;
 
 -- --------------------------------------------------------
 
@@ -322,8 +305,9 @@ CREATE TABLE IF NOT EXISTS `position` (
   `last_update` int(10) DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  UNIQUE KEY `id` (`id`),
+  KEY `is_head` (`is_head`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=96 ;
 
 -- --------------------------------------------------------
 
@@ -338,7 +322,7 @@ CREATE TABLE IF NOT EXISTS `rck` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 -- --------------------------------------------------------
 
@@ -366,7 +350,7 @@ CREATE TABLE IF NOT EXISTS `revision_employee` (
   `revision` int(10) NOT NULL DEFAULT '1',
   `id_user_change` int(10) NOT NULL DEFAULT '0',
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -397,7 +381,7 @@ CREATE TABLE IF NOT EXISTS `revision_established_post` (
   `revision` int(10) NOT NULL,
   `id_user_change` int(11) NOT NULL DEFAULT '0',
   UNIQUE KEY `id` (`id_revision`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -433,7 +417,7 @@ CREATE TABLE IF NOT EXISTS `strategic_project` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_delete` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 -- --------------------------------------------------------
 
@@ -448,7 +432,7 @@ CREATE TABLE IF NOT EXISTS `type_office` (
   `last_update` int(10) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -479,7 +463,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `added` (`added`),
   KEY `ip` (`ip`),
   KEY `user` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=2 ;
 
 -- --------------------------------------------------------
 
@@ -492,11 +476,8 @@ CREATE TABLE IF NOT EXISTS `user_group` (
   `name` varchar(255) NOT NULL,
   `load_data` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
---
--- Дамп данных таблицы `user_group`
---
 
 INSERT INTO `user_group` (`id`, `name`, `load_data`) VALUES
   (1, 'Администраторская', 'basic, sap'),
