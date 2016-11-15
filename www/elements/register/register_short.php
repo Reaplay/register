@@ -131,7 +131,7 @@ LEFT JOIN mvz ON mvz.id = established_post.id_mvz
     $res=sql_query("
 SELECT
 established_post.id,established_post.uid_post,established_post.id_position, established_post.id_functional_manager, established_post.id_administrative_manager, established_post.draft,established_post.transfer, established_post.date_entry, established_post.id_direction, established_post.id_department, established_post.id_block,
-employee.name_employee,employee.id as e_id, employee.id_functionality, employee.date_transfer, employee.date_employment, employee.fte, employee.id_strategic_project, employee.id_employee_model,
+employee.name_employee,employee.id_employee as e_id, employee.id_functionality, employee.date_transfer, employee.date_employment, employee.fte, employee.id_strategic_project, employee.id_employee_model,
 direction.name_direction,
 rck.name_rck,
 mvz.name_mvz,
