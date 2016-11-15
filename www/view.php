@@ -25,7 +25,7 @@ elseif($_GET['eid']){
     if(!is_valid_id($_GET['eid'])){
         stderr("Ошибка","Не правильный идентификатор");
     }
-    $WHERE = "employee.id='".$_GET['eid']."' AND employee.is_deleted = 0";
+    $WHERE = "employee.id_employee='".$_GET['eid']."' AND employee.is_deleted = 0 AND employee.current = 1";
 }
     else
         stderr("Ошибка","Не правильный идентификатор");
