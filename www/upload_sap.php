@@ -793,8 +793,353 @@
     }
 
     //Проверка ШЕ и сотрудников на изменения. Если есть, то копия в таблицу ревизий и обновление записей
-
     if($_GET['step'] == '6') {
+
+
+        /*
+         * сначала формируем справочники по которым будем проставлять значения
+         *
+         * */
+        //выбираем всех сотрудников
+        $res_emp=sql_query("SELECT * FROM employee WHERE is_deleted = 0 AND `current` = 1;") or sqlerr(__FILE__, __LINE__);
+
+        while($row_emp = mysql_fetch_array($res_emp)){
+            //так формируем массив, что бы не попали полные тезки. вероятность того, что 2 человека с одним ФИО будут приняты в один день - маловероятна
+            $array_emp[$row_emp['name_employee'].$row_emp['date_employment']]=$row_emp;
+            $array_all_emp[] = $row_emp['id'];
+        }
+
+        //выбираем всех штатников
+        $res_esp=sql_query("SELECT * FROM established_post WHERE established_post.uid_post !=0 AND established_post.is_deleted = 0 AND `current` = 1;") or sqlerr(__FILE__, __LINE__);
+
+        while($row_esp = mysql_fetch_array($res_esp)){
+            $array_esp[$row_esp['uid_post']]=$row_esp;
+            $array_all_esp[] = $row_esp['id'];
+        }
+
+        //загружаем справочники
+        $data_functionality = select_data_base("functionality","name_functionality","WHERE id_parent != 0");
+        $data_project = select_data_base("strategic_project","name_project");
+        $data_model = select_data_base("employee_model","name_model");
+
+        $data_position = select_data_base("position","name_position");
+        $data_block = select_data_base("block","name_block");
+        //    $data_department = select_data_base("department","name_department");
+        $data_direction = select_data_base("direction","name_direction");
+        $data_rck = select_data_base("rck","name_rck");
+        $data_mvz = select_data_base("mvz","name_mvz");
+        $data_city = select_data_base("location_city","name_city");
+
+        $res=sql_query("SELECT id, floor, room, place, date_ready FROM location_place;")  or sqlerr(__FILE__, __LINE__);
+        while($row = mysql_fetch_array($res)) {
+            $data_place[$row['id']] = $row['floor'] . "," . $row['room'] . "," . $row['place'] . "," . $row['date_ready'];
+        }
+
+        //ищем подразделения так, т.к. они вложенные
+        $res_dep = sql_query("SELECT id, name_department, level FROM department") or sqlerr(__FILE__, __LINE__);
+        while($row_dep = mysql_fetch_array($res_dep)){
+
+            $data_department[$row_dep['id']] = $row_dep['name_department'].$row_dep['level'];
+
+        }
+
+        //получаем существующие UID POST к которым привязаны люди
+        $res_mgr=sql_query("SELECT employee.name_employee, established_post.id FROM employee LEFT JOIN established_post ON established_post.id = employee.id_uid_post WHERE established_post.`current` = 1 AND employee.`current` = 1 ;") or sqlerr(__FILE__, __LINE__);
+
+        while($row_mgr = mysql_fetch_array($res_mgr)){
+
+            $data_mgr[$row_mgr['id']]=$row_mgr['name_employee'];
+        }
+
+
+        for ($i = $t; $i < count ($mass); $i++) {
+
+            $mass[$i] = mb_convert_encoding ($mass[$i], 'utf-8', "cp1251");
+            $data = str_getcsv($mass[$i],";");
+
+            //пропускаем всех внештатников
+            $uid_post = (int)$data['0'];
+            if($uid_post < 1){
+                continue;
+            }
+
+
+            //ищем в массивах ID принадлежащие людям и ШЕ
+            $data_emp = $array_emp[trim($data['1']).unix_time ($data['31'])];
+            if(!$data_emp)
+                $data_emp = $array_emp[trim($data['1']).unix_time (0)];
+
+            $data_esp = $array_esp[trim($data['0'])];
+
+
+
+            $ss = 10;
+            //  print_r ($data_emp);
+            //проверяем что сотрудник есть, если да, то проверяем данные
+            if($data_emp AND trim($data['1']) != $reserve_name AND $ss = 50){
+
+                $update = 0;
+
+                $array_used_emp[] = $data_emp['id'];
+
+                //прописываем данные для удобства
+                $location_place = (int)array_search(trim("".$data['35'].",".$data['36'].",".$data['37'].",".unix_time($data['39']).""),$data_place);
+                $date_transfer = unix_time ($data['32']);
+                $date_employment = unix_time ($data['31']);
+                $id_functionality = (int)array_search(trim($data['20']),$data_functionality);
+                $fte = str_replace(",",".",$data['28']);
+                $id_project = (int)array_search(trim($data['21']),$data_project);
+                if ($data_model)
+                    $id_employee_model = (int)array_search(trim($data['24']),$data_model);
+
+                if($data_esp['id'] != $data_emp['id_uid_post']){
+                    $update = 1;
+                }
+                if($location_place != $data_emp['id_location_place']){
+                    $update = 2;
+                }
+                if($date_transfer != $data_emp['date_transfer']){
+                    $update = 4;
+                }
+                if($id_functionality != $data_emp['id_functionality']){
+                    $update = 5;
+                }
+                if($fte != $data_emp['fte']){
+                    $update = 6;
+                }
+                if($id_project != $data_emp['id_strategic_project']){
+                    $update = 7;
+                }
+                if($id_employee_model != $data_emp['id_employee_model']){
+                    $update = 8;
+                }
+                if($data_emp['vacancy'] != 0){
+                    $update = 9;
+                }
+                if($data_emp['date_employment'] != $date_employment){
+                    $update = 10;
+                }
+
+                // если были многочисленные изменения, то обновляем запись, плюс копируем в ревизии
+                if($update !=0){
+
+
+                    sql_query("
+
+                        INSERT INTO employee (
+                        `name_employee`, `id_uid_post`, `id_location_place`,
+                        `email`, `date_employment`, `date_transfer`,
+                        `id_functionality`, `added`, `last_update`,
+                        `fte`, `id_strategic_project`,
+                        `id_employee_model`,  `revision`,
+                        `id_user_change`, `id_employee`,
+                         `date_start`)
+                        VALUES (
+                        '".$data_emp['name_employee']."', '".$data_esp['id']."','".$location_place."',
+                        '".$data_emp['email']."','".$date_employment."','".$date_transfer."',
+                        '".$id_functionality."','".$data_emp['added']."','".$date_data."',
+                        '".$fte."','".$id_project."',
+                        '".$id_employee_model."','".$data_emp['revision']."' + 1,
+                        '".$CURUSER['id']."','".$data_emp['id_employee']."',
+                        '".$date_data."'
+                        );"
+
+                    ) or sqlerr(__FILE__, __LINE__);
+
+                    /*  sql_query("INSERT INTO employee
+(
+`name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change`, `id_employee`)
+SELECT
+`name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change`,`id_employee` FROM employee WHERE employee.id =  '".$data_emp['id']."';") or sqlerr(__FILE__, __LINE__);*/
+                    //  $last_id = mysql_insert_id();
+                    /*  sql_query("UPDATE `employee` SET `id_uid_post` = '".$data_esp['id']."',  `id_location_place` = '".$location_place."',  `date_transfer` = '".$date_transfer."', `id_functionality` = '".$id_functionality."', `fte` = '".$fte."',  `id_strategic_project` = '".$id_project."',  `id_employee_model` = '".$id_employee_model."',  `last_update` = '".$date_data."',  `revision` = `revision` + 1,  `id_user_change` = '".$CURUSER['id']."', `date_start` = '".$date_data."'   WHERE `id` ='".$last_id."';") or sqlerr(__FILE__, __LINE__);*/
+                    //обновляем
+                    sql_query("UPDATE `employee` SET `last_update` = '".$date_data."', `id_user_change` = '".$CURUSER['id']."', `current` = '0', `date_end` = '".$date_data."'   WHERE `id` ='".$data_emp['id']."';") or sqlerr(__FILE__, __LINE__);
+
+
+                    /*
+                     * sql_query("INSERT INTO revision_employee (`id_employee`, `name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change`) SELECT `id`, `name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change` FROM employee WHERE employee.id =  '".$data_emp['id']."';") or sqlerr(__FILE__, __LINE__);
+                     * */
+                    /*   sql_query("UPDATE `employee` SET `id_uid_post` = '".$data_esp['id']."',  `id_location_place` = '".$location_place."',  `date_transfer` = '".$date_transfer."', `id_functionality` = '".$id_functionality."', `fte` = '".$fte."',  `id_strategic_project` = '".$id_project."',  `id_employee_model` = '".$id_employee_model."',  `last_update` = '".$date_data."',  `revision` = `revision` + 1,  `id_user_change` = '".$CURUSER['id']."'  WHERE `id` ='".$data_emp['id']."';") or sqlerr(__FILE__, __LINE__);*/
+                    /*   $query .= "INSERT INTO revision_employee (`id_employee`, `name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change`, `vacancy`) SELECT `id`, `name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change`, `vacancy` FROM employee WHERE employee.id =  '".$data_emp['id']."';";
+                       //обновляем
+                       $query .= "UPDATE `employee` SET `id_uid_post` = '".$data_esp['id']."',  `id_location_place` = '".$location_place."',  `date_transfer` = '".$date_transfer."', `id_functionality` = '".$id_functionality."', `fte` = '".$fte."',  `id_strategic_project` = '".$id_project."',  `id_employee_model` = '".$id_employee_model."',  `last_update` = '".$date_data."',  `revision` = `revision` + 1,  `id_user_change` = '".$CURUSER['id']."', `vacancy` = 0  WHERE `id` ='".$data_emp['id']."';";*/
+
+                }
+
+            }
+
+
+            //отмечаем какие ИД мы уже использовали. те что нет, отмечаем в базе как старые
+          //  $array_used_esp[] = $data_esp['id'];
+            //НЕ РАБОТАЕТ!!!!!!! ВЫКЛЮЧЕНО
+            /*КОСЯК ОБНОВЛЕНИЯ ПРИВЯЗКИ СОТРУДНИКА*/
+            $ss = 10;
+
+            if((int)$data_esp['id'] >0 ){
+
+                $update = 0;
+                $array_used_esp[] = $data_esp['id'];
+
+                $id_position = (int)array_search(trim($data['2']),$data_position);
+                $id_block = (int)array_search(str_replace("\"","",$data['3']),$data_block);
+
+                unset($array_department);
+                // $array_department[] = (int)array_search(str_replace ("\"", "", $data['3']),$data_department);
+                /* $array_department[] = (int)array_search(str_replace ("\"", "", $data['4']),$data_department);
+                 $array_department[] = (int)array_search(str_replace ("\"", "", $data['6']),$data_department);
+                 $array_department[] = (int)array_search(str_replace ("\"", "", $data['7']),$data_department);
+                 $array_department[] = (int)array_search(str_replace ("\"", "", $data['8']),$data_department);
+                 $array_department[] = (int)array_search(str_replace ("\"", "", $data['9']),$data_department);*/
+                $array_department[] = (int)array_search(str_replace ("\"", "", $data['4']."0"),$data_department);
+                $array_department[] = (int)array_search(str_replace ("\"", "", $data['6']."1"),$data_department);
+                $array_department[] = (int)array_search(str_replace ("\"", "", $data['7']."2"),$data_department);
+                $array_department[] = (int)array_search(str_replace ("\"", "", $data['8']."3"),$data_department);
+                $array_department[] = (int)array_search(str_replace ("\"", "", $data['9']."4"),$data_department);
+                $id_department = "";
+                foreach ($array_department as $array) {
+                    if($array < 1)
+                        continue;
+
+                    if($id_department)
+                        $id_department .= ",";
+
+                    $id_department .= $array;
+                }
+
+                $id_direction = (int)array_search(trim($data['10']),$data_direction);
+                $id_rck = (int)array_search(trim($data['22']),$data_rck);
+                $id_mvz = (int)array_search(trim($data['23']),$data_mvz);
+                $date_entry = unix_time ($data['29']);
+                $id_location_city = (int)array_search(trim($data['33']),$data_city);
+
+                $id_functional_manager = (int)array_search(trim($data['14']),$data_mgr);
+                $id_administrative_manager = (int)array_search(trim($data['17']),$data_mgr);
+
+                if ((int)$data['26'] == 1) {
+                    $draft = 0;
+                } else {
+                    $draft = 1;
+                }
+                if ($data['30'] == "Да") {
+                    $transfer = 1;
+                } else {
+                    $transfer = 0;
+                }
+
+                if($id_position != $data_esp['id_position']){
+                    $update = 10;
+                }
+                if($id_block != $data_esp['id_block']){
+                    $update = 11;
+                }
+                if($id_department != $data_esp['id_department']){
+                    $update = 12;
+                }
+
+                if($id_direction != $data_esp['id_direction']){
+                    $update = 13;
+                }
+                if($id_rck != $data_esp['id_rck']){
+                    $update = 14;
+                }
+                if($id_mvz != $data_esp['id_mvz']){
+                    $update = 15;
+                }
+                if($date_entry != $data_esp['date_entry']){
+                    $update = 16;
+                }
+                if($id_location_city != $data_esp['id_location_city']){
+                    $update = 17;
+                }
+
+                if($id_functional_manager != $data_esp['id_functional_manager']){
+                    $update = 18;
+                }
+                if($id_administrative_manager != $data_esp['id_administrative_manager']){
+                    $update = 19;
+                }
+
+                if($draft != $data_esp['draft']){
+                    $update = 20;
+                }
+                if($transfer != $data_esp['transfer']){
+                    $update = 21;
+                }
+
+
+                if($update !=0){
+                    $last_id = 0;
+                    sql_query("
+INSERT INTO established_post (`uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`,`revision`,`id_ep`)SELECT `uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`, `revision`,`id_ep`  FROM established_post WHERE established_post.id =  '".$data_esp['id']."';") or sqlerr(__FILE__, __LINE__);
+                    $last_id = mysql_insert_id();
+
+                    sql_query("UPDATE `established_post` SET  `id_position` = '".$id_position."', `id_block` = '".$id_block."', `id_department` = '".$id_department."', `id_direction` = '".$id_direction."', `id_rck` = '".$id_rck."', `id_mvz` = '".$id_mvz."', `date_entry` = '".$date_entry."', `last_update` = '".$date_data."', `id_location_city` = '".$id_location_city."', `id_functional_manager` = '".$id_functional_manager."', `id_administrative_manager` = '".$id_administrative_manager."', `draft` = '".$draft."', `transfer` = '".$transfer."',`is_deleted` = '0', `revision` = `revision` + 1, `date_start` = '".$date_data."'  WHERE `id` ='".$last_id."';") or sqlerr(__FILE__, __LINE__);
+                    sql_query("UPDATE `established_post` SET `is_deleted` = 1,`last_update` = '".$date_data."', `id_user_change` = '".$CURUSER['id']."', `current` = '0', `date_end` = '".$date_data."'  WHERE `id` ='".$data_esp['id']."';") or sqlerr(__FILE__, __LINE__);
+                    /*   sql_query("INSERT INTO revision_established_post (`id_established_post`, `uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`,`revision`) SELECT `id`, `uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`, `revision`  FROM established_post WHERE established_post.id =  '".$data_esp['id']."';") or sqlerr(__FILE__, __LINE__);
+                       //обновляем
+                       sql_query("UPDATE `established_post` SET `id_position` = '".$id_position."', `id_block` = '".$id_block."', `id_department` = '".$id_department."', `id_direction` = '".$id_direction."', `id_rck` = '".$id_rck."', `id_mvz` = '".$id_mvz."', `date_entry` = '".$date_entry."', `last_update` = '".$date_data."', `id_location_city` = '".$id_location_city."', `id_functional_manager` = '".$id_functional_manager."', `id_administrative_manager` = '".$id_administrative_manager."', `draft` = '".$draft."', `transfer` = '".$transfer."',`is_deleted` = '0', `revision` = `revision` + 1 WHERE `id` ='".$data_esp['id']."';") or sqlerr(__FILE__, __LINE__);*/
+
+                }
+
+
+            }
+
+
+        }
+        $array_not_used_esp = array_diff($array_all_esp,$array_used_esp);
+        $array_not_used_emp = array_diff($array_all_emp,$array_used_emp);
+
+        foreach($array_not_used_emp as $a){
+            if((int)$a >0){
+                $last_id = 0;
+
+             //   sql_query("INSERT INTO employee(`name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change`, `id_employee`) SELECT `name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change`,`id_employee` FROM employee WHERE employee.id =  '".$a."';") or sqlerr(__FILE__, __LINE__);
+            //    $last_id = mysql_insert_id();
+            //    sql_query("UPDATE `employee` SET `is_deleted` = 1,`revision` = `revision` +1,`last_update` = '".$date_data."',  `date_start` = '".$date_data."', `date_end` =  '".$date_data."', `id_user_change` = '".$CURUSER['id']."'   WHERE `id` ='".$last_id."';") or sqlerr(__FILE__, __LINE__);
+                //обновляем
+           //     sql_query("UPDATE `employee` SET  `last_update` = '".$date_data."', `date_end` =  '".$date_data."',  `current` = '0'   WHERE `id` ='".$a."';") or sqlerr(__FILE__, __LINE__);
+
+                /*
+                sql_query("INSERT INTO revision_employee (`id_employee`, `name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change`) SELECT `id`, `name_employee`, `id_uid_post`, `id_location_place`, `email`, `date_employment`, `date_transfer`, `id_functionality`, `added`, `last_update`, `fte`, `is_deleted`, `id_strategic_project`, `id_employee_model`, `id_parent_ee`, `revision`, `id_user_change` FROM employee WHERE employee.id =  '".$a."';") or sqlerr(__FILE__, __LINE__);
+                sql_query("UPDATE employee SET is_deleted = 1, `revision` = `revision` + 1 WHERE id = '".$a."';");*/
+
+
+            }
+        }
+        /*  sql_query($query) or sqlerr(__FILE__, __LINE__);
+          unset($query);*/
+        foreach($array_not_used_esp as $a){
+            if((int)$a >0){
+                $last_id = 0;
+                sql_query("INSERT INTO established_post (`uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`,`revision`,`id_ep`)SELECT `uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`, `revision`,`id_ep`  FROM established_post WHERE established_post.id =  '".$a."';") or sqlerr(__FILE__, __LINE__);
+                $last_id = mysql_insert_id();
+                sql_query("UPDATE `established_post` SET `is_deleted` = 1,`revision` = `revision` +1,`last_update` = '".$date_data."',  `date_start` = '".$date_data."', `date_end` =  '".$date_data."', `id_user_change` = '".$CURUSER['id']."', `current` = '0'   WHERE `id` ='".$last_id."';") or sqlerr(__FILE__, __LINE__);
+                //обновляем
+                sql_query("UPDATE `established_post` SET   `last_update` = '".$date_data."', `date_end` =  '".$date_data."', `current` = '0'    WHERE `id` = '".$a."';") or sqlerr(__FILE__, __LINE__);
+
+                /*
+                sql_query("INSERT INTO revision_established_post (`id_established_post`, `uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`,
+     `revision`) SELECT `id`, `uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`, `revision`  FROM established_post WHERE established_post.id =  '".$a."'") or sqlerr(__FILE__, __LINE__);
+
+                sql_query("UPDATE established_post SET is_deleted = 1, `revision` = `revision` + 1 WHERE id = '".$a."';");
+*/
+            }
+        }
+        // print $query;
+        // sql_query($query) or sqlerr(__FILE__, __LINE__);
+
+        //   die();
+        $REL_TPL->stdmsg('Выполнено','Шаг 6a завершен. Данные обновлены (1/3)');
+        $step = "6b";
+        safe_redirect("upload_sap.php?step=6b&name=".$time."&date_data=".$date_data."",1);
+
+        $REL_TPL->stdfoot();
+        die();
+    }
+
+
+    if($_GET['step'] == '6b') {
 
 
 /*
@@ -886,6 +1231,7 @@
                     //прописываем данные для удобства
                     $location_place = (int)array_search(trim("".$data['35'].",".$data['36'].",".$data['37'].",".unix_time($data['39']).""),$data_place);
                     $date_transfer = unix_time ($data['32']);
+                    $date_employment = unix_time ($data['31']);
                     $id_functionality = (int)array_search(trim($data['20']),$data_functionality);
                     $fte = str_replace(",",".",$data['28']);
                     $id_project = (int)array_search(trim($data['21']),$data_project);
@@ -916,6 +1262,10 @@
                     if($data_emp['vacancy'] != 0){
                         $update = 9;
                     }
+                    if($data_emp['date_employment'] != $date_employment){
+                        $update = 10;
+                    }
+
                     // если были многочисленные изменения, то обновляем запись, плюс копируем в ревизии
                     if($update !=0){
 
@@ -932,7 +1282,7 @@
                          `date_start`)
                         VALUES (
                         '".$data_emp['name_employee']."', '".$data_esp['id']."','".$location_place."',
-                        '".$data_emp['email']."','".$data_emp['date_employment']."','".$date_transfer."',
+                        '".$data_emp['email']."','".$date_employment."','".$date_transfer."',
                         '".$id_functionality."','".$data_emp['added']."','".$date_data."',
                         '".$fte."','".$id_project."',
                         '".$id_employee_model."','".$data_emp['revision']."' + 1,
@@ -967,11 +1317,12 @@ SELECT
 
 
             //отмечаем какие ИД мы уже использовали. те что нет, отмечаем в базе как старые
-            $array_used_esp[] = $data_esp['id'];
-            //условие что бы не работало
+           // $array_used_esp[] = $data_esp['id'];
+            //НЕ РАБОТАЕТ!!!!!!! ВЫКЛЮЧЕНО
+            /*КОСЯК ОБНОВЛЕНИЯ ПРИВЯЗКИ СОТРУДНИКА*/
                 $ss = 10;
 
-                if((int)$data_esp['id'] >0 AND $ss ==50){
+                if((int)$data_esp['id'] >0 AND $ss = 50){
 
                     $update = 0;
                     $array_used_esp[] = $data_esp['id'];
@@ -1068,6 +1419,8 @@ SELECT
                         sql_query("
 INSERT INTO established_post (`uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`,`revision`,`id_ep`)SELECT `uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`, `revision`,`id_ep`  FROM established_post WHERE established_post.id =  '".$data_esp['id']."';") or sqlerr(__FILE__, __LINE__);
                         $last_id = mysql_insert_id();
+                        // обновляем записи сотрудников, с привязкой к новой ШЕ
+                        sql_query("UPDATE employee SET `id_uid_post` = '".$last_id."' WHERE `id_uid_post` = '".$data_esp['id']."' AND current = 1;");
                         sql_query("UPDATE `established_post` SET  `id_position` = '".$id_position."', `id_block` = '".$id_block."', `id_department` = '".$id_department."', `id_direction` = '".$id_direction."', `id_rck` = '".$id_rck."', `id_mvz` = '".$id_mvz."', `date_entry` = '".$date_entry."', `last_update` = '".$date_data."', `id_location_city` = '".$id_location_city."', `id_functional_manager` = '".$id_functional_manager."', `id_administrative_manager` = '".$id_administrative_manager."', `draft` = '".$draft."', `transfer` = '".$transfer."',`is_deleted` = '0', `revision` = `revision` + 1, `date_start` = '".$date_data."'  WHERE `id` ='".$last_id."';") or sqlerr(__FILE__, __LINE__);
                         sql_query("UPDATE `established_post` SET `is_deleted` = 1,`last_update` = '".$date_data."', `id_user_change` = '".$CURUSER['id']."', `current` = '0', `date_end` = '".$date_data."'  WHERE `id` ='".$data_esp['id']."';") or sqlerr(__FILE__, __LINE__);
                      /*   sql_query("INSERT INTO revision_established_post (`id_established_post`, `uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`,`revision`) SELECT `id`, `uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`, `revision`  FROM established_post WHERE established_post.id =  '".$data_esp['id']."';") or sqlerr(__FILE__, __LINE__);
@@ -1106,11 +1459,11 @@ INSERT INTO established_post (`uid_post`, `id_position`, `id_block`, `id_departm
         foreach($array_not_used_esp as $a){
             if((int)$a >0){
                 $last_id = 0;
-                sql_query("INSERT INTO established_post (`uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`,`revision`,`id_ep`)SELECT `uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`, `revision`,`id_ep`  FROM established_post WHERE established_post.id =  '".$a."';") or sqlerr(__FILE__, __LINE__);
-                $last_id = mysql_insert_id();
-                sql_query("UPDATE `established_post` SET `is_deleted` = 1,`revision` = `revision` +1,`last_update` = '".$date_data."',  `date_start` = '".$date_data."', `date_end` =  '".$date_data."', `id_user_change` = '".$CURUSER['id']."', `current` = '0'   WHERE `id` ='".$last_id."';") or sqlerr(__FILE__, __LINE__);
+              //  sql_query("INSERT INTO established_post (`uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`,`revision`,`id_ep`)SELECT `uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`, `revision`,`id_ep`  FROM established_post WHERE established_post.id =  '".$a."';") or sqlerr(__FILE__, __LINE__);
+             //   $last_id = mysql_insert_id();
+              //  sql_query("UPDATE `established_post` SET `is_deleted` = 1,`revision` = `revision` +1,`last_update` = '".$date_data."',  `date_start` = '".$date_data."', `date_end` =  '".$date_data."', `id_user_change` = '".$CURUSER['id']."', `current` = '0'   WHERE `id` ='".$last_id."';") or sqlerr(__FILE__, __LINE__);
                 //обновляем
-                sql_query("UPDATE `established_post` SET   `last_update` = '".$date_data."', `date_end` =  '".$date_data."', `current` = '0'    WHERE `id` = '".$a."';") or sqlerr(__FILE__, __LINE__);
+              //  sql_query("UPDATE `established_post` SET   `last_update` = '".$date_data."', `date_end` =  '".$date_data."', `current` = '0'    WHERE `id` = '".$a."';") or sqlerr(__FILE__, __LINE__);
 
                 /*
                 sql_query("INSERT INTO revision_established_post (`id_established_post`, `uid_post`, `id_position`, `id_block`, `id_department`, `id_direction`, `id_rck`, `id_mvz`, `date_entry`, `added`, `last_update`, `id_location_city`, `id_functional_manager`, `id_administrative_manager`, `draft`, `transfer`, `is_deleted`, `id_parent_ep`,
@@ -1124,13 +1477,16 @@ INSERT INTO established_post (`uid_post`, `id_position`, `id_block`, `id_departm
        // sql_query($query) or sqlerr(__FILE__, __LINE__);
 
      //   die();
-        $REL_TPL->stdmsg('Выполнено','Шаг 7 завершен. Данные обновлены (1/2)');
+        $REL_TPL->stdmsg('Выполнено','Шаг 7 завершен. Данные обновлены (1/3)');
         $step = 7;
         safe_redirect("upload_sap.php?step=7&name=".$time."&date_data=".$date_data."",1);
 
         $REL_TPL->stdfoot();
         die();
     }
+
+
+    //обновлние почты
     if($_GET['step'] == '7') {
 
         $data_employee_rc = select_data_base("employee","name_employee");
@@ -1145,7 +1501,7 @@ INSERT INTO established_post (`uid_post`, `id_position`, `id_block`, `id_departm
             $id_functional_manager = (int)array_search(trim($data['14']),$data_employee_rc);
 
             if((array_search($id_functional_manager,$used_id_functional_manager) === false) AND $id_functional_manager > 0){
-                sql_query ("UPDATE `employee` SET `email` = '".$data['15']."' WHERE `id` = $id_functional_manager;") or sqlerr(__FILE__, __LINE__);
+                sql_query ("UPDATE `employee` SET `email` = '".$data['15']."' WHERE `id` = $id_functional_manager AND current = 1;") or sqlerr(__FILE__, __LINE__);
                 $used_id_functional_manager[] = $id_functional_manager;
             }
 
@@ -1155,7 +1511,7 @@ INSERT INTO established_post (`uid_post`, `id_position`, `id_block`, `id_departm
 
 
 
-        $REL_TPL->stdmsg('Выполнено','Шаг 8 завершен. Данные обновлены (2/2). Не перезагружайте страницу.');
+        $REL_TPL->stdmsg('Выполнено','Шаг 8 завершен. Данные обновлены (3/3). Не перезагружайте страницу.');
         $step = 8;
         safe_redirect("upload_sap.php?step=8&name=".$time."&date_data=".$date_data."",1);
 
@@ -1163,7 +1519,7 @@ INSERT INTO established_post (`uid_post`, `id_position`, `id_block`, `id_departm
         die();
     }
 
-
+//внештатники
     if($_GET['step'] == '8') {
 
         $res_max_id_ep = sql_query("SELECT MAX(id_ep)  FROM established_post") or sqlerr(__FILE__, __LINE__);
