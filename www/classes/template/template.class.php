@@ -96,7 +96,7 @@ class REL_TPL extends Smarty {
       //  generate_post_javascript();
         close_sessions();
 
-       // debug();
+        debug();
         $this->assign('js_add',$js_add);
         if (REL_AJAX) {
            // $this->display($this->config['stdfoot_ajax']);

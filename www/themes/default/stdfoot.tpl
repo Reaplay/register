@@ -55,5 +55,6 @@
 		{/literal}
 {if $chart_flot}{chart_flot data=$chart_flot['data']}{/if}
 		{$js_add}
+
 	</body>
 </html>
