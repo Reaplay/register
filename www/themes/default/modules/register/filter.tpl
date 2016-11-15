@@ -5,6 +5,7 @@
         <div class="toggle-content" >
             <form  action="register.php" method="get">
                 <input type="hidden" name="type" value="{$smarty.get.type}">
+                <input type="hidden" name="date_history" value="{$smarty.get.date_history}">
                 <div class="row margin-bottom-10">
 
                     <div class="col-md-3">
@@ -102,16 +103,10 @@
                     </div>
 
                     <div class="col-md-3">
-                        {*<h4>По подразделению 1</h4>
-                        <div class="fancy-form fancy-form-select">
-                            <select class="form-control select2" name="department" style="width: 253px">
-                                <option value="0">Все</option>
-                                {foreach from=$data_filter.department key=id item=name}
-                                    <option value="{$id}" {if $id==$smarty.get.department}selected="selected"{/if}>{$name}</option>
-                                {/foreach}
-                            </select>
-                            <i class="fancy-arrow"></i>
-                        </div>*}
+                        <h4>История</h4>
+                        <div class="fancy-form">
+                            <input type="text" class="form-control datepicker" data-format="dd-mm-yyyy" data-lang="ru" data-RTL="false" value="{$smarty.get.date_history}" name="date_history">
+                        </div>
                     </div>
 
                 </div>

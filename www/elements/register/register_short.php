@@ -31,6 +31,7 @@ LEFT JOIN mvz ON mvz.id = established_post.id_mvz
         $add_link .="&rck=".$_GET['rck'];
     }
     if((int)$_GET['model'] >0){
+        $left_join_two .= "LEFT JOIN employee ON  employee.id_uid_post = established_post.id";
         $where .= "AND employee.id_employee_model = '".(int)$_GET['model']."'";
         $add_link .="&model=".$_GET['model'];
     }
@@ -43,6 +44,7 @@ LEFT JOIN mvz ON mvz.id = established_post.id_mvz
         $add_link .="&ep=2";
     }
     if((int)$_GET['city'] >0){
+        $left_join_two .= "LEFT JOIN location_city ON location_city.id = established_post.id_location_city";
         $where .= "AND (location_city.id = '".(int)$_GET['city']."' OR established_post.id_location_city = '".(int)$_GET['city']."') ";
         $add_link .="&city=".$_GET['city'];
     }
@@ -89,18 +91,26 @@ LEFT JOIN mvz ON mvz.id = established_post.id_mvz
         }
 
     }
+    $date_history = unix_time($_GET['date_history']);
 
+    if($date_history AND $date_history != 0){
+        $where_two = "AND established_post.date_start <=$date_history AND established_post.date_end > $date_history";
+    }
+    else{
+        $where_two = "AND established_post.current = 1  ";
+    }
 
 
 // получаем основной список сотрудников
-    $paginator = create_paginator($_GET['page'],$REL_CONFIG['per_page_employee'],'established_post',$left_join, $where);
-    $date_history = unix_time($_GET['date_history']);
+    $paginator = create_paginator($_GET['page'],$REL_CONFIG['per_page_employee'],'established_post',$left_join_two, $where, $where_two);
+
+
 
     if($date_history){
 
-        $ress = sql_query("SELECT id FROM established_post WHERE date_start <=$date_history AND date_end > $date_history  GROUP BY id_ep ORDER BY date_end DESC ") or sqlerr(__FILE__, __LINE__);
+        $ress = sql_query("SELECT established_post.id FROM established_post $left_join_two WHERE date_start <=$date_history AND date_end > $date_history $where GROUP BY id_ep ORDER BY date_end DESC,  id_ep asc ".$paginator['limit']."") or sqlerr(__FILE__, __LINE__);
         if(mysql_num_rows($ress ) == 0){
-            stderr("Ошибка","Люди в  базе не обнаружены","no");
+            stderr("Ошибка","Люди в базе не обнаружены (pgn)","no");
         }
 
         while ($roww = mysql_fetch_array($ress)) {
@@ -111,12 +121,12 @@ LEFT JOIN mvz ON mvz.id = established_post.id_mvz
         }
         $where .= "AND `established_post`.`id` IN ($sub_id)" ;
         $add_link .="&date_history=".$_GET['date_history'];
+        $paginator['limit'] = '';
     }
     else {
         $from = "`established_post`";
-        $where .= "AND employee.current = 1 AND established_post.current = 1";
+        $where .= "AND established_post.current = 1";
     }
-
 
     $res=sql_query("
 SELECT
@@ -131,7 +141,7 @@ location_place.floor,location_place.room,location_place.place,location_place.rea
 
 FROM established_post
 $left_join
-WHERE IF(established_post.vacancy = 0, employee.is_deleted = 0,established_post.vacancy = 1) $where
+WHERE IF(established_post.vacancy = 0, (employee.is_deleted = 0 OR employee.id IS NULL),established_post.vacancy = 1) $where
 GROUP BY id_ep
 ".$paginator['limit'].";")  or sqlerr(__FILE__, __LINE__);
     if(mysql_num_rows($res) == 0){
