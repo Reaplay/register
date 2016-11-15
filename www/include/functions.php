@@ -445,7 +445,7 @@ function unix_time ($date){
 
 
     // определяем данные для создания переключателя страниц
-    function create_paginator($page, $per_page, $table, $left_join = "", $where = ""){
+    function create_paginator($page, $per_page, $table, $left_join = "", $where = "", $where_two = ""){
         $paginator['page'] = (int) $page;
 
         if ($paginator['page'] < 2){
@@ -459,7 +459,7 @@ function unix_time ($date){
         $paginator['limit'] = "LIMIT ".$paginator['start_page']." , ".$paginator['cpp'];
 
         // узнаем сколько
-        $res = sql_query("SELECT SUM(1) FROM $table $left_join WHERE $table.is_deleted = 0 $where ;") or sqlerr(__FILE__,__LINE__);
+        $res = sql_query("SELECT SUM(1) FROM $table $left_join WHERE $table.is_deleted = 0 $where $where_two;") or sqlerr(__FILE__,__LINE__);
 
         $row = mysql_fetch_array($res);
         //всего записей
@@ -537,4 +537,25 @@ WHERE established_post.id = '".$id_manager."'");
             $array['department'][] = $row_department;
         }
     return $array;
+    }
+
+    function debug() {
+        global $CURUSER, $REL_CONFIG, $REL_TPL, $REL_DB, $tstart;
+
+        if (($REL_CONFIG['debug_mode']) && ($CURUSER['class'] >= UC_ADMINISTRATOR)) {
+            //var_dump($REL_DB->query);
+            $REL_TPL->assignByRef('query',$REL_DB->query);
+            //$REL_TPL->assignByRef('tstart',$tstart);
+            $seconds = (microtime(true) - $tstart);
+            $display_debug=true;
+
+            $phptime = 		$seconds - $REL_DB->query[0]['seconds'];
+            $query_time = 	$REL_DB->query[0]['seconds'];
+            $percentphp = 	number_format(($phptime/$seconds) * 100, 2);
+            $percentsql = 	number_format(($query_time/$seconds) * 100, 2);
+
+            $REL_TPL->assign('PAGE_GENERATED',(sprintf("Страница сгенерирована за %f секунд. Выполнено %d запросов (%s%% PHP / %s%% MySQL). Обработка PHP: %f, MySQL: %f", $seconds, count($REL_DB->query), $percentphp, $percentsql,$phptime,$query_time)));
+        } else $display_debug=false;
+        $REL_TPL->assign('DEBUG',$display_debug);
+        //var_dump($display_debug);
     }
