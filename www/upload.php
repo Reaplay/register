@@ -328,6 +328,7 @@ dbconn();
 
             else{
                 sql_query("INSERT INTO established_post (id_ep,uid_post, date_entry, draft, transfer, added, date_start, vacancy) VALUES ('" . $i_ep . "',$uid_post, $date_entry, $draft, $transfer, ".$date_data.", ".$date_data.", ".$vacancy." ); ") or sqlerr(__FILE__, __LINE__);
+                $i_ep++;
                 $id_ep = mysql_insert_id();
                 if (!$vacancy) {
                     $insert_employee_no_ep .= "('" . $i_ie . "','" . $employee . "','" . $id_ep . "', '$date_employment' ,'$date_transfer',  $fte, " . $date_data . ", " . $date_data . ")";
@@ -440,7 +441,8 @@ dbconn();
 
         sql_query("INSERT INTO established_post (id_ep, uid_post, date_entry, draft, transfer, added, vacancy, date_start) VALUES ".$insert_established_post."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO employee (id_employee, name_employee, date_employment, date_transfer, fte, added, date_start) VALUES ".$insert_employee."; ") or sqlerr(__FILE__, __LINE__);
-        sql_query("INSERT INTO employee (id_employee, name_employee, id_uid_post, date_employment, date_transfer, fte, added, date_start) VALUES ".$insert_employee_no_ep."; ") or sqlerr(__FILE__, __LINE__);
+        if($insert_employee_no_ep)
+            sql_query("INSERT INTO employee (id_employee, name_employee, id_uid_post, date_employment, date_transfer, fte, added, date_start) VALUES ".$insert_employee_no_ep."; ") or sqlerr(__FILE__, __LINE__);
         if($insert_model)
             sql_query("INSERT INTO employee_model (name_model,added) VALUES ".$insert_model."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO position (name_position, added) VALUES ".$insert_position."; ") or sqlerr(__FILE__, __LINE__);
@@ -451,10 +453,11 @@ dbconn();
         sql_query("INSERT INTO rck (`name_rck`, added) VALUES ".$insert_rck."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO mvz (`name_mvz`, added) VALUES ".$insert_mvz."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO location_city (`name_city`, added) VALUES ".$insert_city."; ") or sqlerr(__FILE__, __LINE__);
-        sql_query("INSERT INTO location_address (`name_address`, added) VALUES ".$insert_address."; ") or sqlerr(__FILE__, __LINE__);
+        if($insert_address)
+            sql_query("INSERT INTO location_address (`name_address`, added) VALUES ".$insert_address."; ") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO location_place (floor, room, place, ready, date_ready, reservation, date_reservation, occupy, date_occupy, added) VALUES ".$insert_place.";") or sqlerr(__FILE__, __LINE__);
-
-        sql_query("INSERT INTO functionality (`name_functionality`, added) VALUES ".$insert_functionality_group.";") or sqlerr(__FILE__, __LINE__);
+        if($insert_functionality_group)
+            sql_query("INSERT INTO functionality (`name_functionality`, added) VALUES ".$insert_functionality_group.";") or sqlerr(__FILE__, __LINE__);
         sql_query("INSERT INTO functionality (`name_functionality`, added, id_parent) VALUES ".$insert_functionality_function.";") or sqlerr(__FILE__, __LINE__);
         if ($insert_project)
             sql_query("INSERT INTO strategic_project (`name_project`, added) VALUES ".$insert_project.";") or sqlerr(__FILE__, __LINE__);
@@ -468,6 +471,7 @@ dbconn();
     }
 //связываем данные
     if($_GET['step'] == '2'){
+
         // получаем нужные данные из базы ввиде массива
         $data_rck = select_data_base("rck","name_rck");
         $data_mvz = select_data_base("mvz","name_mvz");

@@ -1,9 +1,3 @@
-
-<div class="alert alert-danger margin-bottom-30">
-    <strong>Внимание</strong> Не делано. Не работает обновление/загрузка внештатников полностью
-
-</div>
-
 {if !$step}
 <form enctype="multipart/form-data" action="upload_sap.php?type=upload_client" method="POST" accept-charset="utf-8">
     <input type="text" class="form-control datepicker" data-format="dd/mm/yyyy" data-lang="ru" data-RTL="false" placeholder="Выберите дату данных" name="date_data">
