@@ -485,7 +485,7 @@ function unix_time ($date){
 
 
     // поиск менеджера
-    function select_manager($id_manager){
+    function select_manager($id_manager,$status ='AND employee.current = 1'){
         if(!$id_manager OR $id_manager == 0) {
             return array();
         }
@@ -495,7 +495,8 @@ FROM established_post
 LEFT JOIN employee ON employee.id_uid_post = established_post.id
 LEFT JOIN position ON position.id = established_post.id_position
 LEFT JOIN location_city ON location_city.id = established_post.id_location_city
-WHERE established_post.id = '".$id_manager."'");
+WHERE established_post.id_ep = '".$id_manager."' ".$status."") or sqlerr(__FILE__,__LINE__);
+
         return mysql_fetch_array($res);
     }
 

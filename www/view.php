@@ -43,7 +43,7 @@ employee.name_employee AS em_name, employee.date_employment, employee.date_trans
 location_city.name_city,
 location_place.place, location_place.floor, location_place.room, location_place.id_address AS lp_ia, location_place.ready, location_place.date_ready, location_place.reservation, location_place.date_reservation, location_place.occupy, location_place.date_occupy,
 location_address.name_address, location_address.id_city AS la_id_city,
-direction.name_direction,direction.id_employee AS id_curator,direction.id as did, (SELECT employee.name_employee FROM employee WHERE employee.id = direction.id_employee) AS name_curator,
+direction.name_direction,direction.id_employee AS id_curator,direction.id as did, (SELECT employee.name_employee FROM employee WHERE employee.id = direction.id_employee AND employee.current = 1) AS name_curator,
 mvz.name_mvz,
 rck.name_rck,
 employee_model.name_model
@@ -105,7 +105,7 @@ if($row['id_department']) {
     $data_employee[$i]['department'] = $department;
 }
 //определеяем где сидит функц. рукль;
-    $cur_res = sql_query ("SELECT name_rck FROM rck LEFT JOIN employee ON employee.id = " . $row['id_administrative_manager'] . " LEFT JOIN established_post ON established_post.id = employee.id_uid_post WHERE rck.id = established_post.id_rck");
+    $cur_res = sql_query ("SELECT name_rck FROM rck LEFT JOIN employee ON employee.id = " . $row['id_administrative_manager'] . " LEFT JOIN established_post ON established_post.id = employee.id_uid_post WHERE rck.id = established_post.id_rck AND employee.current = 1");
     $cur_row = mysql_fetch_array ($cur_res);
     $data_employee[$i]['rck_curator'] = $cur_row['name_rck'];
 

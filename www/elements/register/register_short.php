@@ -219,9 +219,9 @@ GROUP BY id_ep
         $data_employee[$i]['date_occupy'] = mkprettytime($row['date_occupy'], false);
         $data_employee[$i]['date_reservation'] = mkprettytime($row['date_reservation'], false);
         //выбираем функционального рук-ля
-        $data_employee[$i]['func_mgr'] = select_manager($row['id_functional_manager']);
+        $data_employee[$i]['func_mgr'] = select_manager($row['id_functional_manager'],$where_two);
         //выбираем административного рук-ля
-        $data_employee[$i]['adm_mgr'] = select_manager($row['id_administrative_manager']);
+        $data_employee[$i]['adm_mgr'] = select_manager($row['id_administrative_manager'],$where_two);
         // узнаем ID родителя функции
         $id_parent =  $array_functionality[$row['id_functionality']]['id_parent'];
         //прописываем название  функции
