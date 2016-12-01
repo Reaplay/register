@@ -579,7 +579,7 @@ dbconn();
 
      // обрабатываем ДО/ОО
            $id_type_office = (int)array_search($data['5'],$data_type_office);
-           $id_office =  (int)array_search(str_replace ("\"", "", $data['6']),$data_department);
+           $id_office =  (int)array_search(str_replace ("\"", "", $data['4'])."0",$data_department);
 
 
             $id_direction = (int)array_search($data['10'],$data_direction);
@@ -627,10 +627,14 @@ dbconn();
                 $used_id_functional_manager[] = $id_functional_manager;
             }
             /*ОБРАБАТЫВАЕМ ТИПЫ ОФИСОВ*/
-            if((array_search($id_office,$used_id_office) === false) AND $id_type_office > 0){
+            if((array_search($id_office,$used_id_office) === false) AND $id_type_office > 0 AND $id_office >0){
+
                 sql_query ("UPDATE `department` SET `id_type_office` = '".$id_type_office."' WHERE `id` = $id_office;") or sqlerr(__FILE__, __LINE__);
                 $used_id_office[] = $id_office;
             }
+             else{
+                 $used_id_office[] = $id_office;
+             }
 
     }
 
@@ -686,11 +690,11 @@ dbconn();
         $used_direction = array();
 
         //получаем существующие UID POST к которым привязаны люди
-        $res_emp=sql_query("SELECT employee.name_employee, established_post.id FROM employee LEFT JOIN established_post ON established_post.id = employee.id_uid_post;") or sqlerr(__FILE__, __LINE__);
+        $res_emp=sql_query("SELECT employee.name_employee, established_post.id_ep FROM employee LEFT JOIN established_post ON established_post.id = employee.id_uid_post;") or sqlerr(__FILE__, __LINE__);
 
         while($row_emp = mysql_fetch_array($res_emp)){
 
-            $data_emp[$row_emp['id']]=$row_emp['name_employee'];
+            $data_emp[$row_emp['id_ep']]=$row_emp['name_employee'];
         }
 
 
